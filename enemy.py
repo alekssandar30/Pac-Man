@@ -1,0 +1,1 @@
+#kod za protivnike
