@@ -5,10 +5,11 @@ from PyQt5.QtGui import QPainter, QPen, QPixmap
 from PyQt5.QtCore import Qt
 import main_window
 
-class Player(main_window.QMainWindow):
+class Player():
 
     def __init__(self):
         super().__init__()
+
 
 
 
