@@ -14,8 +14,9 @@ class MainWindow(QMainWindow):
 
         self.width = 800
         self.height = 600
+        self.map = Board(self)# mapa, za sad matrica 16x16
         self.label = QLabel(self)  # za sad nas player
-        self.map = Board(self)  # mapa, za sad matrica 16x16
+
 
         self.score = 0
         self.score_label = QLabel('Score: ', self)
@@ -47,7 +48,7 @@ class MainWindow(QMainWindow):
     def drawPlayer(self):
         self.pixmap = QPixmap("images/PacManRightEat.png")
         self.label.setPixmap(self.pixmap)
-        self.label.move(200, 200)
+        self.label.move(240, 200)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Left:
@@ -71,20 +72,25 @@ class MainWindow(QMainWindow):
 
     #KRETANJE Pac Man-a
     def movePlayerLeft(self, label):
-        label.setPixmap(QPixmap("images/PacManLeftEat.png"))
-        label.move(label.x() - 5, label.y())
+        print("x = " , label.y() , " y = " ,label.x()," x[%20] = " ,label.x()//40 , "y[%16] = " , label.y()//40)
+        if self.map.is_tunnel(label.x() - 10, label.y()):
+            label.setPixmap(QPixmap("images/PacManLeftEat.png"))
+            label.move(label.x() - 10, label.y())
 
     def movePlayerRight(self, label):
-        label.setPixmap(QPixmap("images/PacManRightEat.png"))
-        label.move(label.x() + 5, label.y())
+        if self.map.is_tunnel(label.x() + 30, label.y()): # +30 potrebno da PacMan ne bi "usao" svojom polovinom u zid.
+            label.setPixmap(QPixmap("images/PacManRightEat.png"))
+            label.move(label.x() + 10, label.y())
 
     def movePlayerUp(self, label):
-        label.setPixmap(QPixmap("images/PacManUpEat.png"))
-        label.move(label.x(), label.y() - 5)
+        if self.map.is_tunnel(label.x(), label.y() - 10):
+            label.setPixmap(QPixmap("images/PacManUpEat.png"))
+            label.move(label.x(), label.y() - 10)
 
     def movePlayerDown(self, label):
-        label.setPixmap(QPixmap("images/PacManDownEat.png"))
-        label.move(label.x(), label.y() + 5)
+        if self.map.is_tunnel(label.x(), label.y() + 30): # +30 potrebno da PacMan ne bi "usao" svojom polovinom u zid.
+            label.setPixmap(QPixmap("images/PacManDownEat.png"))
+            label.move(label.x(), label.y() + 10)
 
     #funkcije za setovanje pixmape playera
     def set_left_close(self, label):
@@ -108,6 +114,8 @@ class MainWindow(QMainWindow):
                   (screen.height() - size.height()) / 2)
 
 
+
+
 class Board(QFrame):
     board_width = 800
     board_height = 600
@@ -119,39 +127,44 @@ class Board(QFrame):
 
         # 0 => zid    1=> tunel
         self.board = [
-             [1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0],
-             [1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0],
-             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-             [1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0],
-             [1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0],
-             [0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0],
-             [0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0],
-             [0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0],
-             [0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0],
-             [0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0],
-             [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0],
-             [1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0],
-             [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0],
-             [0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0],
-             [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0],
-             [1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0],
+             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+             [0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0],
+             [0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+             [0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0],
+             [0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+             [0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+             [0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+             [0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+             [1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0],
+             [0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0],
+             [0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+             [0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0],
+             [0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0],
+             [0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0],
+             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 
 
         ]
 
+    def is_tunnel(self, x, y): # Vraca true ako je tunel, tj. omogucava kretanje PacMan-a. Ako je element matrice 0(zid) onda vraca false, tj. zabranjuje prolazak PacMan-a.
+        if self.board[y//40][x//40] == 1:
+            return True
+        else:
+            return False
 
 
     def paintEvent(self, event):
         painter = QPainter(self)
         #ovde treba ispraviti
-        for i in range(16):
+        for i in range(20):
             for j in range(16):
-                if self.board[i][j] == 0:
+                if self.board[j][i] == 0:
                     #draw wall
-                    self.draw_map(i*60, j*60, painter, Qt.darkBlue)
+                    self.draw_map(i*40, j*40, painter, Qt.darkBlue)
                 else:
-                    self.draw_map(i*60, j*60, painter, Qt.black) #tunel
+                    self.draw_map(i*40, j*40, painter, Qt.black) #tunel
 
     def draw_map(self, x, y, painter, color):
-        #painter.fillRect(x, y, 60, 60, color)
-        pass
+        painter.fillRect(x, y, 40, 40, color)
+        #pass
