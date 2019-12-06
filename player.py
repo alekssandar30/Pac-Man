@@ -11,8 +11,7 @@ class Player(QLabel):
 
     #KRETANJE Pac Man-a
     def movePlayerLeft(self, label):
-        print("x = " , label.y() , " y = " ,label.x()," x[%20] = " ,label.x()//40 ,
-              "y[%16] = " , label.y()//40)
+        #print("x = " , label.y() , " y = " ,label.x()," x[%20] = " ,label.x()//40 ,"y[%16] = " , label.y()//40)
         if self.map.is_tunnel(label.x() - 10, label.y()):
             label.setPixmap(QPixmap("images/PacManLeftEat.png"))
             label.move(label.x() - 10, label.y())
