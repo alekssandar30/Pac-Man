@@ -96,7 +96,7 @@ class Board(QFrame):
 
         self.resize(self.board_width, self.board_height)
 
-        # 0 => zid    1=> tunel
+        # 0 => zid    1=> tunel  2=> Coin  3=> Eat_Ghost
         self.board = [
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0],
@@ -111,7 +111,7 @@ class Board(QFrame):
             [0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 0, 0, 1, 0, 1, 1, 1, 0],
             [0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0],
             [0, 2, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0],
-            [0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0],
+            [0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 3, 1, 1, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ]
@@ -132,6 +132,8 @@ class Board(QFrame):
                     #draw wall
                     self.draw_map(i*40, j*40, painter, Qt.darkBlue)
                 elif self.board[j][i] == 2:
+                    self.draw_coins(i, j, painter)
+                elif self.board[j][i] == 3:
                     self.draw_eat_ghost_power(i, j, painter)
                 else:
                     self.draw_map(i*40, j*40, painter, Qt.black) #tunel
@@ -139,5 +141,8 @@ class Board(QFrame):
     def draw_map(self, x, y, painter, color):
         painter.fillRect(x, y, 40, 40, color)
 
-    def draw_eat_ghost_power(self, i, j, painter):
+    def draw_coins(self, i, j, painter):
         painter.drawPixmap(i * 40, j *40, QPixmap('images/Coin.png'))
+
+    def draw_eat_ghost_power(self, i, j, painter):
+        painter.drawPixmap(i * 40, j *40, QPixmap('images/EatGhostsPower.png'))
