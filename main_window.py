@@ -16,16 +16,19 @@ class MainWindow(QMainWindow):
         self.width = 800
         self.height = 640
         self.map = Board(self)# mapa, za sad matrica 16x16
+        # Labele
         self.label = QLabel(self)  # za sad nas player
+        self.title_label = QLabel('PacMan',self)
+        self.label_for_player_score = QLabel(self)
+        self.score_label = QLabel('Score: ', self)
+        self.label_for_coin_display = QLabel(self)
 
         # instanciraj igraca
-        self.player = player.Player(self.label, self.map)
-
-        self.score_label = QLabel('Score: ', self)
-
+        self.player = player.Player(self.label, self.map, self.label_for_player_score)
 
         self.init_ui()
         self.drawPlayer()
+        self.initPlayerScore()
 
         self.enemies = []  # u ove liste cemo dodavati protivnike i hranu
         self.food = []
@@ -41,12 +44,17 @@ class MainWindow(QMainWindow):
 
         self.center_window()
         self.setCentralWidget(self.map)
-        self.score_label.move(5, 0)
-        self.score_label.setStyleSheet("font: 22pt Comic Sans MS; color: white")
-        self.score_label.resize(150, 40)
+        self.score_label.move(5, 5)
+        self.score_label.setStyleSheet("font: 20pt Comic Sans MS; color: white")
+        self.score_label.resize(150, 30)
 
+        self.title_label.setStyleSheet("font: 22pt Comic Sans MS; color: white")
+        self.title_label.move(350,5)
+        self.title_label.resize(150, 30)
 
-
+        self.label_for_coin_display.setPixmap(QPixmap("images/ResultCoins.png"))
+        self.label_for_coin_display.move(110, 5)
+        self.label_for_coin_display.resize(30,30)
 
     def drawPlayer(self):
         self.pixmap = QPixmap("images/PacManRightEat.png")
@@ -54,6 +62,11 @@ class MainWindow(QMainWindow):
         self.label.resize(40,40)
         self.label.setStyleSheet("background:transparent")
         self.label.move(720, 560)
+
+    def initPlayerScore(self):
+        self.label_for_player_score.setText('0')
+        self.label_for_player_score.setStyleSheet("font: 20pt Comic Sans MS; color: white")
+        self.label_for_player_score.move(135,5)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Left:
@@ -128,8 +141,6 @@ class Board(QFrame):
         else:
             return False
 
-    def draw_black_background(self, x, y):  # Kad PacMan "pojede" coin, coin se zamenjuje crnom slikom
-        self.board[y // 40][x // 40] = 1
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -154,3 +165,6 @@ class Board(QFrame):
 
     def draw_eat_ghost_power(self, i, j, painter):
         painter.drawPixmap(i * 40, j *40, QPixmap('images/EatGhostsPower.png'))
+
+    def draw_black_background(self, x, y):  # Kad PacMan "pojede" coin, coin se zamenjuje crnom slikom
+        self.board[y // 40][x // 40] = 1

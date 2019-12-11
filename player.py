@@ -4,10 +4,12 @@ from PyQt5.QtGui import QPixmap
 
 
 class Player(QLabel):
-    def __init__(self, label, map):
+    def __init__(self, label, map, label_for_player_score):
         super().__init__()
         self.label = label
         self.map = map
+        self.current_score = 0
+        self.score_counter_label = label_for_player_score #QLabel(str(self.current_score)) Labela za score
 
     #KRETANJE Pac Man-a
     def movePlayerLeft(self, label):
@@ -52,6 +54,15 @@ class Player(QLabel):
             self.map.draw_black_background(label.x(), label.y())
         label.setPixmap(QPixmap("images/PacManDownClose.png"))
 
+        def increase_points(self, points):
+            self.current_score += points
+            self.score_counter_label.setText(str(self.current_score))
+
+        def increase_points_for_player(self, x, y):
+            if self.map.is_coin(x, y):
+                self.increase_points(10)
+            elif self.map.is_eat_ghosts_power(x, y):  ## dobija brzinu i ostalo, moze da jede neprijatelje
+                self.increase_points(100)
 
 
 
