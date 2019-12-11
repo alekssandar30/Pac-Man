@@ -37,21 +37,29 @@ class Player(QLabel):
     #funkcije za setovanje pixmape playera
     def set_left_close(self, label):
         #if (label.x() % 40)+20 == 20:
+        if self.map.is_coin(label.x(), label.y()):
+            self.increase_points(10)
         self.map.draw_black_background(label.x(), label.y())
         label.setPixmap(QPixmap("images/PacManLeftClose.png"))
 
     def set_right_close(self, label):
         #if (label.x() % 40)+20 == 30:
+        if self.map.is_coin(label.x(), label.y()):
+            self.increase_points(10)
         self.map.draw_black_background(label.x(), label.y())
         label.setPixmap(QPixmap("images/PacManRightClose.png"))
 
     def set_up_close(self, label):
         #if (label.y() % 40)+20 == 20:
+        if self.map.is_coin(label.x(), label.y()):
+            self.increase_points(10)
         self.map.draw_black_background(label.x(), label.y())
         label.setPixmap(QPixmap("images/PacManUpClose.png"))
 
     def set_down_close(self, label):
         #if (label.y() % 40)+20 == 30:
+        if self.map.is_coin(label.x(), label.y()):
+            self.increase_points(10)
         self.map.draw_black_background(label.x(), label.y())
         label.setPixmap(QPixmap("images/PacManDownClose.png"))
 
@@ -59,11 +67,7 @@ class Player(QLabel):
         self.current_score += points
         self.score_counter_label.setText(str(self.current_score))
 
-    def increase_points_for_player(self, x, y):
-        if self.map.is_coin(x, y):
-            self.increase_points(10)
-        elif self.map.is_eat_ghosts_power(x, y):  ## dobija brzinu i ostalo, moze da jede neprijatelje
-            self.increase_points(100)
+
 
 
 
