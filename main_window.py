@@ -21,8 +21,8 @@ class MainWindow(QMainWindow):
         # instanciraj igraca
         self.player = player.Player(self.label, self.map)
 
-        self.score = 0
         self.score_label = QLabel('Score: ', self)
+
 
         self.init_ui()
         self.drawPlayer()
@@ -41,13 +41,18 @@ class MainWindow(QMainWindow):
 
         self.center_window()
         self.setCentralWidget(self.map)
-        self.score_label.move(5, 5)
-        self.score_label.setStyleSheet("font: 25pt Comic Sans MS; color: white")
-        self.score_label.resize(150, 30)
+        self.score_label.move(5, 0)
+        self.score_label.setStyleSheet("font: 22pt Comic Sans MS; color: white")
+        self.score_label.resize(150, 40)
+
+
+
 
     def drawPlayer(self):
         self.pixmap = QPixmap("images/PacManRightEat.png")
         self.label.setPixmap(self.pixmap)
+        self.label.resize(40,40)
+        self.label.setStyleSheet("background:transparent")
         self.label.move(720, 560)
 
     def keyPressEvent(self, event):
