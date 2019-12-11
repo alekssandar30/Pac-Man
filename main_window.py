@@ -141,6 +141,11 @@ class Board(QFrame):
         else:
             return False
 
+    def is_eat_ghosts_power(self, x, y):
+        if self.board[y // 40][x // 40] == 3:
+            return True
+        else:
+            return False
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -163,8 +168,8 @@ class Board(QFrame):
     def draw_coins(self, i, j, painter):
         painter.drawPixmap(i * 40, j *40, QPixmap('images/Coin.png'))
 
-    def draw_eat_ghost_power(self, i, j, painter):
-        painter.drawPixmap(i * 40, j *40, QPixmap('images/EatGhostsPower.png'))
-
     def draw_black_background(self, x, y):  # Kad PacMan "pojede" coin, coin se zamenjuje crnom slikom
         self.board[y // 40][x // 40] = 1
+
+    def draw_eat_ghost_power(self, i, j, painter):
+        painter.drawPixmap(i * 40, j * 40, QPixmap('images/EatGhostsPower1.png'))
