@@ -14,7 +14,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.width = 800
-        self.height = 600
+        self.height = 640
         self.map = Board(self)# mapa, za sad matrica 16x16
         self.label = QLabel(self)  # za sad nas player
 
@@ -45,15 +45,10 @@ class MainWindow(QMainWindow):
         self.score_label.setStyleSheet("font: 25pt Comic Sans MS; color: white")
         self.score_label.resize(150, 30)
 
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.setPen(QPen(Qt.black, 5, Qt.SolidLine))
-        painter.drawRect(5, 40, self.width - 10, self.height - 50)
-
     def drawPlayer(self):
         self.pixmap = QPixmap("images/PacManRightEat.png")
         self.label.setPixmap(self.pixmap)
-        self.label.move(720, 520)
+        self.label.move(720, 560)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Left:
@@ -89,7 +84,7 @@ class MainWindow(QMainWindow):
 
 class Board(QFrame):
     board_width = 800
-    board_height = 600
+    board_height = 640
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -111,8 +106,8 @@ class Board(QFrame):
             [0, 2, 2, 2, 2, 2, 2, 2, 0, 1, 1, 1, 0, 0, 2, 0, 2, 2, 2, 0],
             [0, 2, 0, 2, 0, 0, 2, 2, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 2, 0],
             [0, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 0, 2, 0],
-            [0, 3, 2, 2, 0, 2, 0, 0, 0, 3, 0, 2, 2, 0, 2, 2, 2, 2, 1, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 3, 2, 2, 0, 2, 0, 0, 0, 3, 0, 2, 2, 0, 2, 2, 2, 2, 2, 0],
+            [0, 2, 0, 2, 2, 2, 0, 0, 0, 2, 2, 2, 0, 0, 2, 2, 2, 0, 1, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ]
 
@@ -122,6 +117,14 @@ class Board(QFrame):
         else:
             return False
 
+    def is_coin(self, x, y):
+        if self.board[y // 40][x // 40] == 2:
+            return True
+        else:
+            return False
+
+    def draw_black_background(self, x, y):  # Kad PacMan "pojede" coin, coin se zamenjuje crnom slikom
+        self.board[y // 40][x // 40] = 1
 
     def paintEvent(self, event):
         painter = QPainter(self)
