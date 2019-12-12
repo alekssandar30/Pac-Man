@@ -1,13 +1,7 @@
 #kod za kretanje igraca, sakupljanje poena...
 from PyQt5.QtWidgets import QWidget, QLabel
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QGuiApplication
 from time import sleep
-from PyQt5 import QtGui
-from multiprocessing import Process
-from threading import Lock
-import threading
-from queue import Queue
-
 
 
 class Player(QLabel):
@@ -34,20 +28,25 @@ class Player(QLabel):
                 label.setPixmap(QPixmap("images/PacManLeftEat.png"))
                 if (label.x() == 0):
                     label.move(label.x() + 780, label.y())
-                    QtGui.QGuiApplication.processEvents()
+                    QGuiApplication.processEvents()
                 else:
                     label.move(label.x() - 20, label.y())
-                    QtGui.QGuiApplication.processEvents()
+                    QGuiApplication.processEvents()
                 sleep(0.05)
                 label.setPixmap(QPixmap("images/PacManLeftClose.png"))
-                QtGui.QGuiApplication.processEvents()
+                QGuiApplication.processEvents()
                 sleep(0.05)
                 i += 1
                 if (i == 1):
                     if self.map.is_coin(label.x() - 20, label.y()):
                         self.increase_points(10)
                         self.map.draw_black_background(label.x() - 20, label.y())
-                    QtGui.QGuiApplication.processEvents()
+                    elif self.map.is_eat_ghosts_power(label.x()-20, label.y()):
+                        #ovde ce da se ubrza pacman i da jede protivnike
+                        self.map.draw_black_background(label.x()-20, label.y())
+
+                    QGuiApplication.processEvents()
+
 
     def movePlayerRight(self, label):
         self.right = True
@@ -60,20 +59,24 @@ class Player(QLabel):
                 label.setPixmap(QPixmap("images/PacManRightEat.png")) #760 320
                 if (label.x() == 760):
                     label.move(label.x() - 780, label.y())
-                    QtGui.QGuiApplication.processEvents()
+                    QGuiApplication.processEvents()
                 else:
                     label.move(label.x() + 20, label.y())
-                    QtGui.QGuiApplication.processEvents()
+                    QGuiApplication.processEvents()
                 sleep(0.05)
                 label.setPixmap(QPixmap("images/PacManRightClose.png"))
-                QtGui.QGuiApplication.processEvents()
+                QGuiApplication.processEvents()
                 sleep(0.05)
                 i += 1
                 if (i == 1):
                     if self.map.is_coin(label.x() + 20, label.y()):
                         self.increase_points(10)
                         self.map.draw_black_background(label.x() + 20, label.y())
-                    QtGui.QGuiApplication.processEvents()
+                    elif self.map.is_eat_ghosts_power(label.x()+20, label.y()):
+                        #ovde ce da se ubrza pacman i da jede protivnike
+                        self.map.draw_black_background(label.x()+20, label.y())
+
+                    QGuiApplication.processEvents()
 
     def movePlayerUp(self, label):
         #print("x = ", label.y(), " y = ", label.x(), " x[%20] = ", label.x() // 40, "y[%16] = ", label.y() // 40)
@@ -86,17 +89,21 @@ class Player(QLabel):
             while (i < 2):
                 label.setPixmap(QPixmap("images/PacManUpEat.png"))
                 label.move(label.x(), label.y() - 20)
-                QtGui.QGuiApplication.processEvents()
+                QGuiApplication.processEvents()
                 sleep(0.05)
                 label.setPixmap(QPixmap("images/PacManUpClose.png"))
-                QtGui.QGuiApplication.processEvents()
+                QGuiApplication.processEvents()
                 sleep(0.05)
                 i += 1
                 if (i == 1):
                     if self.map.is_coin(label.x(), label.y() - 20):
                         self.increase_points(10)
                         self.map.draw_black_background(label.x(), label.y() - 20)
-                    QtGui.QGuiApplication.processEvents()
+                    elif self.map.is_eat_ghosts_power(label.x(), label.y()-20):
+                        #ovde ce da se ubrza pacman i da jede protivnike
+                        self.map.draw_black_background(label.x(), label.y()-20)
+
+                    QGuiApplication.processEvents()
 
     def movePlayerDown(self, label):
         self.down = True
@@ -108,46 +115,21 @@ class Player(QLabel):
             while (i < 2):
                 label.setPixmap(QPixmap("images/PacManDownEat.png"))
                 label.move(label.x(), label.y() + 20)
-                QtGui.QGuiApplication.processEvents()
+                QGuiApplication.processEvents()
                 sleep(0.05)
                 label.setPixmap(QPixmap("images/PacManDownClose.png"))
-                QtGui.QGuiApplication.processEvents()
+                QGuiApplication.processEvents()
                 sleep(0.05)
                 i += 1
-                if (i == 1):
+                if i == 1:
                     if self.map.is_coin(label.x(), label.y() + 20):
                         self.increase_points(10)
                         self.map.draw_black_background(label.x(), label.y() + 20)
-                    QtGui.QGuiApplication.processEvents()
+                    elif self.map.is_eat_ghosts_power(label.x(), label.y()+20):
+                        #ovde ce da se ubrza pacman i da jede protivnike
+                        self.map.draw_black_background(label.x(), label.y()+20)
 
-    #funkcije za setovanje pixmape playera
-    '''def set_left_close(self, label):
-        #if (label.x() % 40)+20 == 20:
-        if self.map.is_coin(label.x(), label.y()):
-            self.increase_points(10)
-        self.map.draw_black_background(label.x(), label.y())
-        label.setPixmap(QPixmap("images/PacManLeftClose.png"))
-
-    def set_right_close(self, label):
-        #if (label.x() % 40)+20 == 30:
-        if self.map.is_coin(label.x(), label.y()):
-            self.increase_points(10)
-        self.map.draw_black_background(label.x(), label.y())
-        label.setPixmap(QPixmap("images/PacManRightClose.png"))
-
-    def set_up_close(self, label):
-        #if (label.y() % 40)+20 == 20:
-        if self.map.is_coin(label.x(), label.y()):
-            self.increase_points(10)
-        self.map.draw_black_background(label.x(), label.y())
-        label.setPixmap(QPixmap("images/PacManUpClose.png"))
-
-    def set_down_close(self, label):
-        #if (label.y() % 40)+20 == 30:
-        if self.map.is_coin(label.x(), label.y()):
-            self.increase_points(10)
-        self.map.draw_black_background(label.x(), label.y())
-        label.setPixmap(QPixmap("images/PacManDownClose.png"))'''
+                    QGuiApplication.processEvents()
 
     def increase_points(self, points):
         self.current_score += points

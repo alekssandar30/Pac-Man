@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import (QMainWindow, QLabel, QDesktopWidget, QFrame)
 from PyQt5.QtGui import (QPainter, QPen, QPixmap, QIcon, QColor)
 from PyQt5.QtCore import Qt
 import player
-from time import sleep
+import enemy
 
 """
 centralni widget u MainWindow je mapa(matrica 16x16) = klasa Board
@@ -16,22 +16,34 @@ class MainWindow(QMainWindow):
 
         self.width = 800
         self.height = 640
-        self.map = Board(self)# mapa, za sad matrica 16x16
+        self.map = Board(self)
+
         # Labele
         self.label = QLabel(self)  # za sad nas player
+        self.blue_ghost = QLabel(self)
+        self.orange_ghost = QLabel(self)
+        self.red_ghost = QLabel(self)
+        self.yellow_ghost = QLabel(self)
+
         self.title_label = QLabel('PacMan',self)
         self.label_for_player_score = QLabel(self)
         self.score_label = QLabel('Score: ', self)
         self.label_for_coin_display = QLabel(self)
 
-        # instanciraj igraca
+        # instanciraj igraca i protivnike
         self.player = player.Player(self.label, self.map, self.label_for_player_score)
+        self.ghost1 = enemy.Enemy(self.blue_ghost, self.map, self.player)
+        self.ghost2 = enemy.Enemy(self.orange_ghost, self.map, self.player)
+        self.ghost3 = enemy.Enemy(self.red_ghost, self.map, self.player)
+        self.ghost4 = enemy.Enemy(self.yellow_ghost, self.map, self.player)
+
 
         self.init_ui()
         self.drawPlayer()
+        self.draw_ghosts()
         self.initPlayerScore()
 
-        self.enemies = []  # u ove liste cemo dodavati protivnike i hranu
+        self.enemies = []
         self.food = []
 
         self.show()
@@ -64,6 +76,28 @@ class MainWindow(QMainWindow):
         self.label.setStyleSheet("background:transparent")
         self.label.move(720, 560)
 
+    #iscrtavanje protivnika
+    def draw_ghosts(self):
+        self.blue_ghost_pixmap = QPixmap("images/GhostBlueDown1.png")
+        self.orange_ghost_pixmap = QPixmap("images/GhostOrangeDown1.png")
+        self.red_ghost_pixmap = QPixmap("images/GhostRedDown1.png")
+        self.yellow_ghost_pixmap = QPixmap("images/GhostYellowDown1.png")
+
+        self.blue_ghost.setPixmap(self.blue_ghost_pixmap)
+        self.orange_ghost.setPixmap(self.orange_ghost_pixmap)
+        self.red_ghost.setPixmap(self.red_ghost_pixmap)
+        self.yellow_ghost.setPixmap(self.yellow_ghost_pixmap)
+
+        self.blue_ghost.resize(40, 40)
+        self.orange_ghost.resize(40, 40)
+        self.red_ghost.resize(40, 40)
+        self.yellow_ghost.resize(40, 40)
+
+        self.blue_ghost.move(370, 370)
+        self.red_ghost.move(400, 400)
+        self.orange_ghost.move(400, 330)
+        self.yellow_ghost.move(520, 320)
+
     def initPlayerScore(self):
         self.label_for_player_score.setText('0')
         self.label_for_player_score.setStyleSheet("font: 20pt Comic Sans MS; color: white")
@@ -78,16 +112,6 @@ class MainWindow(QMainWindow):
             self.player.movePlayerUp(self.label)
         elif event.key() == Qt.Key_Down:
             self.player.movePlayerDown(self.label)
-
-    #def keyReleaseEvent(self, event):
-        #if event.key() == Qt.Key_Left:
-         #   self.player.set_left_close(self.label)
-        #elif event.key() == Qt.Key_Right:
-           # self.player.set_right_close(self.label)
-        #elif event.key() == Qt.Key_Up:
-         #   self.player.set_up_close(self.label)
-        #elif event.key() == Qt.Key_Down:
-         #   self.player.set_down_close(self.label)
 
 
     """Center screen"""
