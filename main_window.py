@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import (QMainWindow, QLabel, QDesktopWidget, QFrame)
 from PyQt5.QtGui import (QPainter, QPen, QPixmap, QIcon, QColor)
 from PyQt5.QtCore import Qt
 import player
+from time import sleep
 
 """
 centralni widget u MainWindow je mapa(matrica 16x16) = klasa Board
@@ -78,15 +79,15 @@ class MainWindow(QMainWindow):
         elif event.key() == Qt.Key_Down:
             self.player.movePlayerDown(self.label)
 
-    def keyReleaseEvent(self, event):
-        if event.key() == Qt.Key_Left:
-            self.player.set_left_close(self.label)
-        elif event.key() == Qt.Key_Right:
-            self.player.set_right_close(self.label)
-        elif event.key() == Qt.Key_Up:
-            self.player.set_up_close(self.label)
-        elif event.key() == Qt.Key_Down:
-            self.player.set_down_close(self.label)
+    #def keyReleaseEvent(self, event):
+        #if event.key() == Qt.Key_Left:
+         #   self.player.set_left_close(self.label)
+        #elif event.key() == Qt.Key_Right:
+           # self.player.set_right_close(self.label)
+        #elif event.key() == Qt.Key_Up:
+         #   self.player.set_up_close(self.label)
+        #elif event.key() == Qt.Key_Down:
+         #   self.player.set_down_close(self.label)
 
 
     """Center screen"""
