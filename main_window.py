@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import (QMainWindow, QLabel, QDesktopWidget, QFrame)
-from PyQt5.QtGui import (QPainter, QPen, QPixmap, QIcon, QColor)
+from PyQt5.QtGui import (QPainter, QPen, QPixmap, QIcon, QColor, QMovie)
 from PyQt5.QtCore import Qt
 import player
 import enemy
@@ -37,6 +37,14 @@ class MainWindow(QMainWindow):
         self.ghost3 = enemy.Enemy(self.red_ghost, self.map, self.player)
         self.ghost4 = enemy.Enemy(self.yellow_ghost, self.map, self.player)
 
+        ## Special power
+        self.label_super_power = QLabel(self)
+        self.movie = QMovie('images/SpecialPowers.gif')
+        self.label_super_power.move(self.map.special_power_locations[0], self.map.special_power_locations[1])
+        self.label_super_power.resize(40, 40)
+        self.label_super_power.setMovie(self.movie)
+        self.movie.start()
+        ##
 
         self.init_ui()
         self.drawPlayer()
@@ -113,7 +121,6 @@ class MainWindow(QMainWindow):
         elif event.key() == Qt.Key_Down:
             self.player.movePlayerDown(self.label)
 
-
     """Center screen"""
 
     def center_window(self):
@@ -121,7 +128,6 @@ class MainWindow(QMainWindow):
         size = self.geometry()
         self.move((screen.width() - size.width()) / 2,
                   (screen.height() - size.height()) / 2)
-
 
 
 
@@ -133,11 +139,10 @@ class Board(QFrame):
         super().__init__(parent)
 
         self.resize(self.board_width, self.board_height)
-
-        # 0 => zid    1=> tunel  2=> Coin  3=> Eat_Ghost
+        # 0 => zid    1=> tunel  2=> Coin  3=> Eat_Ghost 4=> SpecialPowers
         self.board = [
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 3, 2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 0, 2, 2, 2, 0],
+            [0, 3, 2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 0, 2, 2, 4, 0],
             [0, 2, 0, 2, 2, 2, 0, 0, 0, 2, 2, 2, 0, 0, 2, 2, 2, 0, 2, 0],
             [0, 2, 2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 2, 0, 2, 0, 3, 2, 2, 0],
             [0, 0, 2, 0, 0, 2, 2, 0, 2, 3, 0, 2, 2, 2, 2, 2, 0, 2, 2, 0],
@@ -151,8 +156,11 @@ class Board(QFrame):
             [0, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 0, 2, 0],
             [0, 3, 2, 2, 0, 2, 0, 0, 0, 3, 0, 2, 2, 0, 2, 2, 2, 2, 2, 0],
             [0, 2, 0, 2, 2, 2, 0, 0, 0, 2, 2, 2, 0, 0, 2, 2, 2, 0, 1, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        ]
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],]
+
+        self.special_power_locations = []
+        self.populate_super_power_indices(self.board, 4) # vraca indekse svih elemenata cija je vrednost 4 iz matrice board
+
 
     def is_tunnel(self, x, y): # Vraca true ako je tunel, tj. omogucava kretanje PacMan-a. Ako je element matrice 0(zid) onda vraca false, tj. zabranjuje prolazak PacMan-a.
         if (x % 40 == 0 and y % 40 == 0):
@@ -198,6 +206,8 @@ class Board(QFrame):
                     self.draw_coins(i, j, painter)
                 elif self.board[j][i] == 3:
                     self.draw_eat_ghost_power(i, j, painter)
+                elif self.board[j][i] == 4:
+                    self.draw_map(i * 40, j * 40, painter, Qt.black) # Za pocetak da crta tunel
                 else:
                     self.draw_map(i*40, j*40, painter, Qt.black) #tunel
 
@@ -212,3 +222,10 @@ class Board(QFrame):
 
     def draw_eat_ghost_power(self, i, j, painter):
         painter.drawPixmap(i * 40, j * 40, QPixmap('images/EatGhostsPower1.png'))
+
+    def populate_super_power_indices(self, board, value):
+        for i in range(20):
+            for j in range(16):
+                if board[j][i] == value:
+                    self.special_power_locations.append(i * 40)
+                    self.special_power_locations.append(j * 40)
