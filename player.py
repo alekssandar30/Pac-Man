@@ -9,6 +9,7 @@ import threading
 from queue import Queue
 
 
+
 class Player(QLabel):
     def __init__(self, label, map, label_for_player_score):
         super().__init__()
@@ -30,9 +31,6 @@ class Player(QLabel):
             self.right = False
             i = 0
             while (i < 2):
-                self.up = False
-                self.down = False
-                self.right = False
                 label.setPixmap(QPixmap("images/PacManLeftEat.png"))
                 if (label.x() == 0):
                     label.move(label.x() + 780, label.y())
@@ -61,7 +59,7 @@ class Player(QLabel):
             while (i < 2):
                 label.setPixmap(QPixmap("images/PacManRightEat.png")) #760 320
                 if (label.x() == 760):
-                    label.move(label.x() - 740, label.y())
+                    label.move(label.x() - 780, label.y())
                     QtGui.QGuiApplication.processEvents()
                 else:
                     label.move(label.x() + 20, label.y())
@@ -86,9 +84,6 @@ class Player(QLabel):
             self.right = False
             i = 0
             while (i < 2):
-                self.down = False
-                self.left = False
-                self.right = False
                 label.setPixmap(QPixmap("images/PacManUpEat.png"))
                 label.move(label.x(), label.y() - 20)
                 QtGui.QGuiApplication.processEvents()
