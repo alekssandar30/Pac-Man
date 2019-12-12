@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import QWidget, QLabel
 from PyQt5.QtGui import QPixmap
 from time import sleep
 from PyQt5 import QtGui
+from multiprocessing import Process
+from threading import Lock
 import threading
 from queue import Queue
 
@@ -18,12 +20,11 @@ class Player(QLabel):
         self.down = False
         self.left = False
         self.right = False
-        self.pomoc = 0
 
     #KRETANJE Pac Man-a
     def movePlayerLeft(self, label):
         self.left = True
-        while (self.map.is_tunnel(label.x() - 40, label.y()) or self.map.is_coin(label.x() - 40, label.y()) or self.map.is_eat_ghosts_power(label.x() - 40, label.y())) and self.left:
+        while (self.map.zid(label.x() - 40, label.y()) and self.left):
             self.up = False
             self.down = False
             self.right = False
@@ -33,45 +34,53 @@ class Player(QLabel):
                 self.down = False
                 self.right = False
                 label.setPixmap(QPixmap("images/PacManLeftEat.png"))
-                label.move(label.x() - 20, label.y())
-                QtGui.QGuiApplication.processEvents()
-                sleep(0.03)
+                if (label.x() == 0):
+                    label.move(label.x() + 780, label.y())
+                    QtGui.QGuiApplication.processEvents()
+                else:
+                    label.move(label.x() - 20, label.y())
+                    QtGui.QGuiApplication.processEvents()
+                sleep(0.05)
                 label.setPixmap(QPixmap("images/PacManLeftClose.png"))
                 QtGui.QGuiApplication.processEvents()
-                sleep(0.03)
+                sleep(0.05)
                 i += 1
-                if (i == 2):
-                    if self.map.is_coin(label.x(), label.y()):
+                if (i == 1):
+                    if self.map.is_coin(label.x() - 20, label.y()):
                         self.increase_points(10)
-                    self.map.draw_black_background(label.x(), label.y())
+                        self.map.draw_black_background(label.x() - 20, label.y())
                     QtGui.QGuiApplication.processEvents()
 
     def movePlayerRight(self, label):
         self.right = True
-        while (self.map.is_tunnel(label.x() + 40, label.y()) or self.map.is_coin(label.x() + 40, label.y() or self.map.is_eat_ghosts_power(label.x() +40, label.y()))) and self.right:
+        while (self.map.zid(label.x() +40, label.y()) and self.right):
             self.up = False
             self.down = False
             self.left = False
             i = 0
             while (i < 2):
-                label.setPixmap(QPixmap("images/PacManRightEat.png"))
-                label.move(label.x() + 20, label.y())
-                QtGui.QGuiApplication.processEvents()
-                sleep(0.03)
+                label.setPixmap(QPixmap("images/PacManRightEat.png")) #760 320
+                if (label.x() == 760):
+                    label.move(label.x() - 740, label.y())
+                    QtGui.QGuiApplication.processEvents()
+                else:
+                    label.move(label.x() + 20, label.y())
+                    QtGui.QGuiApplication.processEvents()
+                sleep(0.05)
                 label.setPixmap(QPixmap("images/PacManRightClose.png"))
                 QtGui.QGuiApplication.processEvents()
-                sleep(0.03)
+                sleep(0.05)
                 i += 1
-                if (i == 2):
-                    if self.map.is_coin(label.x(), label.y()):
+                if (i == 1):
+                    if self.map.is_coin(label.x() + 20, label.y()):
                         self.increase_points(10)
-                    self.map.draw_black_background(label.x(), label.y())
+                        self.map.draw_black_background(label.x() + 20, label.y())
                     QtGui.QGuiApplication.processEvents()
 
     def movePlayerUp(self, label):
         #print("x = ", label.y(), " y = ", label.x(), " x[%20] = ", label.x() // 40, "y[%16] = ", label.y() // 40)
         self.up = True
-        while (self.map.is_tunnel(label.x(), label.y() - 40) or self.map.is_coin(label.x(), label.y() - 40) or self.map.is_eat_ghosts_power(label.x(), label.y() - 40)) and self.up:
+        while (self.map.zid(label.x(), label.y() - 40) and self.up):
             self.down = False
             self.left = False
             self.right = False
@@ -83,20 +92,20 @@ class Player(QLabel):
                 label.setPixmap(QPixmap("images/PacManUpEat.png"))
                 label.move(label.x(), label.y() - 20)
                 QtGui.QGuiApplication.processEvents()
-                sleep(0.03)
+                sleep(0.05)
                 label.setPixmap(QPixmap("images/PacManUpClose.png"))
                 QtGui.QGuiApplication.processEvents()
-                sleep(0.03)
+                sleep(0.05)
                 i += 1
-                if (i == 2):
-                    if self.map.is_coin(label.x(), label.y()):
+                if (i == 1):
+                    if self.map.is_coin(label.x(), label.y() - 20):
                         self.increase_points(10)
-                    self.map.draw_black_background(label.x(), label.y())
+                        self.map.draw_black_background(label.x(), label.y() - 20)
                     QtGui.QGuiApplication.processEvents()
 
     def movePlayerDown(self, label):
         self.down = True
-        while (self.map.is_tunnel(label.x(), label.y() + 40) or self.map.is_coin(label.x() , label.y() + 40) or self.map.is_eat_ghosts_power(label.x(), label.y() + 40)) and self.down:
+        while (self.map.zid(label.x(), label.y() + 40) and self.down):
             self.up = False
             self.left = False
             self.right = False
@@ -105,15 +114,15 @@ class Player(QLabel):
                 label.setPixmap(QPixmap("images/PacManDownEat.png"))
                 label.move(label.x(), label.y() + 20)
                 QtGui.QGuiApplication.processEvents()
-                sleep(0.03)
+                sleep(0.05)
                 label.setPixmap(QPixmap("images/PacManDownClose.png"))
                 QtGui.QGuiApplication.processEvents()
-                sleep(0.03)
+                sleep(0.05)
                 i += 1
-                if (i == 2):
-                    if self.map.is_coin(label.x(), label.y()):
+                if (i == 1):
+                    if self.map.is_coin(label.x(), label.y() + 20):
                         self.increase_points(10)
-                    self.map.draw_black_background(label.x(), label.y())
+                        self.map.draw_black_background(label.x(), label.y() + 20)
                     QtGui.QGuiApplication.processEvents()
 
     #funkcije za setovanje pixmape playera
@@ -148,6 +157,12 @@ class Player(QLabel):
     def increase_points(self, points):
         self.current_score += points
         self.score_counter_label.setText(str(self.current_score))
+
+    def ispis(self):
+        i = 0
+        while (i < 5):
+            print("zdravo")
+            i += 1
 
 
 

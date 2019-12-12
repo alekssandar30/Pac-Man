@@ -131,20 +131,34 @@ class Board(QFrame):
         ]
 
     def is_tunnel(self, x, y): # Vraca true ako je tunel, tj. omogucava kretanje PacMan-a. Ako je element matrice 0(zid) onda vraca false, tj. zabranjuje prolazak PacMan-a.
-        if self.board[y//40][x//40] == 1:
-            return True
+        if (x % 40 == 0 and y % 40 == 0):
+            if self.board[y//40][x//40] == 1:
+                return True
         else:
             return False
 
     def is_coin(self, x, y):
-        if self.board[y // 40][x // 40] == 2:
-            return True
+        if (x % 40 == 0 and y % 40 == 0):
+            if self.board[y // 40][x // 40] == 2:
+                return True
         else:
             return False
 
     def is_eat_ghosts_power(self, x, y):
-        if self.board[y // 40][x // 40] == 3:
-            return True
+        if (x % 40 == 0 and y % 40 == 0):
+            if self.board[y // 40][x // 40] == 3:
+                return True
+        else:
+            return False
+
+    def zid(self, x, y):
+        if (x % 40 == 0 and y % 40 == 0):
+            if x == 800:
+                return True
+            if x == -40:
+                return True
+            if self.board[y // 40][x // 40] != 0:
+                return True
         else:
             return False
 
