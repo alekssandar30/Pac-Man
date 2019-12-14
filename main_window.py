@@ -3,6 +3,9 @@ from PyQt5.QtGui import (QPainter, QPen, QPixmap, QIcon, QColor, QMovie)
 from PyQt5.QtCore import Qt
 import player
 import enemy
+from time import sleep
+from threading import Thread
+from multiprocessing import Process
 
 """
 centralni widget u MainWindow je mapa(matrica 16x16) = klasa Board
@@ -113,13 +116,13 @@ class MainWindow(QMainWindow):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Left:
-            self.player.movePlayerLeft(self.label)
+            self.pLeft = Process(target=self.player.movePlayerLeft(self.label))
         elif event.key() == Qt.Key_Right:
-            self.player.movePlayerRight(self.label)
+            self.pRight = Process(target=self.player.movePlayerRight(self.label))
         elif event.key() == Qt.Key_Up:
-            self.player.movePlayerUp(self.label)
+            self.pUp = Process(target=self.player.movePlayerUp(self.label))
         elif event.key() == Qt.Key_Down:
-            self.player.movePlayerDown(self.label)
+            self.pDown = Process(target=self.player.movePlayerDown(self.label))
 
     """Center screen"""
 

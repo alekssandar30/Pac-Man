@@ -1,6 +1,5 @@
 import sys
 from PyQt5.QtWidgets import QApplication
-import main_window
 import start_menu
 
 

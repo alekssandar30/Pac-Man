@@ -15,58 +15,236 @@ class Player(QLabel):
         self.down = False
         self.left = False
         self.right = False
+        self.provera = 0
 
     #KRETANJE Pac Man-a
     def movePlayerLeft(self, label):
         self.left = True
-        while (self.map.zid(label.x() - 40, label.y()) and self.left):
+        self.up = False
+        self.down = False
+        self.right = False
+        if (self.provera == 1):
+            while (True):
+                if (self.map.zid(label.x() - 40, label.y())):
+                    break
+                if (self.map.zid(label.x(), label.y() - 20)):
+                    label.setPixmap(QPixmap("images/PacManUpEat.png"))
+                    label.move(label.x(), label.y() - 20)
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                    label.setPixmap(QPixmap("images/PacManUpClose.png"))
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                elif (self.map.zid(label.x(), label.y() - 40)):
+                    i = 0
+                    while (i < 2):
+                        label.setPixmap(QPixmap("images/PacManUpEat.png"))
+                        label.move(label.x(), label.y() - 20)
+                        i += 1
+                        if (i == 1):
+                            if self.map.is_coin(label.x(), label.y() - 20):
+                                self.increase_points(10)
+                                self.map.draw_black_background(label.x(), label.y() - 20)
+                            elif self.map.is_eat_ghosts_power(label.x(), label.y() - 20):
+                                # ovde ce da se ubrza pacman i da jede protivnike
+                                self.map.draw_black_background(label.x(), label.y() - 20)
+                        QGuiApplication.processEvents()
+                        sleep(0.05)
+                        label.setPixmap(QPixmap("images/PacManUpClose.png"))
+                        QGuiApplication.processEvents()
+                        sleep(0.05)
+                if (not self.map.zid(label.x() - 40, label.y()) and not self.map.zid(label.x(), label.y() - 40)):
+                        break
+        elif (self.provera == 3):
+            while (True):
+                if (self.map.zid(label.x() - 40, label.y())):
+                    break
+                if (self.map.zid(label.x(), label.y() + 20)):
+                    label.setPixmap(QPixmap("images/PacManDownEat.png"))
+                    label.move(label.x(), label.y() + 20)
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                    label.setPixmap(QPixmap("images/PacManDownClose.png"))
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                elif (self.map.zid(label.x(), label.y() + 40)):
+                    i = 0
+                    while (i < 2):
+                        label.setPixmap(QPixmap("images/PacManDownEat.png"))
+                        label.move(label.x(), label.y() + 20)
+                        i += 1
+                        if (i == 1):
+                            if self.map.is_coin(label.x(), label.y() + 20):
+                                self.increase_points(10)
+                                self.map.draw_black_background(label.x(), label.y() + 20)
+                            elif self.map.is_eat_ghosts_power(label.x(), label.y() + 20):
+                                # ovde ce da se ubrza pacman i da jede protivnike
+                                self.map.draw_black_background(label.x(), label.y() + 20)
+                        QGuiApplication.processEvents()
+                        sleep(0.05)
+                        label.setPixmap(QPixmap("images/PacManDownClose.png"))
+                        QGuiApplication.processEvents()
+                        sleep(0.05)
+                if (not self.map.zid(label.x() - 40, label.y()) and not self.map.zid(label.x(), label.y() + 40)):
+                        break
+        elif (self.provera == 4):
+            while (True):
+                if (self.map.zid(label.x() - 40, label.y())):
+                    break
+                if (self.map.zid(label.x() + 20, label.y())):
+                    label.setPixmap(QPixmap("images/PacManRightEat.png"))  # 760 320
+                    if (label.x() == 760):
+                        label.move(label.x() - 780, label.y())
+                    else:
+                        label.move(label.x() + 20, label.y())
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                    label.setPixmap(QPixmap("images/PacManRightClose.png"))
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                if (not self.map.zid(label.x() - 40, label.y()) and not self.map.zid(label.x() + 40, label.y())):
+                        break
+        self.provera = 2
+
+        while (self.map.zid(label.x() - 40, label.y()) and self.left and self.up == False and self.down == False and self.right == False):
             self.up = False
             self.down = False
             self.right = False
+
             i = 0
-            while (i < 2):
+            if (self.provera == 2):
                 label.setPixmap(QPixmap("images/PacManLeftEat.png"))
                 if (label.x() == 0):
                     label.move(label.x() + 780, label.y())
-                    QGuiApplication.processEvents()
                 else:
                     label.move(label.x() - 20, label.y())
-                    QGuiApplication.processEvents()
-                sleep(0.05)
-                label.setPixmap(QPixmap("images/PacManLeftClose.png"))
-                QGuiApplication.processEvents()
-                sleep(0.05)
                 i += 1
                 if (i == 1):
                     if self.map.is_coin(label.x() - 20, label.y()):
                         self.increase_points(10)
                         self.map.draw_black_background(label.x() - 20, label.y())
-                    elif self.map.is_eat_ghosts_power(label.x()-20, label.y()):
-                        #ovde ce da se ubrza pacman i da jede protivnike
-                        self.map.draw_black_background(label.x()-20, label.y())
-
+                    elif self.map.is_eat_ghosts_power(label.x() - 20, label.y()):
+                        # ovde ce da se ubrza pacman i da jede protivnike
+                        self.map.draw_black_background(label.x() - 20, label.y())
+                QGuiApplication.processEvents()
+                sleep(0.05)
+                if (self.provera == 2):
+                    label.setPixmap(QPixmap("images/PacManLeftClose.png"))
                     QGuiApplication.processEvents()
-
+                    sleep(0.05)
+                    if (self.map.zid(label.x() - 20, label.y())):
+                        label.setPixmap(QPixmap("images/PacManLeftEat.png"))
+                        if (label.x() == 0):
+                            label.move(label.x() + 780, label.y())
+                        else:
+                            label.move(label.x() - 20, label.y())
+                        QGuiApplication.processEvents()
+                        sleep(0.05)
+                        if (self.provera == 2):
+                            label.setPixmap(QPixmap("images/PacManLeftClose.png"))
+                            QGuiApplication.processEvents()
+                            sleep(0.05)
 
     def movePlayerRight(self, label):
         self.right = True
-        while (self.map.zid(label.x() +40, label.y()) and self.right):
+        self.up = False
+        self.down = False
+        self.left = False
+        if (self.provera == 1):
+            while (True):
+                if (self.map.zid(label.x() + 40, label.y())):
+                    break
+                if (self.map.zid(label.x(), label.y() - 20)):
+                    label.setPixmap(QPixmap("images/PacManUpEat.png"))
+                    label.move(label.x(), label.y() - 20)
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                    label.setPixmap(QPixmap("images/PacManUpClose.png"))
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                elif (self.map.zid(label.x(), label.y() - 40)):
+                    i = 0
+                    while (i < 2):
+                        label.setPixmap(QPixmap("images/PacManUpEat.png"))
+                        label.move(label.x(), label.y() - 20)
+                        i += 1
+                        if (i == 1):
+                            if self.map.is_coin(label.x(), label.y() - 20):
+                                self.increase_points(10)
+                                self.map.draw_black_background(label.x(), label.y() - 20)
+                            elif self.map.is_eat_ghosts_power(label.x(), label.y() - 20):
+                                # ovde ce da se ubrza pacman i da jede protivnike
+                                self.map.draw_black_background(label.x(), label.y() - 20)
+                        QGuiApplication.processEvents()
+                        sleep(0.05)
+                        label.setPixmap(QPixmap("images/PacManUpClose.png"))
+                        QGuiApplication.processEvents()
+                        sleep(0.05)
+                if (not self.map.zid(label.x() + 40, label.y()) and not self.map.zid(label.x(), label.y() - 40)):
+                        break
+        elif (self.provera == 3):
+            while (True):
+                if (self.map.zid(label.x() + 40, label.y())):
+                    break
+                if (self.map.zid(label.x(), label.y() + 20)):
+                    label.setPixmap(QPixmap("images/PacManDownEat.png"))
+                    label.move(label.x(), label.y() + 20)
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                    label.setPixmap(QPixmap("images/PacManDownClose.png"))
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                elif (self.map.zid(label.x(), label.y() + 40)):
+                    i = 0
+                    while (i < 2):
+                        label.setPixmap(QPixmap("images/PacManDownEat.png"))
+                        label.move(label.x(), label.y() + 20)
+                        i += 1
+                        if (i == 1):
+                            if self.map.is_coin(label.x(), label.y() + 20):
+                                self.increase_points(10)
+                                self.map.draw_black_background(label.x(), label.y() + 20)
+                            elif self.map.is_eat_ghosts_power(label.x(), label.y() + 20):
+                                # ovde ce da se ubrza pacman i da jede protivnike
+                                self.map.draw_black_background(label.x(), label.y() + 20)
+                        QGuiApplication.processEvents()
+                        sleep(0.05)
+                        label.setPixmap(QPixmap("images/PacManDownClose.png"))
+                        QGuiApplication.processEvents()
+                        sleep(0.05)
+                if (not self.map.zid(label.x() + 40, label.y()) and not self.map.zid(label.x(), label.y() + 40)):
+                        break
+        elif (self.provera == 2):
+            while (True):
+                if (self.map.zid(label.x() + 40, label.y())):
+                    break
+                if (self.map.zid(label.x() - 20, label.y())):
+                    label.setPixmap(QPixmap("images/PacManLeftEat.png"))
+                    if (label.x() == 0):
+                        label.move(label.x() + 780, label.y())
+                    else:
+                        label.move(label.x() - 20, label.y())
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                    label.setPixmap(QPixmap("images/PacManLeftClose.png"))
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                if (not self.map.zid(label.x() + 40, label.y()) and not self.map.zid(label.x() - 40, label.y())):
+                        break
+        self.provera = 4
+
+        while (self.map.zid(label.x() + 40, label.y()) and self.right and self.up == False and self.down == False and self.left == False):
             self.up = False
             self.down = False
             self.left = False
+
             i = 0
-            while (i < 2):
+            if (self.provera == 4):
                 label.setPixmap(QPixmap("images/PacManRightEat.png")) #760 320
                 if (label.x() == 760):
                     label.move(label.x() - 780, label.y())
-                    QGuiApplication.processEvents()
                 else:
                     label.move(label.x() + 20, label.y())
-                    QGuiApplication.processEvents()
-                sleep(0.05)
-                label.setPixmap(QPixmap("images/PacManRightClose.png"))
-                QGuiApplication.processEvents()
-                sleep(0.05)
                 i += 1
                 if (i == 1):
                     if self.map.is_coin(label.x() + 20, label.y()):
@@ -75,71 +253,289 @@ class Player(QLabel):
                     elif self.map.is_eat_ghosts_power(label.x()+20, label.y()):
                         #ovde ce da se ubrza pacman i da jede protivnike
                         self.map.draw_black_background(label.x()+20, label.y())
-
+                QGuiApplication.processEvents()
+                sleep(0.05)
+                if (self.provera == 4):
+                    label.setPixmap(QPixmap("images/PacManRightClose.png"))
                     QGuiApplication.processEvents()
+                    sleep(0.05)
+                    if (self.map.zid(label.x() + 20, label.y())):
+                        label.setPixmap(QPixmap("images/PacManRightEat.png"))  # 760 320
+                        if (label.x() == 760):
+                            label.move(label.x() - 780, label.y())
+                        else:
+                            label.move(label.x() + 20, label.y())
+                        QGuiApplication.processEvents()
+                        sleep(0.05)
+                        if (self.provera == 4):
+                            label.setPixmap(QPixmap("images/PacManRightClose.png"))
+                            QGuiApplication.processEvents()
+                            sleep(0.05)
 
     def movePlayerUp(self, label):
         #print("x = ", label.y(), " y = ", label.x(), " x[%20] = ", label.x() // 40, "y[%16] = ", label.y() // 40)
         self.up = True
-        while (self.map.zid(label.x(), label.y() - 40) and self.up):
+        self.down = False
+        self.left = False
+        self.right = False
+        if (self.provera == 2):
+            while (True):
+                if (self.map.zid(label.x(), label.y() - 40)):
+                    break
+                if (self.map.zid(label.x() - 20, label.y())):
+                    label.setPixmap(QPixmap("images/PacManLeftEat.png"))
+                    if (label.x() == 0):
+                        label.move(label.x() + 780, label.y())
+                    else:
+                        label.move(label.x() - 20, label.y())
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                    label.setPixmap(QPixmap("images/PacManLeftClose.png"))
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                elif (self.map.zid(label.x() - 40, label.y())):
+                    i = 0
+                    while (i < 2 and self.provera == 2):
+                        label.setPixmap(QPixmap("images/PacManLeftEat.png"))
+                        if (label.x() == 0):
+                            label.move(label.x() + 780, label.y())
+                        else:
+                            label.move(label.x() - 20, label.y())
+                        i += 1
+                        if (i == 1):
+                            if self.map.is_coin(label.x() - 20, label.y()):
+                                self.increase_points(10)
+                                self.map.draw_black_background(label.x() - 20, label.y())
+                            elif self.map.is_eat_ghosts_power(label.x() - 20, label.y()):
+                                # ovde ce da se ubrza pacman i da jede protivnike
+                                self.map.draw_black_background(label.x() - 20, label.y())
+                        QGuiApplication.processEvents()
+                        sleep(0.05)
+                        label.setPixmap(QPixmap("images/PacManLeftClose.png"))
+                        QGuiApplication.processEvents()
+                        sleep(0.05)
+                if (not self.map.zid(label.x(), label.y() - 40) and not self.map.zid(label.x() - 40, label.y())):
+                    break
+        elif (self.provera == 3):
+            while (True):
+                if (self.map.zid(label.x(), label.y() - 40)):
+                    break
+                if (self.map.zid(label.x(), label.y() + 20)):
+                    label.setPixmap(QPixmap("images/PacManDownEat.png"))
+                    label.move(label.x(), label.y() + 20)
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                    label.setPixmap(QPixmap("images/PacManDownClose.png"))
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                if (not self.map.zid(label.x(), label.y() - 40) and not self.map.zid(label.x(), label.y() + 40)):
+                        break
+        elif (self.provera == 4):
+            while (True):
+                if (self.map.zid(label.x(), label.y() - 40)):
+                    break
+                if (self.map.zid(label.x() + 20, label.y())):
+                    label.setPixmap(QPixmap("images/PacManRightEat.png"))  # 760 320
+                    if (label.x() == 760):
+                        label.move(label.x() - 780, label.y())
+                    else:
+                        label.move(label.x() + 20, label.y())
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                    label.setPixmap(QPixmap("images/PacManRightClose.png"))
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                elif (self.map.zid(label.x() + 40, label.y())):
+                    i = 0
+                    while (i < 2 and self.provera == 4):
+                        label.setPixmap(QPixmap("images/PacManRightEat.png"))  # 760 320
+                        if (label.x() == 760):
+                            label.move(label.x() - 780, label.y())
+                        else:
+                            label.move(label.x() + 20, label.y())
+                        i += 1
+                        if (i == 1):
+                            if self.map.is_coin(label.x() + 20, label.y()):
+                                self.increase_points(10)
+                                self.map.draw_black_background(label.x() + 20, label.y())
+                            elif self.map.is_eat_ghosts_power(label.x() + 20, label.y()):
+                                # ovde ce da se ubrza pacman i da jede protivnike
+                                self.map.draw_black_background(label.x() + 20, label.y())
+                        QGuiApplication.processEvents()
+                        sleep(0.05)
+                        label.setPixmap(QPixmap("images/PacManRightClose.png"))
+                        QGuiApplication.processEvents()
+                        sleep(0.05)
+                if (not self.map.zid(label.x(), label.y() - 40) and not self.map.zid(label.x() + 40, label.y())):
+                        break
+
+        while (self.map.zid(label.x(), label.y() - 40) and self.up and self.down == False and self.right == False and self.left == False):
             self.down = False
             self.left = False
             self.right = False
+            self.provera = 1
+
             i = 0
-            while (i < 2):
+            if (self.provera == 1):
                 label.setPixmap(QPixmap("images/PacManUpEat.png"))
                 label.move(label.x(), label.y() - 20)
-                QGuiApplication.processEvents()
-                sleep(0.05)
-                label.setPixmap(QPixmap("images/PacManUpClose.png"))
-                QGuiApplication.processEvents()
-                sleep(0.05)
                 i += 1
                 if (i == 1):
                     if self.map.is_coin(label.x(), label.y() - 20):
                         self.increase_points(10)
                         self.map.draw_black_background(label.x(), label.y() - 20)
-                    elif self.map.is_eat_ghosts_power(label.x(), label.y()-20):
-                        #ovde ce da se ubrza pacman i da jede protivnike
-                        self.map.draw_black_background(label.x(), label.y()-20)
-
+                    elif self.map.is_eat_ghosts_power(label.x(), label.y() - 20):
+                        # ovde ce da se ubrza pacman i da jede protivnike
+                        self.map.draw_black_background(label.x(), label.y() - 20)
+                QGuiApplication.processEvents()
+                sleep(0.05)
+                if (self.provera == 1):
+                    label.setPixmap(QPixmap("images/PacManUpClose.png"))
                     QGuiApplication.processEvents()
+                    sleep(0.05)
+                    if (self.map.zid(label.x(), label.y() - 20)):
+                        label.setPixmap(QPixmap("images/PacManUpEat.png"))
+                        label.move(label.x(), label.y() - 20)
+                        QGuiApplication.processEvents()
+                        sleep(0.05)
+                        if (self.provera == 1):
+                            label.setPixmap(QPixmap("images/PacManUpClose.png"))
+                            QGuiApplication.processEvents()
+                            sleep(0.05)
 
     def movePlayerDown(self, label):
         self.down = True
-        while (self.map.zid(label.x(), label.y() + 40) and self.down):
+        self.up = False
+        self.left = False
+        self.right = False
+        if (self.provera == 2):
+            while (True):
+                if (self.map.zid(label.x(), label.y() + 40)):
+                    break
+                if (self.map.zid(label.x() - 20, label.y())):
+                    label.setPixmap(QPixmap("images/PacManLeftEat.png"))
+                    if (label.x() == 0):
+                        label.move(label.x() + 780, label.y())
+                    else:
+                        label.move(label.x() - 20, label.y())
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                    label.setPixmap(QPixmap("images/PacManLeftClose.png"))
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                elif (self.map.zid(label.x() - 40, label.y())):
+                    i = 0
+                    while (i < 2 and self.provera == 2):
+                        label.setPixmap(QPixmap("images/PacManLeftEat.png"))
+                        if (label.x() == 0):
+                            label.move(label.x() + 780, label.y())
+                        else:
+                            label.move(label.x() - 20, label.y())
+                        i += 1
+                        if (i == 1):
+                            if self.map.is_coin(label.x() - 20, label.y()):
+                                self.increase_points(10)
+                                self.map.draw_black_background(label.x() - 20, label.y())
+                            elif self.map.is_eat_ghosts_power(label.x() - 20, label.y()):
+                                # ovde ce da se ubrza pacman i da jede protivnike
+                                self.map.draw_black_background(label.x() - 20, label.y())
+                        QGuiApplication.processEvents()
+                        sleep(0.05)
+                        label.setPixmap(QPixmap("images/PacManLeftClose.png"))
+                        QGuiApplication.processEvents()
+                        sleep(0.05)
+                if (not self.map.zid(label.x(), label.y() + 40) and not self.map.zid(label.x() - 40, label.y())):
+                    break
+        elif (self.provera == 1):
+            while (True):
+                if (self.map.zid(label.x(), label.y() + 40)):
+                    break
+                if (self.map.zid(label.x(), label.y() - 20)):
+                    label.setPixmap(QPixmap("images/PacManDownEat.png"))
+                    label.move(label.x(), label.y() - 20)
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                    label.setPixmap(QPixmap("images/PacManDownClose.png"))
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                if (not self.map.zid(label.x(), label.y() + 40) and not self.map.zid(label.x(), label.y() - 40)):
+                        break
+        elif (self.provera == 4):
+            while (True):
+                if (self.map.zid(label.x(), label.y() + 40)):
+                    break
+                if (self.map.zid(label.x() + 20, label.y())):
+                    label.setPixmap(QPixmap("images/PacManRightEat.png"))  # 760 320
+                    if (label.x() == 760):
+                        label.move(label.x() - 780, label.y())
+                    else:
+                        label.move(label.x() + 20, label.y())
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                    label.setPixmap(QPixmap("images/PacManRightClose.png"))
+                    QGuiApplication.processEvents()
+                    sleep(0.05)
+                elif (self.map.zid(label.x() + 40, label.y())):
+                    i = 0
+                    while (i < 2 and self.provera == 4):
+                        label.setPixmap(QPixmap("images/PacManRightEat.png"))  # 760 320
+                        if (label.x() == 760):
+                            label.move(label.x() - 780, label.y())
+                        else:
+                            label.move(label.x() + 20, label.y())
+                        i += 1
+                        if (i == 1):
+                            if self.map.is_coin(label.x() + 20, label.y()):
+                                self.increase_points(10)
+                                self.map.draw_black_background(label.x() + 20, label.y())
+                            elif self.map.is_eat_ghosts_power(label.x() + 20, label.y()):
+                                # ovde ce da se ubrza pacman i da jede protivnike
+                                self.map.draw_black_background(label.x() + 20, label.y())
+                        QGuiApplication.processEvents()
+                        sleep(0.05)
+                        label.setPixmap(QPixmap("images/PacManRightClose.png"))
+                        QGuiApplication.processEvents()
+                        sleep(0.05)
+                if (not self.map.zid(label.x(), label.y() + 40) and not self.map.zid(label.x() + 40, label.y())):
+                        break
+
+        while (self.map.zid(label.x(), label.y() + 40) and self.down and self.up == False and self.left == False and self.right == False):
             self.up = False
             self.left = False
             self.right = False
+            self.provera = 3
+
             i = 0
-            while (i < 2):
+            if (self.provera == 3):
                 label.setPixmap(QPixmap("images/PacManDownEat.png"))
                 label.move(label.x(), label.y() + 20)
-                QGuiApplication.processEvents()
-                sleep(0.05)
-                label.setPixmap(QPixmap("images/PacManDownClose.png"))
-                QGuiApplication.processEvents()
-                sleep(0.05)
                 i += 1
                 if i == 1:
                     if self.map.is_coin(label.x(), label.y() + 20):
                         self.increase_points(10)
                         self.map.draw_black_background(label.x(), label.y() + 20)
-                    elif self.map.is_eat_ghosts_power(label.x(), label.y()+20):
-                        #ovde ce da se ubrza pacman i da jede protivnike
-                        self.map.draw_black_background(label.x(), label.y()+20)
-
+                    elif self.map.is_eat_ghosts_power(label.x(), label.y() + 20):
+                        # ovde ce da se ubrza pacman i da jede protivnike
+                        self.map.draw_black_background(label.x(), label.y() + 20)
+                QGuiApplication.processEvents()
+                sleep(0.05)
+                if (self.provera == 3):
+                    label.setPixmap(QPixmap("images/PacManDownClose.png"))
                     QGuiApplication.processEvents()
+                    sleep(0.05)
+                    if (self.map.zid(label.x(), label.y() + 20)):
+                        label.setPixmap(QPixmap("images/PacManDownEat.png"))
+                        label.move(label.x(), label.y() + 20)
+                        QGuiApplication.processEvents()
+                        sleep(0.05)
+                        if (self.provera == 3):
+                            label.setPixmap(QPixmap("images/PacManDownClose.png"))
+                            QGuiApplication.processEvents()
+                            sleep(0.05)
 
     def increase_points(self, points):
         self.current_score += points
         self.score_counter_label.setText(str(self.current_score))
-
-    def ispis(self):
-        i = 0
-        while (i < 5):
-            print("zdravo")
-            i += 1
 
 
 
