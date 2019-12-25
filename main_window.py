@@ -41,12 +41,17 @@ class MainWindow(QMainWindow):
         self.ghost4 = enemy.Enemy(self.yellow_ghost, self.map, self.player)
 
         ## Special power
+        self.niz_lokacija_special_power = [(2, 5), (18, 1), (6, 12), (2, 5), (10, 10), (18, 8)]
         self.label_super_power = QLabel(self)
         self.movie = QMovie('images/SpecialPowers.gif')
-        self.label_super_power.move(self.map.special_power_locations[0], self.map.special_power_locations[1])
+        #self.label_super_power.move(self.map.special_power_locations[0], self.map.special_power_locations[1])
+        self.label_super_power.move(self.niz_lokacija_special_power[0][0] * 40,self.niz_lokacija_special_power[0][1] * 40)
         self.label_super_power.resize(40, 40)
         self.label_super_power.setMovie(self.movie)
         self.movie.start()
+        special_power_thread = Thread(target=self.changeSpecialPowerLocation, args=[30,12]) #Thread koji menja pozicije, svake 30s generise superPower, i ostavlja ju je vidljivo 12s
+        special_power_thread.daemon = True # Da se thread gasi zajedno sa gasenjem glavnog threada (posle zatvaranja prozora)
+        special_power_thread.start()
         ##
 
         self.init_ui()
@@ -60,7 +65,6 @@ class MainWindow(QMainWindow):
         self.show()
 
     def init_ui(self):
-
         self.setWindowTitle('Pac-Man')
         self.setFixedWidth(self.width)
         self.setFixedHeight(self.height)
@@ -132,6 +136,31 @@ class MainWindow(QMainWindow):
         self.move((screen.width() - size.width()) / 2,
                   (screen.height() - size.height()) / 2)
 
+    def changeSpecialPowerLocation(self, showed_time, hidden_time):  # Funkcija prima showed_time koja nam zadaje za koliko ce sekundi da se pojavi special power, a hidden_time da posle koliko sekundi ce se sakriti
+        # Dodati eaten funkciju -> da ceka jos dodatno
+        showing_time = showed_time
+        hidding_time = hidden_time
+        first_time = True
+        i = 1
+        while True:
+            if first_time:
+                self.hideSpecialPower(hidding_time)
+                first_time = False
+            else:
+                sleep(showing_time)
+                if self.label_super_power.isHidden():
+                    self.label_super_power.setHidden(False)
+                self.label_super_power.move(self.niz_lokacija_special_power[i][0] * 40,self.niz_lokacija_special_power[i][1] * 40)
+                i += 1
+                if i == 6:
+                    i = 0
+                self.hideSpecialPower(hidding_time)
+
+    def hideSpecialPower(self, hidding_time):
+        #while True:
+        sleep(hidding_time)
+        #if not_eaten:
+        self.label_super_power.setHidden(True)
 
 
 class Board(QFrame):
