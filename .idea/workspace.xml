@@ -2,9 +2,40 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fca91065-547a-423f-8aee-522caebf1cec" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/PacMan.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/PacMan.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/enemy.py" beforeDir="false" afterPath="$PROJECT_DIR$/enemy.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostBlueDown1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostBlueDown2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostBlueLeft1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostBlueLeft2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostBlueRight1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostBlueRight2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostBlueUp1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostBlueUp2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostOrangeDown1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostOrangeDown2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostOrangeLeft1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostOrangeLeft2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostOrangeRight1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostOrangeRight2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostOrangeUp1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostOrangeUp2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostRedDown1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostRedDown2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostRedLeft1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostRedLeft2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostRedRight1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostRedRight2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostRedUp1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostRedUp2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostYellowDown1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostYellowDown2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostYellowLeft1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostYellowLeft2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostYellowRight1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostYellowRight2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostYellowUp1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/GhostYellowUp2.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main_window.py" beforeDir="false" afterPath="$PROJECT_DIR$/main_window.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />

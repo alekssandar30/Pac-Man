@@ -35,10 +35,10 @@ class MainWindow(QMainWindow):
 
         # instanciraj igraca i protivnike
         self.player = player.Player(self.label, self.map, self.label_for_player_score)
-        self.ghost1 = enemy.Enemy(self.blue_ghost, self.map, self.player)
-        self.ghost2 = enemy.Enemy(self.orange_ghost, self.map, self.player)
-        self.ghost3 = enemy.Enemy(self.red_ghost, self.map, self.player)
-        self.ghost4 = enemy.Enemy(self.yellow_ghost, self.map, self.player)
+        self.ghost1 = enemy.Enemy(self.blue_ghost, self.map, self.player, (18,1), 1) # red ghost
+        self.ghost2 = enemy.Enemy(self.orange_ghost, self.map, self.player, (1,1), 2) # orange ghost
+        self.ghost3 = enemy.Enemy(self.red_ghost, self.map, self.player, (1, 13), 3) # yellow ghost
+        self.ghost4 = enemy.Enemy(self.yellow_ghost, self.map, self.player, (18,13),4) # blue ghost
 
         ## Special power
         self.niz_lokacija_special_power = [(2, 5), (18, 1), (6, 12), (2, 5), (10, 10), (18, 8)]
@@ -58,6 +58,14 @@ class MainWindow(QMainWindow):
         self.drawPlayer()
         self.draw_ghosts()
         self.initPlayerScore()
+        self.ghost4.eaten = True
+        #self.ghost4.change_mode()
+        #test_process = Process(target=self.ghost4.move_eaten, args=(self.ghost4,))
+        #test_process.start()
+        #test_process.join()
+        testThread = Thread(target=self.ghost4.change_mode)
+        testThread.daemon = True
+        testThread.start()
 
         self.enemies = []
         self.food = []
@@ -93,10 +101,10 @@ class MainWindow(QMainWindow):
 
     #iscrtavanje protivnika
     def draw_ghosts(self):
-        self.blue_ghost_pixmap = QPixmap("images/GhostBlueDown1.png")
-        self.orange_ghost_pixmap = QPixmap("images/GhostOrangeDown1.png")
-        self.red_ghost_pixmap = QPixmap("images/GhostRedDown1.png")
-        self.yellow_ghost_pixmap = QPixmap("images/GhostYellowDown1.png")
+        self.blue_ghost_pixmap = QPixmap("images/Ghost4Down1.png")
+        self.orange_ghost_pixmap = QPixmap("images/Ghost2Down1.png")
+        self.red_ghost_pixmap = QPixmap("images/Ghost1Down1.png")
+        self.yellow_ghost_pixmap = QPixmap("images/Ghost3Down1.png")
 
         self.blue_ghost.setPixmap(self.blue_ghost_pixmap)
         self.orange_ghost.setPixmap(self.orange_ghost_pixmap)
@@ -111,7 +119,7 @@ class MainWindow(QMainWindow):
         self.blue_ghost.move(370, 370)
         self.red_ghost.move(400, 400)
         self.orange_ghost.move(400, 330)
-        self.yellow_ghost.move(520, 320)
+        self.yellow_ghost.move(40, 520)
 
     def initPlayerScore(self):
         self.label_for_player_score.setText('0')
