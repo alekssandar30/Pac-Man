@@ -35,10 +35,10 @@ class MainWindow(QMainWindow):
 
         # instanciraj igraca i protivnike
         self.player = player.Player(self.label, self.map, self.label_for_player_score)
-        self.ghost1 = enemy.Enemy(self.blue_ghost, self.map, self.player, (18,1), 1) # red ghost
-        self.ghost2 = enemy.Enemy(self.orange_ghost, self.map, self.player, (1,1), 2) # orange ghost
-        self.ghost3 = enemy.Enemy(self.red_ghost, self.map, self.player, (1, 13), 3) # yellow ghost
-        self.ghost4 = enemy.Enemy(self.yellow_ghost, self.map, self.player, (18,13),4) # blue ghost
+        self.ghost1 = enemy.Enemy(self.red_ghost, self.map, self.player, (18,1), 1, self.red_ghost) # red ghost
+        self.ghost2 = enemy.Enemy(self.orange_ghost, self.map, self.player, (1,1), 2, self.red_ghost) # orange ghost
+        self.ghost3 = enemy.Enemy(self.yellow_ghost, self.map, self.player, (1, 13), 3, self.red_ghost) # yellow ghost
+        self.ghost4 = enemy.Enemy(self.blue_ghost, self.map, self.player, (18,13),4, self.red_ghost) # blue ghost
 
         ## Special power
         self.niz_lokacija_special_power = [(2, 5), (18, 1), (6, 12), (2, 5), (10, 10), (18, 8)]
@@ -58,14 +58,13 @@ class MainWindow(QMainWindow):
         self.drawPlayer()
         self.draw_ghosts()
         self.initPlayerScore()
-        self.ghost4.eaten = True
+        #self.ghost4.eaten = True
         #self.ghost4.change_mode()
         #test_process = Process(target=self.ghost4.move_eaten, args=(self.ghost4,))
         #test_process.start()
         #test_process.join()
-        testThread = Thread(target=self.ghost4.change_mode)
-        testThread.daemon = True
-        testThread.start()
+
+        self.start_enemies()
 
         self.enemies = []
         self.food = []
@@ -97,7 +96,7 @@ class MainWindow(QMainWindow):
         self.label.setPixmap(self.pixmap)
         self.label.resize(40,40)
         self.label.setStyleSheet("background:transparent")
-        self.label.move(720, 560)
+        self.label.move(720,560)
 
     #iscrtavanje protivnika
     def draw_ghosts(self):
@@ -116,10 +115,27 @@ class MainWindow(QMainWindow):
         self.red_ghost.resize(40, 40)
         self.yellow_ghost.resize(40, 40)
 
-        self.blue_ghost.move(370, 370)
-        self.red_ghost.move(400, 400)
-        self.orange_ghost.move(400, 330)
-        self.yellow_ghost.move(40, 520)
+        self.blue_ghost.move(360, 360)
+        self.red_ghost.move(360, 400)  # 720
+        self.orange_ghost.move(440, 360)
+        self.yellow_ghost.move(440, 400)
+
+    def start_enemies(self):
+        red_ghost_movement = Thread(target=self.ghost1.move_chase)
+        red_ghost_movement.daemon = True
+        red_ghost_movement.start()
+
+        orange_ghost_movement = Thread(target=self.ghost2.move_chase)
+        orange_ghost_movement.daemon = True
+        orange_ghost_movement.start()
+
+        yellow_ghost_movement = Thread(target=self.ghost3.move_chase)
+        yellow_ghost_movement.daemon = True
+        yellow_ghost_movement.start()
+
+        blue_ghost_movement = Thread(target=self.ghost4.move_chase)
+        blue_ghost_movement.daemon = True
+        blue_ghost_movement.start()
 
     def initPlayerScore(self):
         self.label_for_player_score.setText('0')
@@ -137,7 +153,6 @@ class MainWindow(QMainWindow):
             self.pDown = Process(target=self.player.movePlayerDown(self.label))
 
     """Center screen"""
-
     def center_window(self):
         screen = QDesktopWidget().screenGeometry()
         size = self.geometry()
@@ -201,7 +216,6 @@ class Board(QFrame):
         self.special_power_locations = []
         self.populate_super_power_indices(self.board, 4) # vraca indekse svih elemenata cija je vrednost 4 iz matrice board
 
-
     def is_tunnel(self, x, y): # Vraca true ako je tunel, tj. omogucava kretanje PacMan-a. Ako je element matrice 0(zid) onda vraca false, tj. zabranjuje prolazak PacMan-a.
         if (x % 40 == 0 and y % 40 == 0):
             if self.board[y//40][x//40] == 1:
@@ -233,6 +247,16 @@ class Board(QFrame):
                 return True
         else:
             return False
+
+    def is_wall(self, x, y):
+        #if (x % 40 == 0 and y % 40 == 0):
+            if x == 800:
+               return False
+            if x == -40:
+                return False
+            if self.board[y // 40][x // 40] == 0:
+                return False
+            return True
 
     def paintEvent(self, event):
         painter = QPainter(self)

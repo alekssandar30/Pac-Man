@@ -537,6 +537,9 @@ class Player(QLabel):
         self.current_score += points
         self.score_counter_label.setText(str(self.current_score))
 
+    def return_current_player_position(self):
+        return (self.label.x(), self.label.y())
+
 
 
 
