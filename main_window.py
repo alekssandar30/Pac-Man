@@ -60,12 +60,11 @@ class MainWindow(QMainWindow):
         self.initPlayerScore()
         #self.ghost4.eaten = True
         #self.ghost4.change_mode()
-        self.ghost1.mode = 2
         #test_process = Process(target=self.ghost1.move_frightened)
         #test_process.start()
         #test_process.join()
-
-        red_ghost_movement = Thread(target=self.ghost1.move_frightened)
+        #self.ghost3.mode = 1
+        red_ghost_movement = Thread(target=self.ghost3.move_scatter)
         red_ghost_movement.daemon = True
         red_ghost_movement.start()
 

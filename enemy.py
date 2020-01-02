@@ -24,8 +24,10 @@ class Enemy(QLabel):
         self.eaten = False # da li ga je player pojeo
         self.activated_frightened = False
         self.reborned = False # da li se vratio ghost na pocetno mesto kad ga je pacman pojeo
+        self.zero_point_passed = False # polje ispred kuce, odatle znaju da se krecu u odgovarajuce pravce, sve dok ga ne predju a nalaze se u kucici, ne mogu da izadju pomocu osnovnog algoritma
+        self.zero_point = (400, 320)
         self.target_home = (400,400)
-        self.mode = 1 # 0 - scatter mode
+        self.mode = 0 # 0 - scatter mode
                       # 1 - chase mode
                       # 2 - frightened mode
                       # 3 - eaten
@@ -45,16 +47,34 @@ class Enemy(QLabel):
                                     # 3 - desno
 
     def move_chase(self): # ide za pacmanom
-        self.move_one_180()
+        if self.zero_point_passed == False:
+            while self.zero_point_passed == False:
+                self.move_one_to_target((self.zero_point[0], self.zero_point[1]))
+                self.check_if_zero_point_passed()
+        elif self.zero_point_passed == True:
+            self.move_one_180()
         while self.mode == 1: # while chase mode
             self.move_one_to_target(self.calculate_chase_position(self.player.return_current_player_position(), self.ghost_id))
             #self.check_if_pacman_catched()
 
+
     def move_scatter(self): # ide u svoj ugao
-        pass
+        if self.zero_point_passed == False:
+            while self.zero_point_passed == False:
+                self.move_one_to_target((self.zero_point[0], self.zero_point[1]))
+                self.check_if_zero_point_passed()
+        elif self.zero_point_passed == True:
+            self.move_one_180()
+        while self.mode == 0:
+            self.move_one_to_target((self.scatter_target[0] * 40, self.scatter_target[1] * 40))
 
     def move_frightened(self): # okrene se za 180 stepeni i random krece da se pomera
-        self.move_one_180()
+        if self.zero_point_passed == False:
+            while self.zero_point_passed == False:
+                self.move_one_to_target((self.zero_point[0], self.zero_point[1]))
+                self.check_if_zero_point_passed()
+        elif self.zero_point_passed == True:
+            self.move_one_180()
         while self.mode == 2:
             self.move_random_one()
 
@@ -62,6 +82,13 @@ class Enemy(QLabel):
         while not self.reborned:
             self.move_one_to_target(self.target_home)
             #self.check_if_ghost_returned_to_home()
+
+    def check_if_zero_point_passed(self): # zero point: X> 400 Y > 280. Logika: Ako zero point nije predjen, protivnik treba prvo do njega da dodje.
+        if self.label.x() == 400 and self.label.y() == 280:
+            if self.zero_point_passed == True:
+                self.zero_point_passed = False
+            elif self.zero_point_passed == False:
+                self.zero_point_passed = True
 
     def calculate_chase_position(self, player, ghost_id): # Funckija vraca Tuple, prva vrednost je X koordinata, druga Y koordinata koju juri ghost
         if ghost_id == 1: # RED ghost, vija tacno pacman-ovu poziciju
