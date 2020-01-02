@@ -8,6 +8,7 @@ from time import sleep
 from math import sqrt, floor, atan2, degrees
 import math
 from operator import itemgetter
+from random import randint
 
 
 class Enemy(QLabel):
@@ -44,16 +45,18 @@ class Enemy(QLabel):
                                     # 3 - desno
 
     def move_chase(self): # ide za pacmanom
+        self.move_one_180()
         while self.mode == 1: # while chase mode
             self.move_one_to_target(self.calculate_chase_position(self.player.return_current_player_position(), self.ghost_id))
             #self.check_if_pacman_catched()
-
 
     def move_scatter(self): # ide u svoj ugao
         pass
 
     def move_frightened(self): # okrene se za 180 stepeni i random krece da se pomera
-        pass
+        self.move_one_180()
+        while self.mode == 2:
+            self.move_random_one()
 
     def move_eaten(self): # vraca se na pocetnu poziciju, na 400 400
         while not self.reborned:
@@ -161,7 +164,6 @@ class Enemy(QLabel):
             self.move_to_direction(self.previous_direction)
             return
 
-
     def check_if_ghost_returned_to_home(self): # Ako se vratio na pocetnu poziciju, rebornuje se
         if self.label.x() == self.target_home[0] and self.label.y() == self.target_home[1]:
             self.reborned = True
@@ -172,6 +174,30 @@ class Enemy(QLabel):
             self.mode = 0 # treba da umanji pacmanov broj zivota i da ga resetuje na poziciju
             print('UHVATIO PACMANA')
 
+    def move_one_180(self):
+        if self.previous_direction == 0:  # DOLE
+            self.move_to_direction(2)
+        elif self.previous_direction == 1:  # LEVO
+            self.move_to_direction(3)
+        elif self.previous_direction == 2:  # GORE
+            self.move_to_direction(0)
+        elif self.previous_direction == 3:  # DESNO
+            self.move_to_direction(1)
+
+    def move_random_one(self):
+        direction = randint(0,3)
+        if direction == 0:  # DOLE
+            if self.map.is_wall(self.label.x(), self.label.y() + 40):
+                self.move_to_direction(direction)
+        elif direction == 1:  # LEVO
+            if self.map.is_wall(self.label.x() - 40, self.label.y()):
+                self.move_to_direction(direction)
+        elif direction == 2:  # GORE
+            if self.map.is_wall(self.label.x(), self.label.y() - 40):
+                self.move_to_direction(direction)
+        elif direction == 3:  # DESNO
+            if self.map.is_wall(self.label.x() + 40, self.label.y()):
+                self.move_to_direction(direction)
 
     def move_to_direction(self, direction):
         for i in range(2):
@@ -210,14 +236,14 @@ class Enemy(QLabel):
 
     def change_look_of_ghost(self, picture_num, direction): # eye_direction -> Left, Right, Down, Up
         if picture_num == 1:
-            if self.activated_frightened: # Moze se pojesti, tj uzima plavi skin
+            if self.activated_frightened or self.mode == 2: # Moze se pojesti, tj uzima plavi skin
                 self.label.setPixmap(QPixmap("images/GhostDead1.png"))
             elif self.eaten:
                 self.label.setPixmap(QPixmap("images/Eyes"+direction+".png"))
             else:
                 self.label.setPixmap(QPixmap("images/Ghost"+str(self.ghost_id)+str(direction)+"1.png"))
         elif picture_num == 2:
-            if self.activated_frightened: # Moze se pojesti, tj uzima plavi skin
+            if self.activated_frightened or self.mode == 2: # Moze se pojesti, tj uzima plavi skin
                 self.label.setPixmap(QPixmap("images/GhostDead2.png"))
             elif self.eaten:
                 self.label.setPixmap(QPixmap("images/Eyes"+direction+".png"))

@@ -60,11 +60,16 @@ class MainWindow(QMainWindow):
         self.initPlayerScore()
         #self.ghost4.eaten = True
         #self.ghost4.change_mode()
-        #test_process = Process(target=self.ghost4.move_eaten, args=(self.ghost4,))
+        self.ghost1.mode = 2
+        #test_process = Process(target=self.ghost1.move_frightened)
         #test_process.start()
         #test_process.join()
 
-        self.start_enemies()
+        red_ghost_movement = Thread(target=self.ghost1.move_frightened)
+        red_ghost_movement.daemon = True
+        red_ghost_movement.start()
+
+        #self.start_enemies()
 
         self.enemies = []
         self.food = []
