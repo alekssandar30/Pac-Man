@@ -40,6 +40,7 @@ class MainWindow(QMainWindow):
         self.ghost3 = enemy.Enemy(self.yellow_ghost, self.map, self.player, (1, 13), 3, self.red_ghost) # yellow ghost
         self.ghost4 = enemy.Enemy(self.blue_ghost, self.map, self.player, (18,13),4, self.red_ghost) # blue ghost
 
+
         ## Special power
         self.niz_lokacija_special_power = [(2, 5), (18, 1), (6, 12), (2, 5), (10, 10), (18, 8)]
         self.label_super_power = QLabel(self)
@@ -64,16 +65,16 @@ class MainWindow(QMainWindow):
         #test_process.start()
         #test_process.join()
         #self.ghost3.mode = 1
-        red_ghost_movement = Thread(target=self.ghost3.move_scatter)
-        red_ghost_movement.daemon = True
-        red_ghost_movement.start()
+        #red_ghost_movement = Thread(target=self.ghost1.change_mode)
+        #red_ghost_movement.daemon = True
+        #red_ghost_movement.start()
 
-        #self.start_enemies()
+        self.start_enemies()
 
         self.enemies = []
         self.food = []
-
         self.show()
+
 
     def init_ui(self):
         self.setWindowTitle('Pac-Man')
@@ -101,6 +102,10 @@ class MainWindow(QMainWindow):
         self.label.resize(40,40)
         self.label.setStyleSheet("background:transparent")
         self.label.move(720,560)
+        #self.red_ghost = self.ghost1
+        #self.orange_ghost = self.ghost2
+        #self.yellow_ghost = self.ghost3
+        #self.blue_ghost = self.ghost4
 
     #iscrtavanje protivnika
     def draw_ghosts(self):
@@ -125,19 +130,19 @@ class MainWindow(QMainWindow):
         self.yellow_ghost.move(440, 400)
 
     def start_enemies(self):
-        red_ghost_movement = Thread(target=self.ghost1.move_chase)
+        red_ghost_movement = Thread(target=self.ghost1.change_mode)
         red_ghost_movement.daemon = True
         red_ghost_movement.start()
 
-        orange_ghost_movement = Thread(target=self.ghost2.move_chase)
+        orange_ghost_movement = Thread(target=self.ghost2.change_mode)
         orange_ghost_movement.daemon = True
         orange_ghost_movement.start()
 
-        yellow_ghost_movement = Thread(target=self.ghost3.move_chase)
+        yellow_ghost_movement = Thread(target=self.ghost3.change_mode)
         yellow_ghost_movement.daemon = True
         yellow_ghost_movement.start()
 
-        blue_ghost_movement = Thread(target=self.ghost4.move_chase)
+        blue_ghost_movement = Thread(target=self.ghost4.change_mode)
         blue_ghost_movement.daemon = True
         blue_ghost_movement.start()
 
@@ -218,7 +223,7 @@ class Board(QFrame):
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],]
 
         self.special_power_locations = []
-        self.populate_super_power_indices(self.board, 4) # vraca indekse svih elemenata cija je vrednost 4 iz matrice board
+        self.populate_super_power_indices(self.board, 3) # vraca indekse svih elemenata cija je vrednost 4 iz matrice board
 
     def is_tunnel(self, x, y): # Vraca true ako je tunel, tj. omogucava kretanje PacMan-a. Ako je element matrice 0(zid) onda vraca false, tj. zabranjuje prolazak PacMan-a.
         if (x % 40 == 0 and y % 40 == 0):
@@ -238,6 +243,8 @@ class Board(QFrame):
         if (x % 40 == 0 and y % 40 == 0):
             if self.board[y // 40][x // 40] == 3:
                 return True
+            else:
+                return False
         else:
             return False
 
@@ -295,5 +302,5 @@ class Board(QFrame):
         for i in range(20):
             for j in range(16):
                 if board[j][i] == value:
-                    self.special_power_locations.append(i * 40)
-                    self.special_power_locations.append(j * 40)
+                    self.special_power_locations.append((i * 40, j * 40))
+

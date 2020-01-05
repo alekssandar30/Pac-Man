@@ -2,6 +2,7 @@
 from PyQt5.QtWidgets import QWidget, QLabel
 from PyQt5.QtGui import QPixmap, QGuiApplication
 from time import sleep
+import enemy
 
 
 class Player(QLabel):
@@ -16,6 +17,11 @@ class Player(QLabel):
         self.left = False
         self.right = False
         self.provera = 0
+        self.num_of_eated_ghost_powers = 0
+
+
+    def return_num_of_eated_ghost_powers_by_player(self):
+        return self.num_of_eated_ghost_powers
 
     #KRETANJE Pac Man-a
     def movePlayerLeft(self, label):
@@ -47,6 +53,7 @@ class Player(QLabel):
                                 self.map.draw_black_background(label.x(), label.y() - 20)
                             elif self.map.is_eat_ghosts_power(label.x(), label.y() - 20):
                                 # ovde ce da se ubrza pacman i da jede protivnike
+                                self.num_of_eated_ghost_powers += 1
                                 self.map.draw_black_background(label.x(), label.y() - 20)
                         QGuiApplication.processEvents()
                         sleep(0.05)
@@ -79,6 +86,7 @@ class Player(QLabel):
                                 self.map.draw_black_background(label.x(), label.y() + 20)
                             elif self.map.is_eat_ghosts_power(label.x(), label.y() + 20):
                                 # ovde ce da se ubrza pacman i da jede protivnike
+                                self.num_of_eated_ghost_powers += 1
                                 self.map.draw_black_background(label.x(), label.y() + 20)
                         QGuiApplication.processEvents()
                         sleep(0.05)
@@ -125,6 +133,7 @@ class Player(QLabel):
                         self.map.draw_black_background(label.x() - 20, label.y())
                     elif self.map.is_eat_ghosts_power(label.x() - 20, label.y()):
                         # ovde ce da se ubrza pacman i da jede protivnike
+                        self.num_of_eated_ghost_powers += 1
                         self.map.draw_black_background(label.x() - 20, label.y())
                 QGuiApplication.processEvents()
                 sleep(0.05)
@@ -174,6 +183,7 @@ class Player(QLabel):
                                 self.map.draw_black_background(label.x(), label.y() - 20)
                             elif self.map.is_eat_ghosts_power(label.x(), label.y() - 20):
                                 # ovde ce da se ubrza pacman i da jede protivnike
+                                self.num_of_eated_ghost_powers += 1
                                 self.map.draw_black_background(label.x(), label.y() - 20)
                         QGuiApplication.processEvents()
                         sleep(0.05)
@@ -206,6 +216,7 @@ class Player(QLabel):
                                 self.map.draw_black_background(label.x(), label.y() + 20)
                             elif self.map.is_eat_ghosts_power(label.x(), label.y() + 20):
                                 # ovde ce da se ubrza pacman i da jede protivnike
+                                self.num_of_eated_ghost_powers += 1
                                 self.map.draw_black_background(label.x(), label.y() + 20)
                         QGuiApplication.processEvents()
                         sleep(0.05)
@@ -252,6 +263,7 @@ class Player(QLabel):
                         self.map.draw_black_background(label.x() + 20, label.y())
                     elif self.map.is_eat_ghosts_power(label.x()+20, label.y()):
                         #ovde ce da se ubrza pacman i da jede protivnike
+                        self.num_of_eated_ghost_powers += 1
                         self.map.draw_black_background(label.x()+20, label.y())
                 QGuiApplication.processEvents()
                 sleep(0.05)
@@ -308,6 +320,7 @@ class Player(QLabel):
                                 self.map.draw_black_background(label.x() - 20, label.y())
                             elif self.map.is_eat_ghosts_power(label.x() - 20, label.y()):
                                 # ovde ce da se ubrza pacman i da jede protivnike
+                                self.num_of_eated_ghost_powers += 1
                                 self.map.draw_black_background(label.x() - 20, label.y())
                         QGuiApplication.processEvents()
                         sleep(0.05)
@@ -360,6 +373,7 @@ class Player(QLabel):
                                 self.map.draw_black_background(label.x() + 20, label.y())
                             elif self.map.is_eat_ghosts_power(label.x() + 20, label.y()):
                                 # ovde ce da se ubrza pacman i da jede protivnike
+                                self.num_of_eated_ghost_powers += 1
                                 self.map.draw_black_background(label.x() + 20, label.y())
                         QGuiApplication.processEvents()
                         sleep(0.05)
@@ -386,6 +400,7 @@ class Player(QLabel):
                         self.map.draw_black_background(label.x(), label.y() - 20)
                     elif self.map.is_eat_ghosts_power(label.x(), label.y() - 20):
                         # ovde ce da se ubrza pacman i da jede protivnike
+                        self.num_of_eated_ghost_powers += 1
                         self.map.draw_black_background(label.x(), label.y() - 20)
                 QGuiApplication.processEvents()
                 sleep(0.05)
@@ -438,6 +453,7 @@ class Player(QLabel):
                                 self.map.draw_black_background(label.x() - 20, label.y())
                             elif self.map.is_eat_ghosts_power(label.x() - 20, label.y()):
                                 # ovde ce da se ubrza pacman i da jede protivnike
+                                self.num_of_eated_ghost_powers += 1
                                 self.map.draw_black_background(label.x() - 20, label.y())
                         QGuiApplication.processEvents()
                         sleep(0.05)
@@ -490,6 +506,7 @@ class Player(QLabel):
                                 self.map.draw_black_background(label.x() + 20, label.y())
                             elif self.map.is_eat_ghosts_power(label.x() + 20, label.y()):
                                 # ovde ce da se ubrza pacman i da jede protivnike
+                                self.num_of_eated_ghost_powers += 1
                                 self.map.draw_black_background(label.x() + 20, label.y())
                         QGuiApplication.processEvents()
                         sleep(0.05)
@@ -516,6 +533,7 @@ class Player(QLabel):
                         self.map.draw_black_background(label.x(), label.y() + 20)
                     elif self.map.is_eat_ghosts_power(label.x(), label.y() + 20):
                         # ovde ce da se ubrza pacman i da jede protivnike
+                        self.num_of_eated_ghost_powers += 1
                         self.map.draw_black_background(label.x(), label.y() + 20)
                 QGuiApplication.processEvents()
                 sleep(0.05)
@@ -539,6 +557,8 @@ class Player(QLabel):
 
     def return_current_player_position(self):
         return (self.label.x(), self.label.y())
+
+
 
 
 
