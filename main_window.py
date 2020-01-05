@@ -32,9 +32,10 @@ class MainWindow(QMainWindow):
         self.label_for_player_score = QLabel(self)
         self.score_label = QLabel('Score: ', self)
         self.label_for_coin_display = QLabel(self)
+        self.label_for_player_lifes = QLabel(self)
 
         # instanciraj igraca i protivnike
-        self.player = player.Player(self.label, self.map, self.label_for_player_score)
+        self.player = player.Player(self.label, self.map, self.label_for_player_score, self.label_for_player_lifes)
         self.ghost1 = enemy.Enemy(self.red_ghost, self.map, self.player, (18,1), 1, self.red_ghost) # red ghost
         self.ghost2 = enemy.Enemy(self.orange_ghost, self.map, self.player, (1,1), 2, self.red_ghost) # orange ghost
         self.ghost3 = enemy.Enemy(self.yellow_ghost, self.map, self.player, (1, 13), 3, self.red_ghost) # yellow ghost
@@ -95,6 +96,10 @@ class MainWindow(QMainWindow):
         self.label_for_coin_display.setPixmap(QPixmap("images/ResultCoins.png"))
         self.label_for_coin_display.move(110, 5)
         self.label_for_coin_display.resize(30,30)
+
+        self.label_for_player_lifes.setPixmap(QPixmap('images/TwoLife.png'))
+        self.label_for_player_lifes.move(680,0)
+        self.label_for_player_lifes.resize(80,40)
 
     def drawPlayer(self):
         self.pixmap = QPixmap("images/PacManRightEat.png")

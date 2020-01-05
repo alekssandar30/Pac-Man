@@ -60,7 +60,7 @@ class Enemy(QLabel):
         while self.mode == 1: # while chase mode
             self.move_one_to_target(self.calculate_chase_position(self.player.return_current_player_position(), self.ghost_id))
             if self.check_if_touch_happened():
-                pass # umanji broj zivota pacmana
+                self.player.decrease_player_lifes()
             #self.check_if_pacman_catched()
 
     def move_scatter(self): # ide u svoj ugao
@@ -71,7 +71,7 @@ class Enemy(QLabel):
         while self.mode == 0:
             self.move_one_to_target((self.scatter_target[0] * 40, self.scatter_target[1] * 40))
             if self.check_if_touch_happened():
-                pass # umanji broj zivota pacmana
+                self.player.decrease_player_lifes()
 
     def move_frightened(self): # okrene se za 180 stepeni i random krece da se pomera
         if self.zero_point_passed == False:

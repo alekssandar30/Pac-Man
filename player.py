@@ -6,7 +6,7 @@ import enemy
 
 
 class Player(QLabel):
-    def __init__(self, label, map, label_for_player_score):
+    def __init__(self, label, map, label_for_player_score, label_for_player_lifes):
         super().__init__()
         self.label = label
         self.map = map
@@ -18,6 +18,8 @@ class Player(QLabel):
         self.right = False
         self.provera = 0
         self.num_of_eated_ghost_powers = 0
+        self.label_for_player_lifes = label_for_player_lifes
+        self.player_lifes = 2 # 2 + 1 na mapi. | Ako padne na -1 onda je GAME OVER
 
 
     def return_num_of_eated_ghost_powers_by_player(self):
@@ -557,6 +559,23 @@ class Player(QLabel):
 
     def return_current_player_position(self):
         return (self.label.x(), self.label.y())
+
+    def increase_player_lifes(self):
+        self.player_lifes += 1
+        self.change_player_life_label()
+
+    def decrease_player_lifes(self):
+        self.player_lifes -= 1
+        self.change_player_life_label()
+
+    def change_player_life_label(self):
+        if self.player_lifes == 0:
+            self.label_for_player_lifes.setPixmap(QPixmap('images/ZeroLife.png'))
+        elif self.player_lifes == 1:
+            self.label_for_player_lifes.setPixmap(QPixmap('images/OneLife.png'))
+        elif self.player_lifes == 2 or self.player_lifes > 2:
+            self.label_for_player_lifes.setPixmap(QPixmap('images/TwoLife.png'))
+
 
 
 
