@@ -9,48 +9,44 @@ from math import sqrt, floor, atan2, degrees
 import math
 from operator import itemgetter
 from random import randint
-import sched
-from multiprocessing import Process
 from threading import Thread
 
+Reset = False
 
 class Enemy(QLabel):
-    def __init__(self, label, map, player, scatter_target, ghost_id, red_ghost_label):
+
+    def __init__(self, label, map, player, scatter_target, ghost_id, red_ghost_label, start_position):
         super().__init__()
 
-        self.scheduler = sched.scheduler(time, sleep)
         self.label = label
         self.map = map
         self.player = player
         self.red_ghost = red_ghost_label
         self.scatter_target = scatter_target # prosledjen Tuple, potrebno je ih pomnoziti sa 40 da bi se dobila pozicija na mapi
         self.ghost_id = ghost_id # ghost_id odredjuje koji kretajuci pattern prati
+        self.zero_point = (400, 320)
+        self.target_home = (400, 400)
         self.eaten = False # da li ga je player pojeo
         self.activated_frightened = False
         self.reborned = False # da li se vratio ghost na pocetno mesto kad ga je pacman pojeo
         self.zero_point_passed = False # polje ispred kuce, odatle znaju da se krecu u odgovarajuce pravce, sve dok ga ne predju a nalaze se u kucici, ne mogu da izadju pomocu osnovnog algoritma
-        self.zero_point = (400, 320)
-        self.target_home = (400,400)
         self.in_chase = False
         self.in_scatter = False
         self.mode = 0  # 0 - scatter mode
                        # 1 - chase mode
                        # 2 - frightened mode
                        # 3 - eaten
-
-
-        self.change_mode_pattern = [(1, 7, 20, 7, 20, 5, 20, 5, 20), (2, 7, 20, 7, 20, 5, 17, 5, 25), (3, 7, 22, 7, 22, 5, 22, 5, 30)]
-        # (1, 7, 20, 7, 20, 5, 20, 5, 20) => 1 - level, 7 sec scatter, 20 sec chase itd (scatter, chase) par
-        #self.enemies = [self.blue_enemy, self.orange_enemy, self.red_enemy, self.rose_enemy, self.yellow_enemy]
-        self.up = False
-        self.down = False
-        self.left = False
-        self.right = False
+                       # 4 - reset
         self.previous_direction = 2 # 0 - dole
                                     # 1 - levo
                                     # 2 - gore
                                     # 3 - desno
         self.previous_eated_num_of_eat_ghost_powers_by_player = 0
+        self.start_position = start_position
+        self.activated_warning_skin = False
+        self.next_warning_skin1 = False
+        self.next_warning_skin2 = False
+
 
     def move_chase(self): # ide za pacmanom
         if self.zero_point_passed == False:
@@ -72,6 +68,7 @@ class Enemy(QLabel):
             self.move_one_to_target((self.scatter_target[0] * 40, self.scatter_target[1] * 40))
             if self.check_if_touch_happened():
                 self.player.decrease_player_lifes()
+
 
     def move_frightened(self): # okrene se za 180 stepeni i random krece da se pomera
         if self.zero_point_passed == False:
@@ -106,6 +103,7 @@ class Enemy(QLabel):
                 self.zero_point_passed = False
             elif self.zero_point_passed == False:
                 self.zero_point_passed = True
+
 
     def calculate_chase_position(self, player, ghost_id): # Funckija vraca Tuple, prva vrednost je X koordinata, druga Y koordinata koju juri ghost
         if ghost_id == 1: # RED ghost, vija tacno pacman-ovu poziciju
@@ -278,31 +276,56 @@ class Enemy(QLabel):
     def change_look_of_ghost(self, picture_num, direction): # eye_direction -> Left, Right, Down, Up
         if picture_num == 1:
             if self.activated_frightened or self.mode == 2: # Moze se pojesti, tj uzima plavi skin
-                self.label.setPixmap(QPixmap("images/GhostDead1.png"))
+                if self.activated_warning_skin == True:
+                    if self.next_warning_skin1 == False:
+                        self.label.setPixmap(QPixmap('images/GhostDeadWhite1.png'))
+                        self.next_warning_skin1 = True
+                    else:
+                        self.label.setPixmap(QPixmap("images/GhostDead1.png"))
+                        self.next_warning_skin1 = False
+                else:
+                    self.label.setPixmap(QPixmap("images/GhostDead1.png"))
             elif self.eaten:
                 self.label.setPixmap(QPixmap("images/Eyes"+direction+".png"))
             else:
                 self.label.setPixmap(QPixmap("images/Ghost"+str(self.ghost_id)+str(direction)+"1.png"))
         elif picture_num == 2:
             if self.activated_frightened or self.mode == 2: # Moze se pojesti, tj uzima plavi skin
-                self.label.setPixmap(QPixmap("images/GhostDead2.png"))
+                if self.activated_warning_skin == True:
+                    if self.next_warning_skin2 == False:
+                        self.label.setPixmap(QPixmap('images/GhostDeadWhite2.png'))
+                        self.next_warning_skin2 = True
+                    else:
+                        self.label.setPixmap(QPixmap("images/GhostDead2.png"))
+                        self.next_warning_skin2 = False
+                else:
+                    self.label.setPixmap(QPixmap("images/GhostDead2.png"))
             elif self.eaten:
                 self.label.setPixmap(QPixmap("images/Eyes"+direction+".png"))
             else:
                 self.label.setPixmap(QPixmap("images/Ghost"+str(self.ghost_id)+str(direction)+"2.png"))
 
     def change_mode(self):
+        global Reset
         second_counter = 20
         time_to_enter_chase = 10
         time_to_enter_scatter = 30
         self.in_chase = False
         self.in_scatter = False
         passed10secs = False
+        in_reset = False
         self.switch_mode()
         while True:
             sleep(0.5)
             second_counter += 0.5
+
+            if second_counter == 7:
+                self.activated_warning_skin = True
+
             if second_counter == 10:
+                self.activated_warning_skin = False
+                self.next_warning_skin1 = False
+                self.next_warning_skin2 = False
                 passed10secs = True
 
             if self.check_if_player_activated_eat_ghost_power():
@@ -350,6 +373,9 @@ class Enemy(QLabel):
             elif self.mode == 2 and self.activated_frightened == True:
                 second_counter = 0
                 passed10secs = False
+                self.activated_warning_skin = False
+                self.next_warning_skin1 = False
+                self.next_warning_skin2 = False
 
             elif self.mode == 2 and self.eaten == True:
                 self.mode = 3
@@ -363,8 +389,23 @@ class Enemy(QLabel):
                 self.mode = 0
                 self.switch_mode()
 
+            """if self.mode == 4:
+                print('USAO U 4444')
+                self.player.set_reset_mode_from_enemy(-1)
+                self.mode = 0
+                self.switch_mode()
+
+            if self.player.return_reset_for_enemies() == 4: # Reset
+                self.mode = 4
+                #self.player.set_reset_mode_from_enemy(-1)
+                self.switch_mode()
+                second_counter = 20
+                continue"""
+
             if second_counter == 30:
                 second_counter = 0
+
+
 
     def switch_mode(self):
         if self.mode == 0:
@@ -383,6 +424,8 @@ class Enemy(QLabel):
             self.currentProcess = Thread(target=self.move_eaten)
             self.currentProcess.daemon = True
             self.currentProcess.start()
+        elif self.mode == 4:
+            self.reset_ghost()
 
     # 0 - scatter mode
     # 1 - chase mode
@@ -418,5 +461,17 @@ class Enemy(QLabel):
                     return True
             #return
 
+    def reset_ghost(self):
+        self.label.move(self.start_position[0], self.start_position[1])
+        self.eaten = False  # da li ga je player pojeo
+        self.activated_frightened = False
+        self.reborned = False  # da li se vratio ghost na pocetno mesto kad ga je pacman pojeo
+        self.zero_point_passed = False  # polje ispred kuce, odatle znaju da se krecu u odgovarajuce pravce, sve dok ga ne predju a nalaze se u kucici, ne mogu da izadju pomocu osnovnog algoritma
+        self.in_chase = False
+        self.in_scatter = False
+        self.previous_direction = 2  # 0 - dole
+        # 1 - levo
+        # 2 - gore
+        # 3 - desno
 
 

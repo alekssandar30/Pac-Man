@@ -137,17 +137,17 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/player.py</url>
-          <line>55</line>
+          <line>57</line>
           <option name="timeStamp" value="33" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/enemy.py</url>
-          <line>294</line>
+          <line>309</line>
           <option name="timeStamp" value="37" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main_window.py</url>
-          <line>58</line>
+          <line>54</line>
           <option name="timeStamp" value="42" />
         </line-breakpoint>
       </breakpoints>

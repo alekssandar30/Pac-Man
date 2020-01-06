@@ -6,7 +6,7 @@ import enemy
 
 
 class Player(QLabel):
-    def __init__(self, label, map, label_for_player_score, label_for_player_lifes):
+    def __init__(self, label, map, label_for_player_score, label_for_player_lifes, start_position):
         super().__init__()
         self.label = label
         self.map = map
@@ -20,6 +20,8 @@ class Player(QLabel):
         self.num_of_eated_ghost_powers = 0
         self.label_for_player_lifes = label_for_player_lifes
         self.player_lifes = 2 # 2 + 1 na mapi. | Ako padne na -1 onda je GAME OVER
+        self.start_position = start_position
+        self.reset_mode_for_enemies = -1
 
 
     def return_num_of_eated_ghost_powers_by_player(self):
@@ -564,9 +566,11 @@ class Player(QLabel):
         self.player_lifes += 1
         self.change_player_life_label()
 
-    def decrease_player_lifes(self):
+    def decrease_player_lifes(self): # Poziva se reset
         self.player_lifes -= 1
         self.change_player_life_label()
+        self.reset_mode_for_enemies = 4
+        self.reset_player()
 
     def change_player_life_label(self):
         if self.player_lifes == 0:
@@ -576,12 +580,11 @@ class Player(QLabel):
         elif self.player_lifes == 2 or self.player_lifes > 2:
             self.label_for_player_lifes.setPixmap(QPixmap('images/TwoLife.png'))
 
+    def reset_player(self): # Treba da se desi freeze igrice, odborjavanje 3 2 1
+        self.label.move(self.start_position[0], self.start_position[1])
 
+    def return_reset_for_enemies(self):
+        return self.reset_mode_for_enemies
 
-
-
-
-
-
-
-
+    def set_reset_mode_from_enemy(self, mode):
+        self.reset_mode_for_enemies = mode

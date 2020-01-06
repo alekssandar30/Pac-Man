@@ -10,8 +10,6 @@ from multiprocessing import Process
 """
 centralni widget u MainWindow je mapa(matrica 16x16) = klasa Board
 """
-
-
 class MainWindow(QMainWindow):
 
     def __init__(self):
@@ -35,12 +33,11 @@ class MainWindow(QMainWindow):
         self.label_for_player_lifes = QLabel(self)
 
         # instanciraj igraca i protivnike
-        self.player = player.Player(self.label, self.map, self.label_for_player_score, self.label_for_player_lifes)
-        self.ghost1 = enemy.Enemy(self.red_ghost, self.map, self.player, (18,1), 1, self.red_ghost) # red ghost
-        self.ghost2 = enemy.Enemy(self.orange_ghost, self.map, self.player, (1,1), 2, self.red_ghost) # orange ghost
-        self.ghost3 = enemy.Enemy(self.yellow_ghost, self.map, self.player, (1, 13), 3, self.red_ghost) # yellow ghost
-        self.ghost4 = enemy.Enemy(self.blue_ghost, self.map, self.player, (18,13),4, self.red_ghost) # blue ghost
-
+        self.player = player.Player(self.label, self.map, self.label_for_player_score, self.label_for_player_lifes, (720,560))
+        self.ghost1 = enemy.Enemy(self.red_ghost, self.map, self.player, (18,1), 1, self.red_ghost, (360, 400)) # red ghost
+        self.ghost2 = enemy.Enemy(self.orange_ghost, self.map, self.player, (1,1), 2, self.red_ghost, (440, 360)) # orange ghost
+        self.ghost3 = enemy.Enemy(self.yellow_ghost, self.map, self.player, (1, 13), 3, self.red_ghost, (440, 400)) # yellow ghost
+        self.ghost4 = enemy.Enemy(self.blue_ghost, self.map, self.player, (18,13),4, self.red_ghost, (360, 360)) # blue ghost
 
         ## Special power
         self.niz_lokacija_special_power = [(2, 5), (18, 1), (6, 12), (2, 5), (10, 10), (18, 8)]
@@ -54,21 +51,11 @@ class MainWindow(QMainWindow):
         special_power_thread = Thread(target=self.changeSpecialPowerLocation, args=[30,12]) #Thread koji menja pozicije, svake 30s generise superPower, i ostavlja ju je vidljivo 12s
         special_power_thread.daemon = True # Da se thread gasi zajedno sa gasenjem glavnog threada (posle zatvaranja prozora)
         special_power_thread.start()
-        ##
 
         self.init_ui()
         self.drawPlayer()
         self.draw_ghosts()
         self.initPlayerScore()
-        #self.ghost4.eaten = True
-        #self.ghost4.change_mode()
-        #test_process = Process(target=self.ghost1.move_frightened)
-        #test_process.start()
-        #test_process.join()
-        #self.ghost3.mode = 1
-        #red_ghost_movement = Thread(target=self.ghost1.change_mode)
-        #red_ghost_movement.daemon = True
-        #red_ghost_movement.start()
 
         self.start_enemies()
 
@@ -107,10 +94,6 @@ class MainWindow(QMainWindow):
         self.label.resize(40,40)
         self.label.setStyleSheet("background:transparent")
         self.label.move(720,560)
-        #self.red_ghost = self.ghost1
-        #self.orange_ghost = self.ghost2
-        #self.yellow_ghost = self.ghost3
-        #self.blue_ghost = self.ghost4
 
     #iscrtavanje protivnika
     def draw_ghosts(self):
