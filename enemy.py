@@ -353,12 +353,6 @@ class Enemy(QLabel):
         elif self.mode == 4:
             print('RESTART started, ghost ID: ', self.ghost_id)
             self.stop_movement = True
-           #pass
-
-    # 0 - scatter mode
-    # 1 - chase mode
-    # 2 - frightened mode
-    # 3 - eaten
 
     def check_if_player_activated_eat_ghost_power(self):
         current_eated = self.player.return_num_of_eated_ghost_powers_by_player()

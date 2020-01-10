@@ -297,7 +297,6 @@ class MainWindow(QMainWindow):
                     self.ghost1.mode = 1
                 self.ghost1.switch_mode()
 
-
             if self.ghost2.mode == 3 and self.ghost2.reborned == True and self.enter_frightened == False:
                 print('Usao u [self.ghost2.mode == 3 and self.ghost2.reborned == True and self.enter_frightened == False:], iteration: ',iteration)
                 if enter_scatter == True:
@@ -368,7 +367,6 @@ class MainWindow(QMainWindow):
                 second_counter = -10
                 passed_10_seconds = False
                 continue
-
 
     def switch_if_needed(self, to_mode: int):
         if self.ghost1.mode != to_mode and to_mode == 4:
