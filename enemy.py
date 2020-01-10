@@ -10,6 +10,7 @@ import math
 from operator import itemgetter
 from random import randint
 from threading import Thread
+import multiprocessing
 
 Reset = False
 
@@ -30,9 +31,10 @@ class Enemy(QLabel):
         self.activated_frightened = False
         self.reborned = False # da li se vratio ghost na pocetno mesto kad ga je pacman pojeo
         self.zero_point_passed = False # polje ispred kuce, odatle znaju da se krecu u odgovarajuce pravce, sve dok ga ne predju a nalaze se u kucici, ne mogu da izadju pomocu osnovnog algoritma
-        self.in_chase = False
-        self.in_scatter = False
-        self.mode = 0  # 0 - scatter mode
+        self.activated_warning_skin = False
+        self.next_warning_skin1 = False
+        self.next_warning_skin2 = False
+        self.mode = 5  # 0 - scatter mode
                        # 1 - chase mode
                        # 2 - frightened mode
                        # 3 - eaten
@@ -43,59 +45,80 @@ class Enemy(QLabel):
                                     # 3 - desno
         self.previous_eated_num_of_eat_ghost_powers_by_player = 0
         self.start_position = start_position
-        self.activated_warning_skin = False
-        self.next_warning_skin1 = False
-        self.next_warning_skin2 = False
+        self.currentProcess = None
+        self.eated = False
+        self.stop_movement = False
+
 
 
     def move_chase(self): # ide za pacmanom
+        self.stop_movement = False
+        decreased_player_life = False
         if self.zero_point_passed == False:
-            while self.zero_point_passed == False:
+            while self.zero_point_passed == False and not self.stop_movement:
                 self.move_one_to_target((self.zero_point[0], self.zero_point[1]))
                 self.check_if_zero_point_passed()
-        while self.mode == 1: # while chase mode
+        while self.mode == 1 and not self.stop_movement: # while chase mode
             self.move_one_to_target(self.calculate_chase_position(self.player.return_current_player_position(), self.ghost_id))
             if self.check_if_touch_happened():
-                self.player.decrease_player_lifes()
+                if not decreased_player_life:
+                    self.player.decrease_player_lifes()
+                    decreased_player_life = True
+
             #self.check_if_pacman_catched()
 
     def move_scatter(self): # ide u svoj ugao
+        self.stop_movement = False
+        decreased_player_life = False
         if self.zero_point_passed == False:
-            while self.zero_point_passed == False:
+            while self.zero_point_passed == False and not self.stop_movement:
                 self.move_one_to_target((self.zero_point[0], self.zero_point[1]))
                 self.check_if_zero_point_passed()
-        while self.mode == 0:
-            self.move_one_to_target((self.scatter_target[0] * 40, self.scatter_target[1] * 40))
+        while self.mode == 0 and not self.stop_movement:
             if self.check_if_touch_happened():
-                self.player.decrease_player_lifes()
+                if not decreased_player_life:
+                    self.player.decrease_player_lifes()
+                    decreased_player_life = True
+            else:
+                self.move_one_to_target((self.scatter_target[0], self.scatter_target[1]))
 
 
     def move_frightened(self): # okrene se za 180 stepeni i random krece da se pomera
+        self.stop_movement = False
+        increased = False
         if self.zero_point_passed == False:
-            while self.zero_point_passed == False:
+            while self.zero_point_passed == False and not self.stop_movement:
                 self.move_one_to_target((self.zero_point[0], self.zero_point[1]))
                 self.check_if_zero_point_passed()
-        while self.mode == 2:
-            self.move_random_one()
+        while self.mode == 2 and not self.stop_movement:
             if self.check_if_touch_happened():
-                self.mode = 3 # pojeden je ghost
-                self.eaten = True
-                self.reborned = False
-                self.player.increase_points(200) # povecaj poene playera za 200
-                # Dodaj labelu + 200
-                self.switch_mode()
+                if increased == False:
+                    #self.mode = 3 # pojeden je ghost
+                    self.eaten = True
+                    self.eated = True
+                    self.reborned = False
+                    self.player.increase_points(200) # povecaj poene playera za 200
+                    print('INCREASED')
+                    increased = True
+
+                    # Dodaj labelu + 200
+                    #self.switch_mode()
+            else:
+                self.move_random_one()
 
     def move_eaten(self): # vraca se na pocetnu poziciju, na 400 400
-        while not self.reborned:
-            self.move_one_to_target(self.target_home)
+        while not self.reborned and self.mode != 4:
             if self.check_if_ghost_returned_to_home():
-                #print('RETURNED TO HOME')
+                print('RETURNED TO HOME, ghost ID: ', self.ghost_id)
                 self.reborned = True
                 self.eaten = False
-                self.mode = 0
+                self.eated = False
                 self.zero_point_passed = False
+                #self.mode = 0
                 #print('prev was in SCATTER pa mora u SCATTER')
-                self.switch_mode()
+                #self.switch_mode()
+            else:
+                self.move_one_to_target(self.start_position)
 
     def check_if_zero_point_passed(self): # zero point: X> 400 Y > 280. Logika: Ako zero point nije predjen, protivnik treba prvo do njega da dodje.
         if self.label.x() == 400 and self.label.y() == 280:
@@ -103,7 +126,6 @@ class Enemy(QLabel):
                 self.zero_point_passed = False
             elif self.zero_point_passed == False:
                 self.zero_point_passed = True
-
 
     def calculate_chase_position(self, player, ghost_id): # Funckija vraca Tuple, prva vrednost je X koordinata, druga Y koordinata koju juri ghost
         if ghost_id == 1: # RED ghost, vija tacno pacman-ovu poziciju
@@ -137,7 +159,7 @@ class Enemy(QLabel):
     def calculate_for_yellow_ghost(self, player):
         distance = sqrt((abs(player[0] - (self.label.x())) ** 2) + (abs(player[1] - (self.label.y())) ** 2))
         if distance < 80: # Scatter mode
-            return (self.scatter_target[0] * 40, self.scatter_target[1] * 40)
+            return (self.scatter_target[0], self.scatter_target[1])
         elif distance > 80 or distance == 80: # Direct chase
             return (player[0], player[1])
 
@@ -204,7 +226,7 @@ class Enemy(QLabel):
             return
 
     def check_if_ghost_returned_to_home(self): # Ako se vratio na pocetnu poziciju, rebornuje se
-        if self.label.x() == self.target_home[0] and self.label.y() == self.target_home[1]:
+        if self.label.x() == self.start_position[0] and self.label.y() == self.start_position[1]:
             return True
 
     def check_if_pacman_catched(self):
@@ -305,127 +327,33 @@ class Enemy(QLabel):
             else:
                 self.label.setPixmap(QPixmap("images/Ghost"+str(self.ghost_id)+str(direction)+"2.png"))
 
-    def change_mode(self):
-        global Reset
-        second_counter = 20
-        time_to_enter_chase = 10
-        time_to_enter_scatter = 30
-        self.in_chase = False
-        self.in_scatter = False
-        passed10secs = False
-        in_reset = False
-        self.switch_mode()
-        while True:
-            sleep(0.5)
-            second_counter += 0.5
-
-            if second_counter == 7:
-                self.activated_warning_skin = True
-
-            if second_counter == 10:
-                self.activated_warning_skin = False
-                self.next_warning_skin1 = False
-                self.next_warning_skin2 = False
-                passed10secs = True
-
-            if self.check_if_player_activated_eat_ghost_power():
-                self.activated_frightened = True
-            else:
-                self.activated_frightened = False
-
-            if self.mode == 0 and second_counter == time_to_enter_chase:
-                self.mode = 1 # ide u chase
-                self.in_chase = True
-                self.in_scatter = False
-                self.switch_mode()
-
-            elif self.mode == 0 and self.activated_frightened == True:
-                self.mode = 2 # ide u frightened
-                second_counter = 0
-                passed10secs = False
-                self.switch_mode()
-
-            elif self.mode == 1 and second_counter == time_to_enter_scatter:
-                self.mode = 0
-                self.in_chase = False
-                self.in_scatter = True
-                self.switch_mode()
-
-            elif self.mode == 1 and self.activated_frightened == True:
-                self.mode = 2
-                second_counter = 0
-                passed10secs = False
-                self.switch_mode()
-
-            elif self.mode == 2 and passed10secs == True and second_counter == time_to_enter_scatter: # self.in_scatter == True
-                self.mode = 0
-                #self.in_scatter = True
-                #self.in_chase = False
-                passed10secs = False
-                self.switch_mode()
-
-            elif self.mode == 2 and passed10secs == True and second_counter == time_to_enter_chase: # self.in_chase == True
-                self.mode = 1
-                #self.in_chase = True
-                passed10secs = False
-                self.switch_mode()
-
-            elif self.mode == 2 and self.activated_frightened == True:
-                second_counter = 0
-                passed10secs = False
-                self.activated_warning_skin = False
-                self.next_warning_skin1 = False
-                self.next_warning_skin2 = False
-
-            elif self.mode == 2 and self.eaten == True:
-                self.mode = 3
-                self.switch_mode()
-
-            elif self.mode == 3 and self.reborned == True and self.in_chase == True:
-                self.mode = 1
-                self.switch_mode()
-
-            elif self.mode == 3 and self.reborned == True and self.in_scatter == True:
-                self.mode = 0
-                self.switch_mode()
-
-            """if self.mode == 4:
-                print('USAO U 4444')
-                self.player.set_reset_mode_from_enemy(-1)
-                self.mode = 0
-                self.switch_mode()
-
-            if self.player.return_reset_for_enemies() == 4: # Reset
-                self.mode = 4
-                #self.player.set_reset_mode_from_enemy(-1)
-                self.switch_mode()
-                second_counter = 20
-                continue"""
-
-            if second_counter == 30:
-                second_counter = 0
-
-
-
     def switch_mode(self):
+        self.stop_movement = True
         if self.mode == 0:
+             #multiprocessing.Process(target=self.move_scatter, args=[]).start()
             self.currentProcess = Thread(target=self.move_scatter)
             self.currentProcess.daemon = True
             self.currentProcess.start()
+            print('Scatter started, ghost ID: ', self.ghost_id)
         elif self.mode == 1:
             self.currentProcess = Thread(target=self.move_chase)
             self.currentProcess.daemon = True
             self.currentProcess.start()
+            print('Chase started, ghost ID: ', self.ghost_id)
         elif self.mode == 2:
             self.currentProcess = Thread(target=self.move_frightened)
             self.currentProcess.daemon = True
             self.currentProcess.start()
+            print('Frightened started, ghost ID: ', self.ghost_id)
         elif self.mode == 3:
             self.currentProcess = Thread(target=self.move_eaten)
             self.currentProcess.daemon = True
             self.currentProcess.start()
+            print('Eaten started, ghost ID: ', self.ghost_id)
         elif self.mode == 4:
-            self.reset_ghost()
+            print('RESTART started, ghost ID: ', self.ghost_id)
+            self.stop_movement = True
+           #pass
 
     # 0 - scatter mode
     # 1 - chase mode
@@ -461,17 +389,15 @@ class Enemy(QLabel):
                     return True
             #return
 
-    def reset_ghost(self):
-        self.label.move(self.start_position[0], self.start_position[1])
+    def reset_enemy(self):
         self.eaten = False  # da li ga je player pojeo
         self.activated_frightened = False
         self.reborned = False  # da li se vratio ghost na pocetno mesto kad ga je pacman pojeo
         self.zero_point_passed = False  # polje ispred kuce, odatle znaju da se krecu u odgovarajuce pravce, sve dok ga ne predju a nalaze se u kucici, ne mogu da izadju pomocu osnovnog algoritma
-        self.in_chase = False
-        self.in_scatter = False
-        self.previous_direction = 2  # 0 - dole
-        # 1 - levo
-        # 2 - gore
-        # 3 - desno
-
-
+        self.activated_warning_skin = False
+        self.next_warning_skin1 = False
+        self.next_warning_skin2 = False
+        self.mode = 0  # 0 - scatter mode
+        self.eated = False
+        self.stop_movement = False
+        self.label.setPixmap(QPixmap("images/Ghost" + str(self.ghost_id)+"Down1.png"))

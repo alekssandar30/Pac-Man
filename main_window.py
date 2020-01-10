@@ -31,13 +31,15 @@ class MainWindow(QMainWindow):
         self.score_label = QLabel('Score: ', self)
         self.label_for_coin_display = QLabel(self)
         self.label_for_player_lifes = QLabel(self)
+        self.countdown_label = QLabel(self)
+        self.grave_label = QLabel(self)
 
         # instanciraj igraca i protivnike
-        self.player = player.Player(self.label, self.map, self.label_for_player_score, self.label_for_player_lifes, (720,560))
-        self.ghost1 = enemy.Enemy(self.red_ghost, self.map, self.player, (18,1), 1, self.red_ghost, (360, 400)) # red ghost
-        self.ghost2 = enemy.Enemy(self.orange_ghost, self.map, self.player, (1,1), 2, self.red_ghost, (440, 360)) # orange ghost
-        self.ghost3 = enemy.Enemy(self.yellow_ghost, self.map, self.player, (1, 13), 3, self.red_ghost, (440, 400)) # yellow ghost
-        self.ghost4 = enemy.Enemy(self.blue_ghost, self.map, self.player, (18,13),4, self.red_ghost, (360, 360)) # blue ghost
+        self.player = player.Player(self.label, self.map, self.label_for_player_score, self.label_for_player_lifes, (720,560), self.countdown_label,self.grave_label)
+        self.ghost1 = enemy.Enemy(self.red_ghost, self.map, self.player, (18*40,1*40), 1, self.red_ghost, (360, 400)) # red ghost
+        self.ghost2 = enemy.Enemy(self.orange_ghost, self.map, self.player, (1*40,1*40), 2, self.red_ghost, (440, 360)) # orange ghost
+        self.ghost3 = enemy.Enemy(self.yellow_ghost, self.map, self.player, (1*40, 13*40), 3, self.red_ghost, (440, 400)) # yellow ghost
+        self.ghost4 = enemy.Enemy(self.blue_ghost, self.map, self.player, (18*40,13*40),4, self.red_ghost, (360, 360)) # blue ghost
 
         ## Special power
         self.niz_lokacija_special_power = [(2, 5), (18, 1), (6, 12), (2, 5), (10, 10), (18, 8)]
@@ -56,13 +58,11 @@ class MainWindow(QMainWindow):
         self.drawPlayer()
         self.draw_ghosts()
         self.initPlayerScore()
-
         self.start_enemies()
 
         self.enemies = []
         self.food = []
         self.show()
-
 
     def init_ui(self):
         self.setWindowTitle('Pac-Man')
@@ -88,8 +88,27 @@ class MainWindow(QMainWindow):
         self.label_for_player_lifes.move(680,0)
         self.label_for_player_lifes.resize(80,40)
 
+        self.countdown_label.move(360,200)
+        self.countdown_label.setStyleSheet("font: 120pt Comic Sans MS; color: white")
+        #self.countdown_label.setText('3') # Za 370 je okej
+        self.countdown_label.resize(200,200)
+
+        self.grave_label.resize(40,40)
+
+    def do_initial_countdown(self):
+        self.countdown_label.setText('3')
+        sleep(1)
+        self.countdown_label.setText('2')
+        sleep(1)
+        self.countdown_label.move(370, 200)
+        self.countdown_label.setText('1')
+        sleep(1)
+        self.countdown_label.move(360, 200)
+        self.countdown_label.setText('')
+        self.player.in_reset = False
+
     def drawPlayer(self):
-        self.pixmap = QPixmap("images/PacManRightEat.png")
+        self.pixmap = QPixmap("images/PacManUpEat.png")
         self.label.setPixmap(self.pixmap)
         self.label.resize(40,40)
         self.label.setStyleSheet("background:transparent")
@@ -118,21 +137,9 @@ class MainWindow(QMainWindow):
         self.yellow_ghost.move(440, 400)
 
     def start_enemies(self):
-        red_ghost_movement = Thread(target=self.ghost1.change_mode)
+        red_ghost_movement = Thread(target=self.change_mode_of_enemies)
         red_ghost_movement.daemon = True
         red_ghost_movement.start()
-
-        orange_ghost_movement = Thread(target=self.ghost2.change_mode)
-        orange_ghost_movement.daemon = True
-        orange_ghost_movement.start()
-
-        yellow_ghost_movement = Thread(target=self.ghost3.change_mode)
-        yellow_ghost_movement.daemon = True
-        yellow_ghost_movement.start()
-
-        blue_ghost_movement = Thread(target=self.ghost4.change_mode)
-        blue_ghost_movement.daemon = True
-        blue_ghost_movement.start()
 
     def initPlayerScore(self):
         self.label_for_player_score.setText('0')
@@ -140,6 +147,7 @@ class MainWindow(QMainWindow):
         self.label_for_player_score.move(135,5)
 
     def keyPressEvent(self, event):
+
         if event.key() == Qt.Key_Left:
             self.pLeft = Process(target=self.player.movePlayerLeft(self.label))
         elif event.key() == Qt.Key_Right:
@@ -181,6 +189,262 @@ class MainWindow(QMainWindow):
         sleep(hidding_time)
         #if not_eaten:
         self.label_super_power.setHidden(True)
+
+    def change_mode_of_enemies(self):
+        self.do_initial_countdown()
+        second_counter = 0
+        self.mode = 0 # 0 - scatter, 1 - chase, 2 - frightened, 3 - eaten, 4 - reset
+        enter_scatter = True
+        enter_chase = False
+        self.enter_frightened = False
+        passed_10_seconds = False
+        iteration = 0
+        self.switch_if_needed(0) # init u scatter
+
+        while True:
+            sleep(0.5)
+            second_counter += 0.5
+            iteration += 1
+
+            if second_counter == 10:
+                enter_scatter = False
+                enter_chase = True
+            elif second_counter == 0:
+                passed_10_seconds = True
+                self.deactivate_ghost_warning_skin()
+            elif second_counter == 30.5:
+                second_counter = 0
+                enter_scatter = True
+                enter_chase = False
+            elif second_counter == -3:
+                self.activate_ghost_warning_skin()
+
+            if self.mode == 4:
+                print('Usao u 444, iteration: ', iteration)
+                self.player.set_reset_mode_from_enemy(-1)
+                # sleep(3)
+                second_counter = 0
+                enter_scatter = True
+                enter_chase = False
+                self.enter_frightened = False
+                passed_10_seconds = False
+                self.reset_ghosts()
+                self.reset_player()
+                self.mode = 0
+                self.switch_mode_for_enemies()
+                continue
+
+            if self.player.return_reset_for_enemies() == 4:  # Reset
+                print('Usao u [self.player.return_reset_for_enemies() == 4:], iteration: ', iteration)
+                self.mode = 4
+                self.switch_if_needed(4)
+                continue
+
+            if self.ghost1.check_if_player_activated_eat_ghost_power():
+                self.enter_frightened = True
+            else:
+                self.enter_frightened = False
+
+            if self.mode == 2 and self.ghost1.eated == True:
+                print('Usao u self.mode == 2 and self.ghost1.eated == True, iteration: ', iteration)
+                self.ghost1.eated = False
+                self.ghost1.mode = 3
+                self.ghost1.switch_mode()
+
+            if self.mode == 2 and self.ghost2.eated == True:
+                print('Usao u self.mode == 2 and self.ghost2.eated == True, iteration: ', iteration)
+                self.ghost2.eated = False
+                self.ghost2.mode = 3
+                self.ghost2.switch_mode()
+
+            if self.mode == 2 and self.ghost3.eated == True:
+                print('Usao u self.mode == 2 and self.ghost3.eated == True, iteration: ', iteration)
+                self.ghost3.eated = False
+                self.ghost3.mode = 3
+                self.ghost3.switch_mode()
+
+            if self.mode == 2 and self.ghost4.eated == True:
+                print('Usao u self.mode == 2 and self.ghost4.eated == True, iteration: ', iteration)
+                self.ghost4.eated = False
+                self.ghost4.mode = 3
+                self.ghost4.switch_mode()
+
+            if self.mode == 2 and (self.ghost1.mode == 0 or self.ghost1.mode == 1) and self.enter_frightened == True:
+                print('Usao u [self.mode == 2 and (self.ghost1.mode == 0 or self.ghost1.mode == 1) and self.enter_frightened == True:], iteration: ', iteration)
+                self.ghost1.mode = 2
+                self.ghost1.switch_mode()
+
+            if self.mode == 2 and (self.ghost2.mode == 0 or self.ghost2.mode == 1) and self.enter_frightened == True:
+                print('Usao u [self.mode == 2 and (self.ghost2.mode == 0 or self.ghost2.mode == 1) and self.enter_frightened == True:], iteration: ',iteration)
+                self.ghost2.mode = 2
+                self.ghost2.switch_mode()
+
+            if self.mode == 2 and (self.ghost3.mode == 0 or self.ghost3.mode == 1) and self.enter_frightened == True:
+                print('Usao u [self.mode == 2 and (self.ghost3.mode == 0 or self.ghost3.mode == 1) and self.enter_frightened == True:], iteration: ',iteration)
+                self.ghost3.mode = 2
+                self.ghost3.switch_mode()
+
+            if self.mode == 2 and (self.ghost4.mode == 0 or self.ghost4.mode == 1) and self.enter_frightened == True:
+                print('Usao u [self.mode == 2 and (self.ghost4.mode == 0 or self.ghost4.mode == 1) and self.enter_frightened == True:], iteration: ',iteration)
+                self.ghost4.mode = 2
+                self.ghost4.switch_mode()
+
+            if self.ghost1.mode == 3 and self.ghost1.reborned == True and self.enter_frightened == False:
+                print('Usao u [self.ghost1.mode == 3 and self.ghost1.reborned == True and self.enter_frightened == False:], iteration: ',iteration)
+                if enter_scatter == True:
+                    self.ghost1.mode = 0
+                elif enter_chase == True:
+                    self.ghost1.mode = 1
+                self.ghost1.switch_mode()
+
+
+            if self.ghost2.mode == 3 and self.ghost2.reborned == True and self.enter_frightened == False:
+                print('Usao u [self.ghost2.mode == 3 and self.ghost2.reborned == True and self.enter_frightened == False:], iteration: ',iteration)
+                if enter_scatter == True:
+                    self.ghost2.mode = 0
+                elif enter_chase == True:
+                    self.ghost2.mode = 1
+                self.ghost2.switch_mode()
+
+            if self.ghost3.mode == 3 and self.ghost3.reborned == True and self.enter_frightened == False:
+                print('Usao u [self.ghost3.mode == 3 and self.ghost3.reborned == True and self.enter_frightened == False:], iteration: ',iteration)
+                if enter_scatter == True:
+                    self.ghost3.mode = 0
+                elif enter_chase == True:
+                    self.ghost3.mode = 1
+                self.ghost3.switch_mode()
+
+            if self.ghost4.mode == 3 and self.ghost4.reborned == True and self.enter_frightened == False:
+                print('Usao u [self.ghost4.mode == 3 and self.ghost4.reborned == True and self.enter_frightened == False:], iteration: ',iteration)
+                if enter_scatter == True:
+                    self.ghost4.mode = 0
+                elif enter_chase == True:
+                    self.ghost4.mode = 1
+                self.ghost4.switch_mode()
+
+            if self.mode == 0 and enter_chase == True and self.enter_frightened == False:
+                print('Usao u [self.mode == 0 and enter_chase == True and self.enter_frightened == False:], iteration: ',iteration)
+                self.mode = 1
+                self.switch_if_needed(1)
+                continue
+
+            elif self.mode == 0 and self.enter_frightened == True:
+                print('Usao u [self.mode == 0 and self.enter_frightened == True:], iteration: ',iteration)
+                self.mode = 2
+                second_counter = -10
+                passed_10_seconds = False
+                self.switch_if_needed(2)
+                continue
+
+            elif self.mode == 1 and enter_scatter == True and self.enter_frightened == False:
+                print('Usao u [self.mode == 1 and enter_scatter == True and self.enter_frightened == False:], iteration: ', iteration)
+                self.mode = 0
+                self.switch_if_needed(0)
+                continue
+
+            elif self.mode == 1 and self.enter_frightened == True:
+                print('Usao u [self.mode == 1 and self.enter_frightened == True:], iteration: ',iteration)
+                self.mode = 2
+                second_counter = -10
+                passed_10_seconds = False
+                self.switch_if_needed(2)
+                continue
+
+            elif self.mode == 2 and enter_scatter == True and self.enter_frightened == False and passed_10_seconds == True:
+                print('Usao u [self.mode == 2 and enter_scatter == True and self.enter_frightened == False and passed_10_seconds == True:], iteration: ', iteration)
+                self.mode = 0
+                self.switch_if_needed(0)
+                continue
+
+            elif self.mode == 2 and enter_chase == True and self.enter_frightened == False and passed_10_seconds == True:
+                print('Usao u [self.mode == 2 and enter_chase == True and self.enter_frightened == False and passed_10_seconds == True:], iteration: ', iteration)
+                self.mode = 1
+                self.switch_if_needed(1)
+                continue
+
+            elif self.mode == 2 and self.enter_frightened == True:
+                print('Usao u [self.mode == 2 and self.enter_frightened == True:], iteration: ', iteration)
+                self.deactivate_ghost_warning_skin()
+                second_counter = -10
+                passed_10_seconds = False
+                continue
+
+
+    def switch_if_needed(self, to_mode: int):
+        if self.ghost1.mode != to_mode and to_mode == 4:
+            self.ghost1.mode = to_mode
+            self.ghost1.switch_mode()
+        elif self.ghost1.mode != to_mode and self.ghost1.mode != 3:
+            self.ghost1.mode = to_mode
+            self.ghost1.switch_mode()
+
+        if self.ghost2.mode != to_mode and to_mode == 4:
+            self.ghost2.mode = to_mode
+            self.ghost2.switch_mode()
+        elif self.ghost2.mode != to_mode and self.ghost2.mode != 3:
+            self.ghost2.mode = to_mode
+            self.ghost2.switch_mode()
+
+        if self.ghost3.mode != to_mode and to_mode == 4:
+            self.ghost3.mode = to_mode
+            self.ghost3.switch_mode()
+        elif self.ghost3.mode != to_mode and self.ghost3.mode != 3:
+            self.ghost3.mode = to_mode
+            self.ghost3.switch_mode()
+
+        if self.ghost4.mode != to_mode and to_mode == 4:
+            self.ghost4.mode = to_mode
+            self.ghost4.switch_mode()
+        elif self.ghost4.mode != to_mode and self.ghost4.mode != 3:
+            self.ghost4.mode = to_mode
+            self.ghost4.switch_mode()
+
+    def switch_mode_for_enemies(self):
+        self.ghost1.switch_mode()
+        self.ghost2.switch_mode()
+        self.ghost3.switch_mode()
+        self.ghost4.switch_mode()
+
+    def reset_player(self):
+        self.label.setHidden(True)
+        self.grave_label.setPixmap(QPixmap('images/Grave.png'))
+        self.grave_label.setHidden(False)
+        self.grave_label.move(self.label.x(), self.label.y())
+        self.do_initial_countdown()
+        self.grave_label.setHidden(True)
+        self.label.move(self.player.start_position[0], self.player.start_position[1])
+        self.label.setHidden(False)
+        self.label.setPixmap(QPixmap('images/PacManUpEat.png'))
+
+    def reset_ghosts(self):
+        self.blue_ghost.move(self.ghost4.start_position[0], self.ghost4.start_position[1])
+        self.orange_ghost.move(self.ghost2.start_position[0], self.ghost2.start_position[1])
+        self.red_ghost.move(self.ghost1.start_position[0], self.ghost1.start_position[1])
+        self.yellow_ghost.move(self.ghost3.start_position[0], self.ghost3.start_position[1])
+        self.ghost1.reset_enemy()
+        self.ghost2.reset_enemy()
+        self.ghost3.reset_enemy()
+        self.ghost4.reset_enemy()
+
+    def activate_ghost_warning_skin(self):
+        self.ghost1.activated_warning_skin = True
+        self.ghost2.activated_warning_skin = True
+        self.ghost3.activated_warning_skin = True
+        self.ghost4.activated_warning_skin = True
+
+    def deactivate_ghost_warning_skin(self):
+        self.ghost1.activated_warning_skin = False
+        self.ghost2.activated_warning_skin = False
+        self.ghost3.activated_warning_skin = False
+        self.ghost4.activated_warning_skin = False
+        self.ghost1.next_warning_skin1 = False
+        self.ghost2.next_warning_skin1 = False
+        self.ghost3.next_warning_skin1 = False
+        self.ghost4.next_warning_skin1 = False
+        self.ghost1.next_warning_skin2 = False
+        self.ghost2.next_warning_skin2 = False
+        self.ghost3.next_warning_skin2 = False
+        self.ghost4.next_warning_skin2 = False
 
 
 class Board(QFrame):
