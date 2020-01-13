@@ -35,7 +35,7 @@ class Menu(QWidget):
         self.player6_blue_pacman_label = QLabel(self)
         self.player7_rose_pacman_label = QLabel(self)
         self.player8_gray_pacman_label = QLabel(self)
-        
+
         self.init_UI()
 
     def init_UI(self):
@@ -138,7 +138,7 @@ class Menu(QWidget):
             "background-color: white;""font: 25pt Comic Sans MS;""color: black;""border-radius: 20px;")
         self.player8_name_textbox.setText(' ')
 
-        self.player1_yellow_pacman_label.setPixmap(QPixmap('images/PacManRightEat.png'))
+        self.player1_yellow_pacman_label.setPixmap(QPixmap('images/PacManRightEat1.png'))
         self.player1_yellow_pacman_label.setHidden(True)
         self.player1_yellow_pacman_label.resize(40,40)
         self.player1_yellow_pacman_label.move(160,230)
@@ -182,7 +182,7 @@ class Menu(QWidget):
     @pyqtSlot()
     def on_click1(self):
         #kreiraj mainWindow sa jednim playerom
-        self.mw = MainWindow()
+        self.mw = MainWindow([(1, 'DjuroTelevizor')])
         self.mw.show()
         self.close()
 
@@ -214,43 +214,56 @@ class Menu(QWidget):
 
     @pyqtSlot()
     def on_click_check_multiplayer_for_names(self):
-        if self.player1_name_textbox.text().strip() == "" and self.player2_name_textbox.text().strip() == "":
+        player1_name = self.player1_name_textbox.text().strip()
+        player2_name = self.player2_name_textbox.text().strip()
+        if player1_name == "" and player2_name == "":
             self.oImage = QImage("images/BothNamesMissingMultiplayer.png")
             self.palette.setBrush(QPalette.Window, QBrush(self.oImage))
             self.setPalette(self.palette)
-        elif self.player1_name_textbox.text().strip() == "":
+        elif player1_name == "":
             self.oImage = QImage("images/Player1MissingMultiplayer.png")
             self.palette.setBrush(QPalette.Window, QBrush(self.oImage))
             self.setPalette(self.palette)
-        elif self.player2_name_textbox.text().strip() == "":
+        elif player2_name == "":
             self.oImage = QImage("images/Player2MissingMultiplayer.png")
             self.palette.setBrush(QPalette.Window, QBrush(self.oImage))
             self.setPalette(self.palette)
         else:
-            self.mw = MainWindow() # prosledi imena kao argumente
+            self.mw = MainWindow([(1, player1_name), (2, player2_name)]) # prosledi imena kao argumente
             self.mw.show()
             self.close()
 
     @pyqtSlot()
     def on_click_check_tournament_names_for_four(self):
-        if self.player1_name_textbox.text().strip() == "" or self.player2_name_textbox.text().strip() == "" or self.player3_name_textbox.text().strip() == "" or self.player4_name_textbox.text().strip() == "":
+        player1_name = self.player1_name_textbox.text().strip()
+        player2_name = self.player2_name_textbox.text().strip()
+        player3_name = self.player3_name_textbox.text().strip()
+        player4_name = self.player4_name_textbox.text().strip()
+        if player1_name == "" or player2_name == "" or player3_name == "" or player4_name == "":
             self.oImage = QImage("images/TournamentFail.png")
             self.palette.setBrush(QPalette.Window, QBrush(self.oImage))
             self.setPalette(self.palette)
         else:
-            self.mw = MainWindow()  # prosledi imena kao argumente
+            self.mw = MainWindow([(1, player1_name),(2, player2_name),(3, player3_name),(4, player4_name)])  # prosledi imena kao argumente
             self.mw.show()
             self.close()
 
     @pyqtSlot()
     def on_click_check_tournament_names_for_eight(self):
-        if self.player1_name_textbox.text().strip() == "" or self.player2_name_textbox.text().strip() == "" or self.player3_name_textbox.text().strip() == "" or self.player4_name_textbox.text().strip() == "" \
-                or self.player5_name_textbox.text().strip() == "" or self.player6_name_textbox.text().strip() == "" or self.player7_name_textbox.text().strip() == "" or self.player8_name_textbox.text().strip() == "":
+        player1_name = self.player1_name_textbox.text().strip()
+        player2_name = self.player2_name_textbox.text().strip()
+        player3_name = self.player3_name_textbox.text().strip()
+        player4_name = self.player4_name_textbox.text().strip()
+        player5_name = self.player5_name_textbox.text().strip()
+        player6_name = self.player6_name_textbox.text().strip()
+        player7_name = self.player7_name_textbox.text().strip()
+        player8_name = self.player8_name_textbox.text().strip()
+        if player1_name == "" or player2_name == "" or player3_name == "" or player4_name == "" or player5_name == "" or player6_name == "" or player7_name == "" or player8_name == "":
             self.oImage = QImage("images/EightPlayerMissingNames.png")
             self.palette.setBrush(QPalette.Window, QBrush(self.oImage))
             self.setPalette(self.palette)
         else:
-            self.mw = MainWindow()  # prosledi imena kao argumente
+            self.mw = MainWindow([(1, player1_name),(2, player2_name),(3, player3_name),(4, player4_name),(5, player5_name),(6, player6_name),(7, player7_name),(8, player8_name)])  # prosledi imena kao argumente
             self.mw.show()
             self.close()
 

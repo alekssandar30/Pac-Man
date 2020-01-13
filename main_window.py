@@ -12,34 +12,28 @@ centralni widget u MainWindow je mapa(matrica 16x16) = klasa Board
 """
 class MainWindow(QMainWindow):
 
-    def __init__(self):
+    def __init__(self, list_of_names):
         super().__init__()
 
         self.width = 800
         self.height = 640
         self.map = Board(self)
+        self.list_of_player_names = list_of_names
+        self.play_mode = len(list_of_names) # 1 - Singleplayer, 2 - Multiplayer, 4 - Tornament w 4 players, 8- Tournament w 8 players
 
         # Labele
-        self.label = QLabel(self)  # za sad nas player
+        #self.label = QLabel(self)  # za sad nas player
         self.blue_ghost = QLabel(self)
         self.orange_ghost = QLabel(self)
         self.red_ghost = QLabel(self)
         self.yellow_ghost = QLabel(self)
 
         self.title_label = QLabel('PacMan',self)
-        self.label_for_player_score = QLabel(self)
-        self.score_label = QLabel('Score: ', self)
-        self.label_for_coin_display = QLabel(self)
-        self.label_for_player_lifes = QLabel(self)
         self.countdown_label = QLabel(self)
-        self.grave_label = QLabel(self)
+        self.score_label_player = QLabel(self) # Samo ce im se menjati imena sa .setText(self.player1.player_name+' Score: ', self) kada se menjaju igraci
 
         # instanciraj igraca i protivnike
-        self.player = player.Player(self.label, self.map, self.label_for_player_score, self.label_for_player_lifes, (720,560), self.countdown_label,self.grave_label)
-        self.ghost1 = enemy.Enemy(self.red_ghost, self.map, self.player, (18*40,1*40), 1, self.red_ghost, (360, 400)) # red ghost
-        self.ghost2 = enemy.Enemy(self.orange_ghost, self.map, self.player, (1*40,1*40), 2, self.red_ghost, (440, 360)) # orange ghost
-        self.ghost3 = enemy.Enemy(self.yellow_ghost, self.map, self.player, (1*40, 13*40), 3, self.red_ghost, (440, 400)) # yellow ghost
-        self.ghost4 = enemy.Enemy(self.blue_ghost, self.map, self.player, (18*40,13*40),4, self.red_ghost, (360, 360)) # blue ghost
+        self.instantiate_players_from_list(self.list_of_player_names) # inicijalizuje 1 ili 2 playera (1 ako je singleplayer, 2 ako je multiplayer ili turnir. Kod turnira treba smenjivati id i naziv)
 
         ## Special power
         self.niz_lokacija_special_power = [(2, 5), (18, 1), (6, 12), (2, 5), (10, 10), (18, 8)]
@@ -68,13 +62,27 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('Pac-Man')
         self.setFixedWidth(self.width)
         self.setFixedHeight(self.height)
-        self.setWindowIcon(QIcon('images/PacManRightEat.png'))
+        self.setWindowIcon(QIcon('images/PacManRightEat1.png'))
 
         self.center_window()
         self.setCentralWidget(self.map)
-        self.score_label.move(5, 5)
-        self.score_label.setStyleSheet("font: 20pt Comic Sans MS; color: white")
-        self.score_label.resize(150, 30)
+        if self.play_mode == 1: # singleplayer
+            self.score_label_player.move(5, 5)
+            self.score_label_player.setStyleSheet("font: 20pt Comic Sans MS; color: white")
+            self.score_label_player.resize(150, 30)
+            self.score_label_player.setText('Score: ')
+
+        elif self.play_mode in (2,4,8):
+            self.score_label_player.move(5, 5)
+            self.score_label_player.setStyleSheet("font: 20pt Comic Sans MS; color: white")
+            self.score_label_player.resize(150, 30)
+            self.score_label_player.setText('Score: ')
+
+            self.score_label_player2 = QLabel(self)
+            self.score_label_player2.move(510, 5)
+            self.score_label_player2.setStyleSheet("font: 20pt Comic Sans MS; color: white")
+            self.score_label_player2.resize(150, 30)
+            self.score_label_player2.setText('Score: ')
 
         self.title_label.setStyleSheet("font: 22pt Comic Sans MS; color: white")
         self.title_label.move(350,5)
@@ -82,11 +90,27 @@ class MainWindow(QMainWindow):
 
         self.label_for_coin_display.setPixmap(QPixmap("images/ResultCoins.png"))
         self.label_for_coin_display.move(110, 5)
-        self.label_for_coin_display.resize(30,30)
+        self.label_for_coin_display.resize(30, 30)
 
-        self.label_for_player_lifes.setPixmap(QPixmap('images/TwoLife.png'))
-        self.label_for_player_lifes.move(680,0)
-        self.label_for_player_lifes.resize(80,40)
+        if self.play_mode in (2,4,8):
+            self.label_for_coin_display2 = QLabel(self)
+            self.label_for_coin_display2.setPixmap(QPixmap("images/ResultCoins.png"))
+            self.label_for_coin_display2.move(615, 5)
+            self.label_for_coin_display2.resize(30,30)
+
+        if self.play_mode == 1: # singleplayer
+            self.label_for_player_lifes.setPixmap(QPixmap('images/TwoLife'+str(self.player.player_id)+'.png'))
+            self.label_for_player_lifes.move(685, 0)
+            self.label_for_player_lifes.resize(80, 40)
+        elif self.play_mode in (2,4,8):
+            self.label_for_player_lifes.setPixmap(QPixmap('images/TwoLife' + str(self.player.player_id) + '.png'))
+            self.label_for_player_lifes.move(210, 0)
+            self.label_for_player_lifes.resize(80, 40)
+
+            self.label_for_player2_lifes = QLabel(self)
+            self.label_for_player2_lifes.setPixmap(QPixmap('images/TwoLife'+str(self.player2.player_id)+'.png'))
+            self.label_for_player2_lifes.move(720,0)
+            self.label_for_player2_lifes.resize(80,40)
 
         self.countdown_label.move(360,200)
         self.countdown_label.setStyleSheet("font: 120pt Comic Sans MS; color: white")
@@ -94,6 +118,8 @@ class MainWindow(QMainWindow):
         self.countdown_label.resize(200,200)
 
         self.grave_label.resize(40,40)
+        if self.play_mode in (2,4,8):
+            self.grave_label_for_player2.resize(40,40)
 
     def do_initial_countdown(self):
         self.countdown_label.setText('3')
@@ -108,11 +134,16 @@ class MainWindow(QMainWindow):
         self.player.in_reset = False
 
     def drawPlayer(self):
-        self.pixmap = QPixmap("images/PacManUpEat.png")
-        self.label.setPixmap(self.pixmap)
-        self.label.resize(40,40)
-        self.label.setStyleSheet("background:transparent")
-        self.label.move(720,560)
+        self.player_label.setPixmap(QPixmap("images/PacManUpEat"+str(self.player.player_id)+".png"))
+        self.player_label.resize(40,40)
+        self.player_label.setStyleSheet("background:transparent")
+        self.player_label.move(720,560)
+        if self.play_mode in (2,4,8):
+            self.player2_label.setPixmap(QPixmap("images/PacManUpEat" + str(self.player2.player_id) + ".png"))
+            self.player2_label.resize(40, 40)
+            self.player2_label.setStyleSheet("background:transparent")
+            self.player2_label.move(720, 560)
+            self.player_label.move(40, 560)
 
     #iscrtavanje protivnika
     def draw_ghosts(self):
@@ -143,19 +174,32 @@ class MainWindow(QMainWindow):
 
     def initPlayerScore(self):
         self.label_for_player_score.setText('0')
-        self.label_for_player_score.setStyleSheet("font: 20pt Comic Sans MS; color: white")
+        self.label_for_player_score.setStyleSheet("font: 19pt Comic Sans MS; color: white")
         self.label_for_player_score.move(135,5)
+        if self.play_mode in (2,4,8):
+            self.label_for_player2_score.setText('0')
+            self.label_for_player2_score.setStyleSheet("font: 19pt Comic Sans MS; color: white")
+            self.label_for_player2_score.move(640, 5)
+
 
     def keyPressEvent(self, event):
-
         if event.key() == Qt.Key_Left:
-            self.pLeft = Process(target=self.player.movePlayerLeft(self.label))
+            self.pLeft = Process(target=self.player.movePlayerLeft(self.player_label))
         elif event.key() == Qt.Key_Right:
-            self.pRight = Process(target=self.player.movePlayerRight(self.label))
+            self.pRight = Process(target=self.player.movePlayerRight(self.player_label))
         elif event.key() == Qt.Key_Up:
-            self.pUp = Process(target=self.player.movePlayerUp(self.label))
+            self.pUp = Process(target=self.player.movePlayerUp(self.player_label))
         elif event.key() == Qt.Key_Down:
-            self.pDown = Process(target=self.player.movePlayerDown(self.label))
+            self.pDown = Process(target=self.player.movePlayerDown(self.player_label))
+
+        if event.key() == Qt.Key_A:
+            self.pLeft3 = Process(target=self.player2.movePlayerLeft(self.player2_label))
+        elif event.key() == Qt.Key_D:
+            self.pRight3 = Process(target=self.player2.movePlayerRight(self.player2_label))
+        elif event.key() == Qt.Key_W:
+            self.pUp3 = Process(target=self.player2.movePlayerUp(self.player2_label))
+        elif event.key() == Qt.Key_S:
+            self.pDown3 = Process(target=self.player2.movePlayerDown(self.player2_label))
 
     """Center screen"""
     def center_window(self):
@@ -404,15 +448,15 @@ class MainWindow(QMainWindow):
         self.ghost4.switch_mode()
 
     def reset_player(self):
-        self.label.setHidden(True)
+        self.player_label.setHidden(True)
         self.grave_label.setPixmap(QPixmap('images/Grave.png'))
         self.grave_label.setHidden(False)
-        self.grave_label.move(self.label.x(), self.label.y())
+        self.grave_label.move(self.player_label.x(), self.player_label.y())
         self.do_initial_countdown()
         self.grave_label.setHidden(True)
-        self.label.move(self.player.start_position[0], self.player.start_position[1])
-        self.label.setHidden(False)
-        self.label.setPixmap(QPixmap('images/PacManUpEat.png'))
+        self.player_label.move(self.player.start_position[0], self.player.start_position[1])
+        self.player_label.setHidden(False)
+        self.player_label.setPixmap(QPixmap('images/PacManUpEat'+str(self.player.player_id)+'.png'))
 
     def reset_ghosts(self):
         self.blue_ghost.move(self.ghost4.start_position[0], self.ghost4.start_position[1])
@@ -444,6 +488,46 @@ class MainWindow(QMainWindow):
         self.ghost3.next_warning_skin2 = False
         self.ghost4.next_warning_skin2 = False
 
+    def instantiate_players_from_list(self, list_of_names):
+        number_of_elements = len(list_of_names)
+        if number_of_elements == 1:  # SINGLEPLAYER
+            #player_id, player_name = list_of_names[0]
+
+            player_id, player_name = list_of_names[0]
+            self.player_label = QLabel(self)
+            self.label_for_player_score = QLabel(self)
+            self.label_for_coin_display = QLabel(self)
+            self.label_for_player_lifes = QLabel(self)
+            self.grave_label = QLabel(self)
+            self.player = player.Player(self.player_label, self.map, self.label_for_player_score, self.label_for_player_lifes,self.grave_label,(720,560), player_id, player_name)
+
+            self.ghost1 = enemy.Enemy(self.red_ghost, self.map, self.player, (18 * 40, 1 * 40), 1, self.red_ghost,(360, 400))  # red ghost
+            self.ghost2 = enemy.Enemy(self.orange_ghost, self.map, self.player, (1 * 40, 1 * 40), 2, self.red_ghost,(440, 360))  # orange ghost
+            self.ghost3 = enemy.Enemy(self.yellow_ghost, self.map, self.player, (1 * 40, 13 * 40), 3, self.red_ghost,(440, 400))  # yellow ghost
+            self.ghost4 = enemy.Enemy(self.blue_ghost, self.map, self.player, (18 * 40, 13 * 40), 4, self.red_ghost,(360, 360))  # blue ghost
+
+        elif number_of_elements in (2,4,8): # MULTIPLAYER ili TOURNAMENT
+            player1_id, player1_name = list_of_names[0]
+            self.player_label = QLabel(self)
+            self.label_for_player_score = QLabel(self)
+            self.label_for_coin_display = QLabel(self)
+            self.label_for_player_lifes = QLabel(self)
+            self.grave_label = QLabel(self)
+            self.player = player.Player(self.player_label, self.map, self.label_for_player_score, self.label_for_player_lifes, self.grave_label,(40,560), player1_id, player1_name)
+
+            player2_id, player2_name = list_of_names[1]
+            self.player2_label = QLabel(self)
+            self.label_for_player2_score = QLabel(self)
+            self.label_for_coin_display_player2 = QLabel(self)
+            self.label_for_player2_lifes = QLabel(self)
+            self.grave_label_for_player2 = QLabel(self)
+            self.player2 = player.Player(self.player2_label, self.map, self.label_for_player2_score,self.label_for_player2_lifes, self.grave_label_for_player2,(720,560), player2_id, player2_name)
+
+            self.ghost1 = enemy.Enemy(self.red_ghost, self.map, self.player, (18 * 40, 1 * 40), 1, self.red_ghost,(360, 400))  # red ghost
+            self.ghost2 = enemy.Enemy(self.orange_ghost, self.map, self.player2, (1 * 40, 1 * 40), 2, self.red_ghost,(440, 360))  # orange ghost
+            self.ghost3 = enemy.Enemy(self.yellow_ghost, self.map, self.player2, (1 * 40, 13 * 40), 3, self.red_ghost,(440, 400))  # yellow ghost
+            self.ghost4 = enemy.Enemy(self.blue_ghost, self.map, self.player, (18 * 40, 13 * 40), 4, self.red_ghost,(360, 360))  # blue ghost
+
 
 class Board(QFrame):
     board_width = 800
@@ -465,11 +549,11 @@ class Board(QFrame):
             [0, 2, 2, 3, 2, 2, 0, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0],
             [2, 2, 2, 0, 0, 2, 2, 2, 0, 0, 1, 0, 0, 2, 0, 0, 0, 2, 2, 2],
             [0, 0, 2, 0, 0, 2, 0, 2, 0, 1, 1, 1, 0, 2, 2, 0, 3, 0, 2, 0],
-            [0, 2, 2, 2, 2, 2, 2, 2, 0, 1, 1, 1, 0, 0, 2, 0, 2, 2, 2, 0],
+            [0, 2, 2, 3, 2, 2, 2, 2, 0, 1, 1, 1, 0, 0, 2, 0, 2, 2, 2, 0],
             [0, 2, 0, 2, 0, 0, 2, 2, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 2, 0],
             [0, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 0, 2, 0],
-            [0, 3, 2, 2, 0, 2, 0, 0, 0, 3, 0, 2, 2, 0, 2, 2, 2, 2, 2, 0],
-            [0, 2, 0, 2, 2, 2, 0, 0, 0, 2, 2, 2, 0, 0, 2, 2, 2, 0, 1, 0],
+            [0, 2, 2, 2, 0, 2, 0, 0, 0, 3, 0, 2, 2, 0, 2, 2, 2, 2, 2, 0],
+            [0, 1, 0, 2, 2, 2, 0, 0, 0, 2, 2, 2, 0, 0, 2, 2, 2, 0, 1, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],]
 
         self.special_power_locations = []

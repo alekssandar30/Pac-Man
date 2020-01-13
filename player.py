@@ -6,8 +6,10 @@ import enemy
 
 
 class Player(QLabel):
-    def __init__(self, label, map, label_for_player_score, label_for_player_lifes, start_position, countdown_label, dead_label):
+    def __init__(self, label, map, label_for_player_score, label_for_player_lifes, dead_label, start_position, player_id, player_name):
         super().__init__()
+        self.player_id = player_id
+        self.player_name = player_name
         self.label = label
         self.map = map
         self.current_score = 0
@@ -19,12 +21,11 @@ class Player(QLabel):
         self.provera = 0
         self.num_of_eated_ghost_powers = 0
         self.label_for_player_lifes = label_for_player_lifes
-        self.player_lifes = 2 # 2 + 1 na mapi. | Ako padne na -1 onda je GAME OVER
-        self.start_position = start_position
+        self.player_lifes = 2 # 2 + 1 na mapi. | Ako padne na -1 onda je GAME OVERn
         self.reset_mode_for_enemies = -1
-        self.countdown_label = countdown_label
         self.in_reset = True
         self.dead_label = dead_label
+        self.start_position = start_position
 
 
 
@@ -43,17 +44,17 @@ class Player(QLabel):
                     if (self.map.zid(label.x() - 40, label.y())):
                         break
                     if (self.map.zid(label.x(), label.y() - 20)):
-                        label.setPixmap(QPixmap("images/PacManUpEat.png"))
+                        label.setPixmap(QPixmap("images/PacManUpEat"+str(self.player_id)+".png"))
                         label.move(label.x(), label.y() - 20)
                         QGuiApplication.processEvents()
                         sleep(0.05)
-                        label.setPixmap(QPixmap("images/PacManUpClose.png"))
+                        label.setPixmap(QPixmap("images/PacManUpClose"+str(self.player_id)+".png"))
                         QGuiApplication.processEvents()
                         sleep(0.05)
                     elif (self.map.zid(label.x(), label.y() - 40)):
                         i = 0
                         while (i < 2):
-                            label.setPixmap(QPixmap("images/PacManUpEat.png"))
+                            label.setPixmap(QPixmap("images/PacManUpEat"+str(self.player_id)+".png"))
                             label.move(label.x(), label.y() - 20)
                             i += 1
                             if (i == 1):
@@ -66,7 +67,7 @@ class Player(QLabel):
                                     self.map.draw_black_background(label.x(), label.y() - 20)
                             QGuiApplication.processEvents()
                             sleep(0.05)
-                            label.setPixmap(QPixmap("images/PacManUpClose.png"))
+                            label.setPixmap(QPixmap("images/PacManUpClose"+str(self.player_id)+".png"))
                             QGuiApplication.processEvents()
                             sleep(0.05)
                     if (not self.map.zid(label.x() - 40, label.y()) and not self.map.zid(label.x(), label.y() - 40)):
@@ -76,17 +77,17 @@ class Player(QLabel):
                     if (self.map.zid(label.x() - 40, label.y())):
                         break
                     if (self.map.zid(label.x(), label.y() + 20)):
-                        label.setPixmap(QPixmap("images/PacManDownEat.png"))
+                        label.setPixmap(QPixmap("images/PacManDownEat"+str(self.player_id)+".png"))
                         label.move(label.x(), label.y() + 20)
                         QGuiApplication.processEvents()
                         sleep(0.05)
-                        label.setPixmap(QPixmap("images/PacManDownClose.png"))
+                        label.setPixmap(QPixmap("images/PacManDownClose"+str(self.player_id)+".png"))
                         QGuiApplication.processEvents()
                         sleep(0.05)
                     elif (self.map.zid(label.x(), label.y() + 40)):
                         i = 0
                         while (i < 2):
-                            label.setPixmap(QPixmap("images/PacManDownEat.png"))
+                            label.setPixmap(QPixmap("images/PacManDownEat"+str(self.player_id)+".png"))
                             label.move(label.x(), label.y() + 20)
                             i += 1
                             if (i == 1):
@@ -99,7 +100,7 @@ class Player(QLabel):
                                     self.map.draw_black_background(label.x(), label.y() + 20)
                             QGuiApplication.processEvents()
                             sleep(0.05)
-                            label.setPixmap(QPixmap("images/PacManDownClose.png"))
+                            label.setPixmap(QPixmap("images/PacManDownClose"+str(self.player_id)+".png"))
                             QGuiApplication.processEvents()
                             sleep(0.05)
                     if (not self.map.zid(label.x() - 40, label.y()) and not self.map.zid(label.x(), label.y() + 40)):
@@ -109,14 +110,14 @@ class Player(QLabel):
                     if (self.map.zid(label.x() - 40, label.y())):
                         break
                     if (self.map.zid(label.x() + 20, label.y())):
-                        label.setPixmap(QPixmap("images/PacManRightEat.png"))  # 760 320
+                        label.setPixmap(QPixmap("images/PacManRightEat"+str(self.player_id)+".png"))  # 760 320
                         if (label.x() == 760):
                             label.move(label.x() - 780, label.y())
                         else:
                             label.move(label.x() + 20, label.y())
                         QGuiApplication.processEvents()
                         sleep(0.05)
-                        label.setPixmap(QPixmap("images/PacManRightClose.png"))
+                        label.setPixmap(QPixmap("images/PacManRightClose"+str(self.player_id)+".png"))
                         QGuiApplication.processEvents()
                         sleep(0.05)
                     if (not self.map.zid(label.x() - 40, label.y()) and not self.map.zid(label.x() + 40, label.y())):
@@ -130,7 +131,7 @@ class Player(QLabel):
 
                 i = 0
                 if (self.provera == 2):
-                    label.setPixmap(QPixmap("images/PacManLeftEat.png"))
+                    label.setPixmap(QPixmap("images/PacManLeftEat"+str(self.player_id)+".png"))
                     if (label.x() == 0):
                         label.move(label.x() + 780, label.y())
                     else:
@@ -147,11 +148,11 @@ class Player(QLabel):
                     QGuiApplication.processEvents()
                     sleep(0.05)
                     if (self.provera == 2):
-                        label.setPixmap(QPixmap("images/PacManLeftClose.png"))
+                        label.setPixmap(QPixmap("images/PacManLeftClose"+str(self.player_id)+".png"))
                         QGuiApplication.processEvents()
                         sleep(0.05)
                         if (self.map.zid(label.x() - 20, label.y())):
-                            label.setPixmap(QPixmap("images/PacManLeftEat.png"))
+                            label.setPixmap(QPixmap("images/PacManLeftEat"+str(self.player_id)+".png"))
                             if (label.x() == 0):
                                 label.move(label.x() + 780, label.y())
                             else:
@@ -159,7 +160,7 @@ class Player(QLabel):
                             QGuiApplication.processEvents()
                             sleep(0.05)
                             if (self.provera == 2):
-                                label.setPixmap(QPixmap("images/PacManLeftClose.png"))
+                                label.setPixmap(QPixmap("images/PacManLeftClose"+str(self.player_id)+".png"))
                                 QGuiApplication.processEvents()
                                 sleep(0.05)
 
@@ -174,17 +175,17 @@ class Player(QLabel):
                     if (self.map.zid(label.x() + 40, label.y())):
                         break
                     if (self.map.zid(label.x(), label.y() - 20)):
-                        label.setPixmap(QPixmap("images/PacManUpEat.png"))
+                        label.setPixmap(QPixmap("images/PacManUpEat"+str(self.player_id)+".png"))
                         label.move(label.x(), label.y() - 20)
                         QGuiApplication.processEvents()
                         sleep(0.05)
-                        label.setPixmap(QPixmap("images/PacManUpClose.png"))
+                        label.setPixmap(QPixmap("images/PacManUpClose"+str(self.player_id)+".png"))
                         QGuiApplication.processEvents()
                         sleep(0.05)
                     elif (self.map.zid(label.x(), label.y() - 40)):
                         i = 0
                         while (i < 2):
-                            label.setPixmap(QPixmap("images/PacManUpEat.png"))
+                            label.setPixmap(QPixmap("images/PacManUpEat"+str(self.player_id)+".png"))
                             label.move(label.x(), label.y() - 20)
                             i += 1
                             if (i == 1):
@@ -197,7 +198,7 @@ class Player(QLabel):
                                     self.map.draw_black_background(label.x(), label.y() - 20)
                             QGuiApplication.processEvents()
                             sleep(0.05)
-                            label.setPixmap(QPixmap("images/PacManUpClose.png"))
+                            label.setPixmap(QPixmap("images/PacManUpClose"+str(self.player_id)+".png"))
                             QGuiApplication.processEvents()
                             sleep(0.05)
                     if (not self.map.zid(label.x() + 40, label.y()) and not self.map.zid(label.x(), label.y() - 40)):
@@ -207,17 +208,17 @@ class Player(QLabel):
                     if (self.map.zid(label.x() + 40, label.y())):
                         break
                     if (self.map.zid(label.x(), label.y() + 20)):
-                        label.setPixmap(QPixmap("images/PacManDownEat.png"))
+                        label.setPixmap(QPixmap("images/PacManDownEat"+str(self.player_id)+".png"))
                         label.move(label.x(), label.y() + 20)
                         QGuiApplication.processEvents()
                         sleep(0.05)
-                        label.setPixmap(QPixmap("images/PacManDownClose.png"))
+                        label.setPixmap(QPixmap("images/PacManDownClose"+str(self.player_id)+".png"))
                         QGuiApplication.processEvents()
                         sleep(0.05)
                     elif (self.map.zid(label.x(), label.y() + 40)):
                         i = 0
                         while (i < 2):
-                            label.setPixmap(QPixmap("images/PacManDownEat.png"))
+                            label.setPixmap(QPixmap("images/PacManDownEat"+str(self.player_id)+".png"))
                             label.move(label.x(), label.y() + 20)
                             i += 1
                             if (i == 1):
@@ -230,7 +231,7 @@ class Player(QLabel):
                                     self.map.draw_black_background(label.x(), label.y() + 20)
                             QGuiApplication.processEvents()
                             sleep(0.05)
-                            label.setPixmap(QPixmap("images/PacManDownClose.png"))
+                            label.setPixmap(QPixmap("images/PacManDownClose"+str(self.player_id)+".png"))
                             QGuiApplication.processEvents()
                             sleep(0.05)
                     if (not self.map.zid(label.x() + 40, label.y()) and not self.map.zid(label.x(), label.y() + 40)):
@@ -240,14 +241,14 @@ class Player(QLabel):
                     if (self.map.zid(label.x() + 40, label.y())):
                         break
                     if (self.map.zid(label.x() - 20, label.y())):
-                        label.setPixmap(QPixmap("images/PacManLeftEat.png"))
+                        label.setPixmap(QPixmap("images/PacManLeftEat"+str(self.player_id)+".png"))
                         if (label.x() == 0):
                             label.move(label.x() + 780, label.y())
                         else:
                             label.move(label.x() - 20, label.y())
                         QGuiApplication.processEvents()
                         sleep(0.05)
-                        label.setPixmap(QPixmap("images/PacManLeftClose.png"))
+                        label.setPixmap(QPixmap("images/PacManLeftClose"+str(self.player_id)+".png"))
                         QGuiApplication.processEvents()
                         sleep(0.05)
                     if (not self.map.zid(label.x() + 40, label.y()) and not self.map.zid(label.x() - 40, label.y())):
@@ -261,7 +262,7 @@ class Player(QLabel):
 
                 i = 0
                 if (self.provera == 4):
-                    label.setPixmap(QPixmap("images/PacManRightEat.png")) #760 320
+                    label.setPixmap(QPixmap("images/PacManRightEat"+str(self.player_id)+".png")) #760 320
                     if (label.x() == 760):
                         label.move(label.x() - 780, label.y())
                     else:
@@ -278,11 +279,11 @@ class Player(QLabel):
                     QGuiApplication.processEvents()
                     sleep(0.05)
                     if (self.provera == 4):
-                        label.setPixmap(QPixmap("images/PacManRightClose.png"))
+                        label.setPixmap(QPixmap("images/PacManRightClose"+str(self.player_id)+".png"))
                         QGuiApplication.processEvents()
                         sleep(0.05)
                         if (self.map.zid(label.x() + 20, label.y())):
-                            label.setPixmap(QPixmap("images/PacManRightEat.png"))  # 760 320
+                            label.setPixmap(QPixmap("images/PacManRightEat"+str(self.player_id)+".png"))  # 760 320
                             if (label.x() == 760):
                                 label.move(label.x() - 780, label.y())
                             else:
@@ -290,7 +291,7 @@ class Player(QLabel):
                             QGuiApplication.processEvents()
                             sleep(0.05)
                             if (self.provera == 4):
-                                label.setPixmap(QPixmap("images/PacManRightClose.png"))
+                                label.setPixmap(QPixmap("images/PacManRightClose"+str(self.player_id)+".png"))
                                 QGuiApplication.processEvents()
                                 sleep(0.05)
 
@@ -306,20 +307,20 @@ class Player(QLabel):
                     if (self.map.zid(label.x(), label.y() - 40)):
                         break
                     if (self.map.zid(label.x() - 20, label.y())):
-                        label.setPixmap(QPixmap("images/PacManLeftEat.png"))
+                        label.setPixmap(QPixmap("images/PacManLeftEat"+str(self.player_id)+".png"))
                         if (label.x() == 0):
                             label.move(label.x() + 780, label.y())
                         else:
                             label.move(label.x() - 20, label.y())
                         QGuiApplication.processEvents()
                         sleep(0.05)
-                        label.setPixmap(QPixmap("images/PacManLeftClose.png"))
+                        label.setPixmap(QPixmap("images/PacManLeftClose"+str(self.player_id)+".png"))
                         QGuiApplication.processEvents()
                         sleep(0.05)
                     elif (self.map.zid(label.x() - 40, label.y())):
                         i = 0
                         while (i < 2 and self.provera == 2):
-                            label.setPixmap(QPixmap("images/PacManLeftEat.png"))
+                            label.setPixmap(QPixmap("images/PacManLeftEat"+str(self.player_id)+".png"))
                             if (label.x() == 0):
                                 label.move(label.x() + 780, label.y())
                             else:
@@ -335,7 +336,7 @@ class Player(QLabel):
                                     self.map.draw_black_background(label.x() - 20, label.y())
                             QGuiApplication.processEvents()
                             sleep(0.05)
-                            label.setPixmap(QPixmap("images/PacManLeftClose.png"))
+                            label.setPixmap(QPixmap("images/PacManLeftClose"+str(self.player_id)+".png"))
                             QGuiApplication.processEvents()
                             sleep(0.05)
                     if (not self.map.zid(label.x(), label.y() - 40) and not self.map.zid(label.x() - 40, label.y())):
@@ -345,11 +346,11 @@ class Player(QLabel):
                     if (self.map.zid(label.x(), label.y() - 40)):
                         break
                     if (self.map.zid(label.x(), label.y() + 20)):
-                        label.setPixmap(QPixmap("images/PacManDownEat.png"))
+                        label.setPixmap(QPixmap("images/PacManDownEat"+str(self.player_id)+".png"))
                         label.move(label.x(), label.y() + 20)
                         QGuiApplication.processEvents()
                         sleep(0.05)
-                        label.setPixmap(QPixmap("images/PacManDownClose.png"))
+                        label.setPixmap(QPixmap("images/PacManDownClose"+str(self.player_id)+".png"))
                         QGuiApplication.processEvents()
                         sleep(0.05)
                     if (not self.map.zid(label.x(), label.y() - 40) and not self.map.zid(label.x(), label.y() + 40)):
@@ -359,20 +360,20 @@ class Player(QLabel):
                     if (self.map.zid(label.x(), label.y() - 40)):
                         break
                     if (self.map.zid(label.x() + 20, label.y())):
-                        label.setPixmap(QPixmap("images/PacManRightEat.png"))  # 760 320
+                        label.setPixmap(QPixmap("images/PacManRightEat"+str(self.player_id)+".png"))  # 760 320
                         if (label.x() == 760):
                             label.move(label.x() - 780, label.y())
                         else:
                             label.move(label.x() + 20, label.y())
                         QGuiApplication.processEvents()
                         sleep(0.05)
-                        label.setPixmap(QPixmap("images/PacManRightClose.png"))
+                        label.setPixmap(QPixmap("images/PacManRightClose"+str(self.player_id)+".png"))
                         QGuiApplication.processEvents()
                         sleep(0.05)
                     elif (self.map.zid(label.x() + 40, label.y())):
                         i = 0
                         while (i < 2 and self.provera == 4):
-                            label.setPixmap(QPixmap("images/PacManRightEat.png"))  # 760 320
+                            label.setPixmap(QPixmap("images/PacManRightEat"+str(self.player_id)+".png"))  # 760 320
                             if (label.x() == 760):
                                 label.move(label.x() - 780, label.y())
                             else:
@@ -388,7 +389,7 @@ class Player(QLabel):
                                     self.map.draw_black_background(label.x() + 20, label.y())
                             QGuiApplication.processEvents()
                             sleep(0.05)
-                            label.setPixmap(QPixmap("images/PacManRightClose.png"))
+                            label.setPixmap(QPixmap("images/PacManRightClose"+str(self.player_id)+".png"))
                             QGuiApplication.processEvents()
                             sleep(0.05)
                     if (not self.map.zid(label.x(), label.y() - 40) and not self.map.zid(label.x() + 40, label.y())):
@@ -402,7 +403,7 @@ class Player(QLabel):
 
                 i = 0
                 if (self.provera == 1):
-                    label.setPixmap(QPixmap("images/PacManUpEat.png"))
+                    label.setPixmap(QPixmap("images/PacManUpEat"+str(self.player_id)+".png"))
                     label.move(label.x(), label.y() - 20)
                     i += 1
                     if (i == 1):
@@ -416,16 +417,16 @@ class Player(QLabel):
                     QGuiApplication.processEvents()
                     sleep(0.05)
                     if (self.provera == 1):
-                        label.setPixmap(QPixmap("images/PacManUpClose.png"))
+                        label.setPixmap(QPixmap("images/PacManUpClose"+str(self.player_id)+".png"))
                         QGuiApplication.processEvents()
                         sleep(0.05)
                         if (self.map.zid(label.x(), label.y() - 20)):
-                            label.setPixmap(QPixmap("images/PacManUpEat.png"))
+                            label.setPixmap(QPixmap("images/PacManUpEat"+str(self.player_id)+".png"))
                             label.move(label.x(), label.y() - 20)
                             QGuiApplication.processEvents()
                             sleep(0.05)
                             if (self.provera == 1):
-                                label.setPixmap(QPixmap("images/PacManUpClose.png"))
+                                label.setPixmap(QPixmap("images/PacManUpClose"+str(self.player_id)+".png"))
                                 QGuiApplication.processEvents()
                                 sleep(0.05)
 
@@ -440,20 +441,20 @@ class Player(QLabel):
                     if (self.map.zid(label.x(), label.y() + 40)):
                         break
                     if (self.map.zid(label.x() - 20, label.y())):
-                        label.setPixmap(QPixmap("images/PacManLeftEat.png"))
+                        label.setPixmap(QPixmap("images/PacManLeftEat"+str(self.player_id)+".png"))
                         if (label.x() == 0):
                             label.move(label.x() + 780, label.y())
                         else:
                             label.move(label.x() - 20, label.y())
                         QGuiApplication.processEvents()
                         sleep(0.05)
-                        label.setPixmap(QPixmap("images/PacManLeftClose.png"))
+                        label.setPixmap(QPixmap("images/PacManLeftClose"+str(self.player_id)+".png"))
                         QGuiApplication.processEvents()
                         sleep(0.05)
                     elif (self.map.zid(label.x() - 40, label.y())):
                         i = 0
                         while (i < 2 and self.provera == 2):
-                            label.setPixmap(QPixmap("images/PacManLeftEat.png"))
+                            label.setPixmap(QPixmap("images/PacManLeftEat"+str(self.player_id)+".png"))
                             if (label.x() == 0):
                                 label.move(label.x() + 780, label.y())
                             else:
@@ -469,7 +470,7 @@ class Player(QLabel):
                                     self.map.draw_black_background(label.x() - 20, label.y())
                             QGuiApplication.processEvents()
                             sleep(0.05)
-                            label.setPixmap(QPixmap("images/PacManLeftClose.png"))
+                            label.setPixmap(QPixmap("images/PacManLeftClose"+str(self.player_id)+".png"))
                             QGuiApplication.processEvents()
                             sleep(0.05)
                     if (not self.map.zid(label.x(), label.y() + 40) and not self.map.zid(label.x() - 40, label.y())):
@@ -479,11 +480,11 @@ class Player(QLabel):
                     if (self.map.zid(label.x(), label.y() + 40)):
                         break
                     if (self.map.zid(label.x(), label.y() - 20)):
-                        label.setPixmap(QPixmap("images/PacManDownEat.png"))
+                        label.setPixmap(QPixmap("images/PacManDownEat"+str(self.player_id)+".png"))
                         label.move(label.x(), label.y() - 20)
                         QGuiApplication.processEvents()
                         sleep(0.05)
-                        label.setPixmap(QPixmap("images/PacManDownClose.png"))
+                        label.setPixmap(QPixmap("images/PacManDownClose"+str(self.player_id)+".png"))
                         QGuiApplication.processEvents()
                         sleep(0.05)
                     if (not self.map.zid(label.x(), label.y() + 40) and not self.map.zid(label.x(), label.y() - 40)):
@@ -493,20 +494,20 @@ class Player(QLabel):
                     if (self.map.zid(label.x(), label.y() + 40)):
                         break
                     if (self.map.zid(label.x() + 20, label.y())):
-                        label.setPixmap(QPixmap("images/PacManRightEat.png"))  # 760 320
+                        label.setPixmap(QPixmap("images/PacManRightEat"+str(self.player_id)+".png"))  # 760 320
                         if (label.x() == 760):
                             label.move(label.x() - 780, label.y())
                         else:
                             label.move(label.x() + 20, label.y())
                         QGuiApplication.processEvents()
                         sleep(0.05)
-                        label.setPixmap(QPixmap("images/PacManRightClose.png"))
+                        label.setPixmap(QPixmap("images/PacManRightClose"+str(self.player_id)+".png"))
                         QGuiApplication.processEvents()
                         sleep(0.05)
                     elif (self.map.zid(label.x() + 40, label.y())):
                         i = 0
                         while (i < 2 and self.provera == 4):
-                            label.setPixmap(QPixmap("images/PacManRightEat.png"))  # 760 320
+                            label.setPixmap(QPixmap("images/PacManRightEat"+str(self.player_id)+".png"))  # 760 320
                             if (label.x() == 760):
                                 label.move(label.x() - 780, label.y())
                             else:
@@ -522,7 +523,7 @@ class Player(QLabel):
                                     self.map.draw_black_background(label.x() + 20, label.y())
                             QGuiApplication.processEvents()
                             sleep(0.05)
-                            label.setPixmap(QPixmap("images/PacManRightClose.png"))
+                            label.setPixmap(QPixmap("images/PacManRightClose"+str(self.player_id)+".png"))
                             QGuiApplication.processEvents()
                             sleep(0.05)
                     if (not self.map.zid(label.x(), label.y() + 40) and not self.map.zid(label.x() + 40, label.y())):
@@ -536,7 +537,7 @@ class Player(QLabel):
 
                 i = 0
                 if (self.provera == 3):
-                    label.setPixmap(QPixmap("images/PacManDownEat.png"))
+                    label.setPixmap(QPixmap("images/PacManDownEat"+str(self.player_id)+".png"))
                     label.move(label.x(), label.y() + 20)
                     i += 1
                     if i == 1:
@@ -550,16 +551,16 @@ class Player(QLabel):
                     QGuiApplication.processEvents()
                     sleep(0.05)
                     if (self.provera == 3):
-                        label.setPixmap(QPixmap("images/PacManDownClose.png"))
+                        label.setPixmap(QPixmap("images/PacManDownClose"+str(self.player_id)+".png"))
                         QGuiApplication.processEvents()
                         sleep(0.05)
                         if (self.map.zid(label.x(), label.y() + 20)):
-                            label.setPixmap(QPixmap("images/PacManDownEat.png"))
+                            label.setPixmap(QPixmap("images/PacManDownEat"+str(self.player_id)+".png"))
                             label.move(label.x(), label.y() + 20)
                             QGuiApplication.processEvents()
                             sleep(0.05)
                             if (self.provera == 3):
-                                label.setPixmap(QPixmap("images/PacManDownClose.png"))
+                                label.setPixmap(QPixmap("images/PacManDownClose"+str(self.player_id)+".png"))
                                 QGuiApplication.processEvents()
                                 sleep(0.05)
 
@@ -590,9 +591,9 @@ class Player(QLabel):
         if self.player_lifes == 0:
             self.label_for_player_lifes.setPixmap(QPixmap('images/ZeroLife.png'))
         elif self.player_lifes == 1:
-            self.label_for_player_lifes.setPixmap(QPixmap('images/OneLife.png'))
+            self.label_for_player_lifes.setPixmap(QPixmap('images/OneLife'+str(self.player_id)+'.png'))
         elif self.player_lifes == 2 or self.player_lifes > 2:
-            self.label_for_player_lifes.setPixmap(QPixmap('images/TwoLife.png'))
+            self.label_for_player_lifes.setPixmap(QPixmap('images/TwoLife'+str(self.player_id)+'.png'))
 
 
     def return_reset_for_enemies(self):
@@ -600,15 +601,3 @@ class Player(QLabel):
 
     def set_reset_mode_from_enemy(self, mode):
         self.reset_mode_for_enemies = mode
-
-    def do_countdown(self):
-        self.countdown_label.setText('3')
-        sleep(1)
-        self.countdown_label.setText('2')
-        sleep(1)
-        self.countdown_label.move(370, 200)
-        self.countdown_label.setText('1')
-        sleep(1)
-        self.countdown_label.move(360, 200)
-        self.countdown_label.setText('')
-        self.in_reset = False

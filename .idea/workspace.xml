@@ -3,6 +3,19 @@
   <component name="ChangeListManager">
     <list default="true" id="fca91065-547a-423f-8aee-522caebf1cec" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/enemy.py" beforeDir="false" afterPath="$PROJECT_DIR$/enemy.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/OneLife.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/PacManDownClose.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/PacManDownEat.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/PacManLeftClose.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/PacManLeftEat.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/PacManRightClose.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/PacManRightEat.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/PacManUpClose.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/PacManUpEat.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/TwoLife.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main_window.py" beforeDir="false" afterPath="$PROJECT_DIR$/main_window.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/player.py" beforeDir="false" afterPath="$PROJECT_DIR$/player.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/start_menu.py" beforeDir="false" afterPath="$PROJECT_DIR$/start_menu.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -135,12 +148,13 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/player.py</url>
-          <line>62</line>
+          <line>63</line>
           <option name="timeStamp" value="33" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/start_menu.py</url>
-          <option name="timeStamp" value="34" />
+          <line>184</line>
+          <option name="timeStamp" value="38" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

@@ -55,7 +55,7 @@ class Enemy(QLabel):
         self.stop_movement = False
         decreased_player_life = False
         if self.zero_point_passed == False:
-            while self.zero_point_passed == False and not self.stop_movement:
+            while self.zero_point_passed == False and not self.stop_movement and self.mode == 1:
                 self.move_one_to_target((self.zero_point[0], self.zero_point[1]))
                 self.check_if_zero_point_passed()
         while self.mode == 1 and not self.stop_movement: # while chase mode
@@ -71,7 +71,7 @@ class Enemy(QLabel):
         self.stop_movement = False
         decreased_player_life = False
         if self.zero_point_passed == False:
-            while self.zero_point_passed == False and not self.stop_movement:
+            while self.zero_point_passed == False and not self.stop_movement and self.mode == 0:
                 self.move_one_to_target((self.zero_point[0], self.zero_point[1]))
                 self.check_if_zero_point_passed()
         while self.mode == 0 and not self.stop_movement:
@@ -87,7 +87,7 @@ class Enemy(QLabel):
         self.stop_movement = False
         increased = False
         if self.zero_point_passed == False:
-            while self.zero_point_passed == False and not self.stop_movement:
+            while self.zero_point_passed == False and not self.stop_movement and self.mode == 2:
                 self.move_one_to_target((self.zero_point[0], self.zero_point[1]))
                 self.check_if_zero_point_passed()
         while self.mode == 2 and not self.stop_movement:
