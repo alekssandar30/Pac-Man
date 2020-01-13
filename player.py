@@ -1,4 +1,4 @@
-#kod za kretanje igraca, sakupljanje poena...
+
 from PyQt5.QtWidgets import QWidget, QLabel
 from PyQt5.QtGui import QPixmap, QGuiApplication
 from time import sleep

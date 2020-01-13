@@ -1,8 +1,8 @@
-from PyQt5.QtWidgets import QWidget, QPushButton, QDesktopWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QLineEdit, QLabel
-from PyQt5.QtCore import pyqtSlot, QSize
+from PyQt5.QtWidgets import QWidget, QPushButton, QDesktopWidget, QLineEdit, QLabel
+from PyQt5.QtCore import pyqtSlot
 from main_window import MainWindow
 from PyQt5.QtGui import QImage, QPalette, QBrush, QPixmap
-from time import sleep
+
 
 
 class Menu(QWidget):

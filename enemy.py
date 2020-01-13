@@ -1,6 +1,4 @@
-#kod za protivnike
 
-# kod za protivnike
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtGui import QPixmap
 import player
@@ -27,7 +25,7 @@ class Enemy(QLabel):
         self.ghost_id = ghost_id # ghost_id odredjuje koji kretajuci pattern prati
         self.zero_point = (400, 320)
         self.target_home = (400, 400)
-        self.eaten = False # da li ga je player pojeo
+        self.eaten = False
         self.activated_frightened = False
         self.reborned = False # da li se vratio ghost na pocetno mesto kad ga je pacman pojeo
         self.zero_point_passed = False # polje ispred kuce, odatle znaju da se krecu u odgovarajuce pravce, sve dok ga ne predju a nalaze se u kucici, ne mogu da izadju pomocu osnovnog algoritma
