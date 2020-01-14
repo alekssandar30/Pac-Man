@@ -14,7 +14,7 @@ centralni widget u MainWindow je mapa(matrica 16x16) = klasa Board
 """
 class MainWindow(QMainWindow):
 
-    def __init__(self, list_of_names):
+    def __init__(self, list_of_names, tournament_window):
         super().__init__()
 
         self.width = 800
@@ -22,6 +22,7 @@ class MainWindow(QMainWindow):
         self.map = Board(self)
         self.list_of_player_names = list_of_names
         self.play_mode = len(list_of_names) # 1 - Singleplayer, 2 - Multiplayer, 4 - Tornament w 4 players, 8- Tournament w 8 players
+        self.tournament_window = tournament_window # Posle svakog turnira (tj runde) treba pozvati metodu self.tournament_window.round_done(winner_id, winner_name) da se azurira prozor
 
         # Labele
 
@@ -106,13 +107,13 @@ class MainWindow(QMainWindow):
             self.player1_name_label.resize(150, 30)
             self.player1_name_label.move(15, 600)
             self.player1_name_label.setStyleSheet("font: 15pt Comic Sans MS; color: red")
-            self.player1_name_label.setText(str(player_name))
+            self.player1_name_label.setText(str(player_name).capitalize())
 
             player_id2, player2_name = self.list_of_player_names[1]
             self.player2_name_label.resize(150, 30)
             self.player2_name_label.move(700, 600)
             self.player2_name_label.setStyleSheet("font: 15pt Comic Sans MS; color: aqua")
-            self.player2_name_label.setText(str(player2_name))
+            self.player2_name_label.setText(str(player2_name).capitalize())
 
             self.label_for_coin_display2 = QLabel(self)
             self.label_for_coin_display2.setPixmap(QPixmap("images/ResultCoins.png"))
@@ -174,7 +175,7 @@ class MainWindow(QMainWindow):
             self.label_for_coin_display = QLabel(self)
             self.label_for_player_lifes = QLabel(self)
             self.grave_label = QLabel(self)
-            self.player = player.Player(self.player_label, self.map, self.label_for_player_score, self.label_for_player_lifes,self.grave_label,(720,560), player_id, player_name)
+            self.player = player.Player(self.player_label, self.map, self.label_for_player_score, self.label_for_player_lifes,self.grave_label,(40,560), player_id, player_name)
 
             self.ghost1 = enemy.Enemy(self.red_ghost, self.map, self.player, (18 * 40, 1 * 40), 1, self.red_ghost,(360, 400))  # red ghost
             self.ghost2 = enemy.Enemy(self.orange_ghost, self.map, self.player, (1 * 40, 1 * 40), 2, self.red_ghost,(440, 360))  # orange ghost
