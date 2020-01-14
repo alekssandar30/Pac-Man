@@ -23,7 +23,7 @@ class Player(QLabel):
         self.label_for_player_lifes = label_for_player_lifes
         self.player_lifes = 2 # 2 + 1 na mapi. | Ako padne na -1 onda je GAME OVERn
         self.reset_mode_for_enemies = -1
-        self.in_reset = True
+        self.in_reset = False
         self.dead_label = dead_label
         self.start_position = start_position
 
@@ -577,7 +577,7 @@ class Player(QLabel):
 
     def decrease_player_lifes(self): # Poziva se reset
         self.player_lifes -= 1
-        self.in_reset = True
+        self.in_reset = False
         self.change_player_life_label()
         self.reset_mode_for_enemies = 4
         self.up = False
@@ -585,7 +585,7 @@ class Player(QLabel):
         self.left = False
         self.right = False
         self.provera = 0
-        self.in_reset = False
+        self.in_reset = True
 
     def change_player_life_label(self):
         if self.player_lifes == 0:

@@ -36,6 +36,7 @@ class MainWindow(QMainWindow):
         self.score_label_player = QLabel(self) # Samo ce im se menjati imena sa .setText(self.player1.player_name+' Score: ', self) kada se menjaju igraci
         self.player1_name_label = QLabel(self)
         self.player2_name_label = QLabel(self)
+        self.winner_label = QLabel(self)
 
         # instanciraj igraca i protivnike
         self.instantiate_players_from_list(self.list_of_player_names) # Kod turnira treba smenjivati id i naziv)
@@ -145,9 +146,16 @@ class MainWindow(QMainWindow):
         #self.countdown_label.setText('3') # Za 370 je okej
         self.countdown_label.resize(200,200)
 
+        self.winner_label.move(200, 100)
+        self.winner_label.setStyleSheet("font: 50pt Comic Sans MS; color: white")
+        self.winner_label.resize(500, 500)
+        self.winner_label.setText('')
+
         self.grave_label.resize(40,40)
         if self.play_mode in (2,4,8):
             self.grave_label_for_player2.resize(40,40)
+
+
 
 ####################################################################################################
 
@@ -257,48 +265,44 @@ class MainWindow(QMainWindow):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Left:
-            self.pLeft = Process(target=self.player.movePlayerLeft(self.player_label)).start()
-
-            #self.pLeft.join()
+            self.pLeft = Process(target=self.player.movePlayerLeft(self.player_label))
             #w = worker.Worker(self.player.movePlayerLeft(self.player_label))
         elif event.key() == Qt.Key_Right:
-            self.pRight = Process(target=self.player.movePlayerRight(self.player_label)).start()
-
-            #self.pRight.join()
+            self.pRight = Process(target=self.player.movePlayerRight(self.player_label))
             #w = worker.Worker(self.player.movePlayerRight(self.player_label))
         elif event.key() == Qt.Key_Up:
-            self.pUp = Process(target=self.player.movePlayerUp(self.player_label)).start()
-
-            #self.pUp.join()
+            self.pUp = Process(target=self.player.movePlayerUp(self.player_label))
             #w = worker.Worker(self.player.movePlayerUp(self.player_label))
         elif event.key() == Qt.Key_Down:
-            self.pDown = Process(target=self.player.movePlayerDown(self.player_label)).start()
-
-            #self.pDown.join()
+            self.pDown = Process(target=self.player.movePlayerDown(self.player_label))
             #w = worker.Worker(self.player.movePlayerDown(self.player_label))
 
         elif event.key() == Qt.Key_A:
-            self.pLeft = Process(target=self.player2.movePlayerLeft(self.player2_label)).start()
-            #self.pLeft3.join()
+            self.pLeft2 = Process(target=self.player2.movePlayerLeft(self.player2_label))
             #w = worker.Worker(self.player2.movePlayerLeft(self.player2_label))
         elif event.key() == Qt.Key_D:
-            self.pRight = Process(target=self.player2.movePlayerRight(self.player2_label)).start()
-
-            #self.pRight3.join()
+            self.pRight2 = Process(target=self.player2.movePlayerRight(self.player2_label))
             #w = worker.Worker(self.player2.movePlayerRight(self.player2_label))
         elif event.key() == Qt.Key_W:
             print('w is pressed')
-            self.pUp = Process(target=self.player2.movePlayerUp(self.player2_label)).start()
-
-            #self.pUp3.join()
+            self.pUp2 = Process(target=self.player2.movePlayerUp(self.player2_label))
             #w = worker.Worker(self.player2.movePlayerUp(self.player2_label))
         elif event.key() == Qt.Key_S:
-            self.pDown = Process(target=self.player2.movePlayerDown(self.player2_label)).start()
-
-            #self.pDown3.join()
+            self.pDown2 = Process(target=self.player2.movePlayerDown(self.player2_label))
             #w = worker.Worker(self.player2.movePlayerDown(self.player2_label))
 
         #self.threadpool.start(w)
+
+    """Funkcija ce se pozvati kada jedan player izgubi sve zivote
+       Vraca string (winner_id, winner_name)
+    """
+    def calculate_winner(self):
+        if int(self.label_for_player_score.text()) < int(self.label_for_player2_score.text()):
+            return (self.player2.player_id, self.player2_name_label.text().capitalize())
+        elif int(self.label_for_player_score.text()) > int(self.label_for_player2_score.text()):
+            return (self.player.player_id, self.player1_name_label.text().capitalize())
+        else:
+            return ()
 
     """Center screen"""
     def center_window(self):
@@ -556,6 +560,18 @@ class MainWindow(QMainWindow):
         self.player_label.move(self.player.start_position[0], self.player.start_position[1])
         self.player_label.setHidden(False)
         self.player_label.setPixmap(QPixmap('images/PacManUpEat'+str(self.player.player_id)+'.png'))
+
+        if self.play_mode in (2,4,8):
+            if self.player.player_lifes == 0 or self.player2.player_lifes == 0:
+                #self.winner_label.setText(self.calculate_winner())
+                winner_id, winner_name = self.calculate_winner()
+                self.winner_label.setText(f"{winner_name} je pobednik!")
+                self.tournament_window.round_done(winner_id, winner_name)
+
+        if self.player.player_lifes == 0 or self.player2.player_lifes == 0:
+            winner_id, winner_name = self.calculate_winner()
+            self.winner_label.setText(f"{winner_name} je pobednik!")
+
 
     def reset_ghosts(self):
         self.blue_ghost.move(self.ghost4.start_position[0], self.ghost4.start_position[1])
