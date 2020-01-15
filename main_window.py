@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import (QMainWindow, QLabel, QDesktopWidget, QFrame)
-from PyQt5.QtGui import (QPainter, QPixmap, QIcon, QMovie)
+from PyQt5.QtGui import (QPainter, QPixmap, QIcon, QMovie, QTextDocument)
 from PyQt5.QtCore import Qt, QThreadPool
 import player
 import enemy
@@ -37,6 +37,7 @@ class MainWindow(QMainWindow):
         self.player1_name_label = QLabel(self)
         self.player2_name_label = QLabel(self)
         self.winner_label = QLabel(self)
+        self.next_players_label = QLabel(self)
 
         # instanciraj igraca i protivnike
         self.instantiate_players_from_list(self.list_of_player_names) # Kod turnira treba smenjivati id i naziv)
@@ -151,6 +152,11 @@ class MainWindow(QMainWindow):
         self.winner_label.resize(500, 500)
         self.winner_label.setText('')
 
+        self.next_players_label.move(100, 50)
+        self.next_players_label.setStyleSheet("font: 30pt Comic Sans MS; color: green")
+        self.next_players_label.resize(500, 500)
+        self.next_players_label.setText('')
+
         self.grave_label.resize(40,40)
         if self.play_mode in (2,4,8):
             self.grave_label_for_player2.resize(40,40)
@@ -205,6 +211,7 @@ class MainWindow(QMainWindow):
             self.label_for_coin_display_player2 = QLabel(self)
             self.label_for_player2_lifes = QLabel(self)
             self.grave_label_for_player2 = QLabel(self)
+
             self.player2 = player.Player(self.player2_label, self.map, self.label_for_player2_score,self.label_for_player2_lifes, self.grave_label_for_player2,(720,560), player2_id, player2_name)
 
             self.ghost1 = enemy.Enemy(self.red_ghost, self.map, self.player, (18 * 40, 1 * 40), 1, self.red_ghost,(360, 400))  # red ghost
@@ -265,36 +272,36 @@ class MainWindow(QMainWindow):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Left:
-            self.pLeft = Process(target=self.player.movePlayerLeft(self.player_label))
+            self.pLeft = Thread(target=self.player.movePlayerLeft(self.player_label))
             #w = worker.Worker(self.player.movePlayerLeft(self.player_label))
         elif event.key() == Qt.Key_Right:
-            self.pRight = Process(target=self.player.movePlayerRight(self.player_label))
+            self.pRight = Thread(target=self.player.movePlayerRight(self.player_label))
             #w = worker.Worker(self.player.movePlayerRight(self.player_label))
         elif event.key() == Qt.Key_Up:
-            self.pUp = Process(target=self.player.movePlayerUp(self.player_label))
+            self.pUp = Thread(target=self.player.movePlayerUp(self.player_label))
             #w = worker.Worker(self.player.movePlayerUp(self.player_label))
         elif event.key() == Qt.Key_Down:
-            self.pDown = Process(target=self.player.movePlayerDown(self.player_label))
+            self.pDown = Thread(target=self.player.movePlayerDown(self.player_label))
             #w = worker.Worker(self.player.movePlayerDown(self.player_label))
 
-        elif event.key() == Qt.Key_A:
-            self.pLeft2 = Process(target=self.player2.movePlayerLeft(self.player2_label))
+        if event.key() == Qt.Key_A:
+            self.pLeft2 = Thread(target=self.player2.movePlayerLeft(self.player2_label))
             #w = worker.Worker(self.player2.movePlayerLeft(self.player2_label))
         elif event.key() == Qt.Key_D:
-            self.pRight2 = Process(target=self.player2.movePlayerRight(self.player2_label))
+            self.pRight2 = Thread(target=self.player2.movePlayerRight(self.player2_label))
             #w = worker.Worker(self.player2.movePlayerRight(self.player2_label))
         elif event.key() == Qt.Key_W:
             print('w is pressed')
-            self.pUp2 = Process(target=self.player2.movePlayerUp(self.player2_label))
+            self.pUp2 = Thread(target=self.player2.movePlayerUp(self.player2_label))
             #w = worker.Worker(self.player2.movePlayerUp(self.player2_label))
         elif event.key() == Qt.Key_S:
-            self.pDown2 = Process(target=self.player2.movePlayerDown(self.player2_label))
+            self.pDown2 = Thread(target=self.player2.movePlayerDown(self.player2_label))
             #w = worker.Worker(self.player2.movePlayerDown(self.player2_label))
 
         #self.threadpool.start(w)
 
     """Funkcija ce se pozvati kada jedan player izgubi sve zivote
-       Vraca string (winner_id, winner_name)
+       Vraca tuple (winner_id, winner_name)
     """
     def calculate_winner(self):
         if int(self.label_for_player_score.text()) < int(self.label_for_player2_score.text()):
@@ -325,7 +332,11 @@ class MainWindow(QMainWindow):
                 sleep(showing_time)
                 if self.label_super_power.isHidden():
                     self.label_super_power.setHidden(False)
+
+                x_coord = self.niz_lokacija_special_power[i][0]*40
+                y_coord = self.niz_lokacija_special_power[i][1]*40
                 self.label_super_power.move(self.niz_lokacija_special_power[i][0] * 40,self.niz_lokacija_special_power[i][1] * 40)
+
                 i += 1
                 if i == 6:
                     i = 0
@@ -560,6 +571,7 @@ class MainWindow(QMainWindow):
         self.player_label.move(self.player.start_position[0], self.player.start_position[1])
         self.player_label.setHidden(False)
         self.player_label.setPixmap(QPixmap('images/PacManUpEat'+str(self.player.player_id)+'.png'))
+        next_players = []
 
         if self.play_mode in (2,4,8):
             if self.player.player_lifes == 0 or self.player2.player_lifes == 0:
@@ -568,9 +580,29 @@ class MainWindow(QMainWindow):
                 self.winner_label.setText(f"{winner_name} je pobednik!")
                 self.tournament_window.round_done(winner_id, winner_name)
 
-        if self.player.player_lifes == 0 or self.player2.player_lifes == 0:
-            winner_id, winner_name = self.calculate_winner()
-            self.winner_label.setText(f"{winner_name} je pobednik!")
+
+        if self.play_mode in (4, 8):
+            if self.player.player_lifes == 0 or self.player2.player_lifes == 0:
+                next_players = self.calculate_next_players()
+                winner_id, winner_name = self.calculate_winner()
+                self.next_players_label.setText(f"Sledeci igraci: {next_players[0][1]} i {next_players[1][1]}")
+                self.tournament_window.round_done(winner_id, winner_name)
+
+
+    """Funkcija vraca sledeca 2 playera [(player1_id, player1_name), (player2_id, player2_name)]"""
+    def calculate_next_players(self):
+        next_players = []
+        for player in self.list_of_player_names:
+            player1_name = self.player1_name_label.text()
+            player2_name = self.player2_name_label.text()
+            if player[1].capitalize() == player1_name or player[1].capitalize() == player2_name:
+                self.list_of_player_names.remove(player)
+                continue
+            else:
+                next_players.append((player))
+
+        return next_players
+
 
 
     def reset_ghosts(self):
@@ -613,7 +645,7 @@ class Board(QFrame):
         super().__init__(parent)
 
         self.resize(self.board_width, self.board_height)
-        # 0 => zid    1=> tunel  2=> Coin  3=> Eat_Ghost 4=> SpecialPowers
+        # 0 => zid    1=> tunel  2=> Coin  3=> Eat_Ghost
         self.board = [
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 3, 2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 0, 2, 2, 4, 0],
@@ -648,6 +680,7 @@ class Board(QFrame):
                 return True
         else:
             return False
+
 
     def is_eat_ghosts_power(self, x, y):
         if (x % 40 == 0 and y % 40 == 0):
