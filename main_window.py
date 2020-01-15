@@ -130,7 +130,7 @@ class MainWindow(QMainWindow):
             self.label_for_player_lifes.move(210, 0)
             self.label_for_player_lifes.resize(80, 40)
 
-            self.label_for_player2_lifes = QLabel(self)
+
             self.label_for_player2_lifes.setPixmap(QPixmap('images/TwoLife' + str(self.player2.player_id) + '.png'))
             self.label_for_player2_lifes.move(720, 0)
             self.label_for_player2_lifes.resize(80, 40)
@@ -191,12 +191,12 @@ class MainWindow(QMainWindow):
             self.label_for_coin_display = QLabel(self)
             self.label_for_player_lifes = QLabel(self)
             self.grave_label = QLabel(self)
-            self.player = player.Player(self.player_label, self.map, self.label_for_player_score, self.label_for_player_lifes,self.grave_label,(40,560), player_id, player_name)
+            self.player = player.Player(self.player_label, self.map, self.label_for_player_score, self.label_for_player_lifes,self.grave_label,(40,560), player_id, player_name,0.07)
 
-            self.ghost1 = enemy.Enemy(self.red_ghost, self.map, self.player, (18 * 40, 1 * 40), 1, self.red_ghost,(360, 400))  # red ghost
-            self.ghost2 = enemy.Enemy(self.orange_ghost, self.map, self.player, (1 * 40, 1 * 40), 2, self.red_ghost,(440, 360))  # orange ghost
-            self.ghost3 = enemy.Enemy(self.yellow_ghost, self.map, self.player, (1 * 40, 13 * 40), 3, self.red_ghost,(440, 400))  # yellow ghost
-            self.ghost4 = enemy.Enemy(self.blue_ghost, self.map, self.player, (18 * 40, 13 * 40), 4, self.red_ghost,(360, 360))  # blue ghost
+            self.ghost1 = enemy.Enemy(self.red_ghost, self.map, self.player,None, (18 * 40, 1 * 40), 1, self.red_ghost,(360, 400))  # red ghost
+            self.ghost2 = enemy.Enemy(self.orange_ghost, self.map, self.player, None,  (1 * 40, 1 * 40), 2, self.red_ghost,(440, 360))  # orange ghost
+            self.ghost3 = enemy.Enemy(self.yellow_ghost, self.map, self.player, None,  (1 * 40, 13 * 40), 3, self.red_ghost,(440, 400))  # yellow ghost
+            self.ghost4 = enemy.Enemy(self.blue_ghost, self.map, self.player, None, (18 * 40, 13 * 40), 4, self.red_ghost,(360, 360))  # blue ghost
 
         elif number_of_elements in (2,4,8): # MULTIPLAYER ili TOURNAMENT
             player1_id, player1_name = list_of_names[0]
@@ -205,7 +205,7 @@ class MainWindow(QMainWindow):
             self.label_for_coin_display = QLabel(self)
             self.label_for_player_lifes = QLabel(self)
             self.grave_label = QLabel(self)
-            self.player = player.Player(self.player_label, self.map, self.label_for_player_score, self.label_for_player_lifes, self.grave_label,(40,560), player1_id, player1_name)
+            self.player = player.Player(self.player_label, self.map, self.label_for_player_score, self.label_for_player_lifes, self.grave_label,(40,560), player1_id, player1_name,0.07)
 
             player2_id, player2_name = list_of_names[1]
             self.player2_label = QLabel(self)
@@ -214,12 +214,11 @@ class MainWindow(QMainWindow):
             self.label_for_player2_lifes = QLabel(self)
             self.grave_label_for_player2 = QLabel(self)
 
-            self.player2 = player.Player(self.player2_label, self.map, self.label_for_player2_score,self.label_for_player2_lifes, self.grave_label_for_player2,(720,560), player2_id, player2_name)
-
-            self.ghost1 = enemy.Enemy(self.red_ghost, self.map, self.player, (18 * 40, 1 * 40), 1, self.red_ghost,(360, 400))  # red ghost
-            self.ghost2 = enemy.Enemy(self.orange_ghost, self.map, self.player2, (1 * 40, 1 * 40), 2, self.red_ghost,(440, 360))  # orange ghost
-            self.ghost3 = enemy.Enemy(self.yellow_ghost, self.map, self.player2, (1 * 40, 13 * 40), 3, self.red_ghost,(440, 400))  # yellow ghost
-            self.ghost4 = enemy.Enemy(self.blue_ghost, self.map, self.player, (18 * 40, 13 * 40), 4, self.red_ghost,(360, 360))  # blue ghost
+            self.player2 = player.Player(self.player2_label, self.map, self.label_for_player2_score,self.label_for_player2_lifes, self.grave_label_for_player2,(720,560), player2_id, player2_name,0.07)
+            self.ghost1 = enemy.Enemy(self.red_ghost, self.map, self.player, self.player2, (18 * 40, 1 * 40), 1, self.red_ghost,(360, 400))  # red ghost
+            self.ghost2 = enemy.Enemy(self.orange_ghost, self.map, self.player2, self.player ,(1 * 40, 1 * 40), 2, self.red_ghost,(440, 360))  # orange ghost
+            self.ghost3 = enemy.Enemy(self.yellow_ghost, self.map, self.player2, self.player, (1 * 40, 13 * 40), 3, self.red_ghost,(440, 400))  # yellow ghost
+            self.ghost4 = enemy.Enemy(self.blue_ghost, self.map, self.player, self.player2, (18 * 40, 13 * 40), 4, self.red_ghost,(360, 360))  # blue ghost
 
     def drawPlayer(self):
         self.player_label.setPixmap(QPixmap("images/PacManUpEat"+str(self.player.player_id)+".png"))
@@ -585,7 +584,7 @@ class MainWindow(QMainWindow):
         next_players = []
 
         if self.play_mode in (2,4,8):
-            if self.player.player_lifes == 0 or self.player2.player_lifes == 0:
+            if self.player.player_lifes == -1 or self.player2.player_lifes == -1:
                 #self.winner_label.setText(self.calculate_winner())
                 winner_id, winner_name = self.calculate_winner()
                 self.winner_label.setText(f"{winner_name} je pobednik!")

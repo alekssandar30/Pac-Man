@@ -14,12 +14,13 @@ Reset = False
 
 class Enemy(QLabel):
 
-    def __init__(self, label, map, player, scatter_target, ghost_id, red_ghost_label, start_position):
+    def __init__(self, label, map, player, player2, scatter_target, ghost_id, red_ghost_label, start_position):
         super().__init__()
 
         self.label = label
         self.map = map
         self.player = player
+        self.player2 = player2
         self.red_ghost = red_ghost_label
         self.scatter_target = scatter_target # prosledjen Tuple, potrebno je ih pomnoziti sa 40 da bi se dobila pozicija na mapi
         self.ghost_id = ghost_id # ghost_id odredjuje koji kretajuci pattern prati
@@ -46,6 +47,7 @@ class Enemy(QLabel):
         self.currentProcess = None
         self.eated = False
         self.stop_movement = False
+        self.ghost_speed = 0.06
 
 
 
@@ -58,12 +60,17 @@ class Enemy(QLabel):
                 self.check_if_zero_point_passed()
         while self.mode == 1 and not self.stop_movement: # while chase mode
             self.move_one_to_target(self.calculate_chase_position(self.player.return_current_player_position(), self.ghost_id))
-            if self.check_if_touch_happened():
+            touch_happened = self.check_if_touch_happened() # Vraca tuple, (True, 1) broj posle True oznacava koji player je dodirnut
+            if touch_happened[0]:
                 if not decreased_player_life:
-                    self.player.decrease_player_lifes()
+                    if touch_happened[1] == 1: # uhvatio je prvog igraca
+                        self.player.decrease_player_lifes()
+                    elif touch_happened[1] == 2: # uhvatio je drugog igraca
+                        self.player2.decrease_player_lifes()
+                    elif touch_happened[1] == 3: # uhvatio oba igraca
+                        self.player.decrease_player_lifes()
+                        self.player2.decrease_player_lifes()
                     decreased_player_life = True
-
-            #self.check_if_pacman_catched()
 
     def move_scatter(self): # ide u svoj ugao
         self.stop_movement = False
@@ -73,9 +80,16 @@ class Enemy(QLabel):
                 self.move_one_to_target((self.zero_point[0], self.zero_point[1]))
                 self.check_if_zero_point_passed()
         while self.mode == 0 and not self.stop_movement:
-            if self.check_if_touch_happened():
+            touch_happened = self.check_if_touch_happened()  # Vraca tuple, (True, 1) broj posle True oznacava koji player je dodirnut
+            if touch_happened[0]:
                 if not decreased_player_life:
-                    self.player.decrease_player_lifes()
+                    if touch_happened[1] == 1:  # uhvatio je prvog igraca
+                        self.player.decrease_player_lifes()
+                    elif touch_happened[1] == 2:  # uhvatio je drugog igraca
+                        self.player2.decrease_player_lifes()
+                    elif touch_happened[1] == 3:  # uhvatio oba igraca
+                        self.player.decrease_player_lifes()
+                        self.player2.decrease_player_lifes()
                     decreased_player_life = True
             else:
                 self.move_one_to_target((self.scatter_target[0], self.scatter_target[1]))
@@ -89,13 +103,21 @@ class Enemy(QLabel):
                 self.move_one_to_target((self.zero_point[0], self.zero_point[1]))
                 self.check_if_zero_point_passed()
         while self.mode == 2 and not self.stop_movement:
-            if self.check_if_touch_happened():
+            touch_happened = self.check_if_touch_happened()
+            if touch_happened[0]:
                 if increased == False:
+                    if touch_happened[1] == 1:  # uhvatio je prvog igraca
+                        self.player.increase_points(200)
+                    elif touch_happened[1] == 2:  # uhvatio je drugog igraca
+                        self.player2.increase_points(200)
+                    elif touch_happened[1] == 3:  # uhvati
+                        self.player.increase_points(200)
+                        self.player2.increase_points(200)
                     #self.mode = 3 # pojeden je ghost
                     self.eaten = True
                     self.eated = True
                     self.reborned = False
-                    self.player.increase_points(200) # povecaj poene playera za 200
+                     # povecaj poene playera za 200
                     print('INCREASED')
                     increased = True
 
@@ -227,12 +249,6 @@ class Enemy(QLabel):
         if self.label.x() == self.start_position[0] and self.label.y() == self.start_position[1]:
             return True
 
-    def check_if_pacman_catched(self):
-        pacman_position = self.player.return_current_player_position()
-        if self.label.x() == pacman_position[0] and self.label.y() == pacman_position[1]:
-            self.mode = 0 # treba da umanji pacmanov broj zivota i da ga resetuje na poziciju
-            print('UHVATIO PACMANA')
-
     def move_one_180(self):
         if self.previous_direction == 0:  # DOLE
             self.move_to_direction(2)
@@ -264,34 +280,34 @@ class Enemy(QLabel):
                 self.change_look_of_ghost(1, 'Down')
                 self.label.move(self.label.x(), self.label.y() + 20)
                 #QGuiApplication.processEvents()
-                sleep(0.06)
+                sleep(self.ghost_speed)
                 self.change_look_of_ghost(2, 'Down')
                 #QGuiApplication.processEvents()
-                sleep(0.06)
+                sleep(self.ghost_speed)
             elif direction == 1: # LEVO
                 self.change_look_of_ghost(1, 'Left')
                 self.label.move(self.label.x() - 20, self.label.y())
                 # QGuiApplication.processEvents()
-                sleep(0.06)
+                sleep(self.ghost_speed)
                 self.change_look_of_ghost(2, 'Left')
                 # QGuiApplication.processEvents()
-                sleep(0.06)
+                sleep(self.ghost_speed)
             elif direction == 2: # GORE
                 self.change_look_of_ghost(1, 'Up')
                 self.label.move(self.label.x(), self.label.y() - 20)
                 # QGuiApplication.processEvents()
-                sleep(0.06)
+                sleep(self.ghost_speed)
                 self.change_look_of_ghost(2, 'Up')
                 # QGuiApplication.processEvents()
-                sleep(0.06)
+                sleep(self.ghost_speed)
             elif direction == 3: # DESNO
                 self.change_look_of_ghost(1, 'Right')
                 self.label.move(self.label.x() + 20, self.label.y())
                 # QGuiApplication.processEvents()
-                sleep(0.06)
+                sleep(self.ghost_speed)
                 self.change_look_of_ghost(2, 'Right')
                 # QGuiApplication.processEvents()
-                sleep(0.06)
+                sleep(self.ghost_speed)
 
     def change_look_of_ghost(self, picture_num, direction): # eye_direction -> Left, Right, Down, Up
         if picture_num == 1:
@@ -355,6 +371,8 @@ class Enemy(QLabel):
 
     def check_if_player_activated_eat_ghost_power(self):
         current_eated = self.player.return_num_of_eated_ghost_powers_by_player()
+        if self.player2 != None:
+            current_eated += self.player2.return_num_of_eated_ghost_powers_by_player()
         if self.previous_eated_num_of_eat_ghost_powers_by_player < current_eated:
             self.previous_eated_num_of_eat_ghost_powers_by_player = current_eated
             return True
@@ -363,23 +381,48 @@ class Enemy(QLabel):
 
     def check_if_touch_happened(self):
         #while True:
+            touched_ghosts = 0
             position = self.player.return_current_player_position()
+            if self.player2 != None:
+                position2 = self.player2.return_current_player_position()
             if self.previous_direction == 0: # Dole
                 if self.label.x() == position[0]  and abs((self.label.y() + 40) - position[1]) < 41:
                    # print('DOLE NASO TE ACOOOO AUUA')
-                    return True
+                   touched_ghosts = 1
+                if self.player2 != None:
+                    if self.label.x() == position2[0] and abs((self.label.y() + 40) - position2[1]) < 41:
+                        touched_ghosts += 2
+                if touched_ghosts != 0:
+                    return (True, touched_ghosts)
             elif self.previous_direction == 1: # LEVO
                 if abs((self.label.x() - 40) - position[0]) < 41 and self.label.y() == position[1]:
                     #print('LEVO NASO TE ACOOOO AUUA')
-                    return True
+                    touched_ghosts = 1
+                if self.player2 != None:
+                    if abs((self.label.x() - 40) - position2[0]) < 41 and self.label.y() == position2[1]:
+                        touched_ghosts += 2
+                if touched_ghosts != 0:
+                    return (True, touched_ghosts)
             elif self.previous_direction == 2: # GORE
                 if self.label.x() == position[0] and abs((self.label.y() - 40) - position[1]) < 41:
                     #print('GORE NASO TE ACOOOO AUUA')
-                    return True
+                    touched_ghosts = 1
+                if self.player2 != None:
+                    if self.label.x() == position2[0] and abs((self.label.y() - 40) - position2[1]) < 41:
+                        touched_ghosts += 2
+                if touched_ghosts != 0:
+                    return (True, touched_ghosts)
             elif self.previous_direction == 3: # DESNO
                 if abs((self.label.x() + 40) - position[0]) < 41 and self.label.y() == position[1]:
                     #print('DESNO NASO TE ACOOOO AUUA')
-                    return True
+                    touched_ghosts = 1
+                if self.player2 != None:
+                    if abs((self.label.x() + 40) - position2[0]) < 41 and self.label.y() == position2[1]:
+                        touched_ghosts += 2
+                if touched_ghosts != 0:
+                    return (True, touched_ghosts)
+
+            return (False,'')
             #return
 
     def reset_enemy(self):
