@@ -7,7 +7,7 @@ import worker
 from time import sleep
 from threading import Thread
 from multiprocessing import Process
-
+from key_notifier import KeyNotifier
 
 """
 centralni widget u MainWindow je mapa(matrica 16x16) = klasa Board
@@ -62,6 +62,10 @@ class MainWindow(QMainWindow):
         self.draw_ghosts()
         self.initPlayerScore()
         self.start_enemies()
+
+        self.key_notifier = KeyNotifier()
+        self.key_notifier.key_signal.connect(self.__update_position__)
+        self.key_notifier.start()
 
         self.show()
 
@@ -132,7 +136,6 @@ class MainWindow(QMainWindow):
             self.label_for_player2_lifes.resize(80, 40)
 
 
-
         self.title_label.setStyleSheet("font: 20pt Comic Sans MS; color: white")
         self.title_label.move(350,5)
         self.title_label.resize(150, 30)
@@ -177,7 +180,6 @@ class MainWindow(QMainWindow):
         self.countdown_label.setText('')
         self.player.in_reset = False
 
-
     def instantiate_players_from_list(self, list_of_names):
         number_of_elements = len(list_of_names)
         if number_of_elements == 1:  # SINGLEPLAYER
@@ -219,7 +221,6 @@ class MainWindow(QMainWindow):
             self.ghost3 = enemy.Enemy(self.yellow_ghost, self.map, self.player2, (1 * 40, 13 * 40), 3, self.red_ghost,(440, 400))  # yellow ghost
             self.ghost4 = enemy.Enemy(self.blue_ghost, self.map, self.player, (18 * 40, 13 * 40), 4, self.red_ghost,(360, 360))  # blue ghost
 
-
     def drawPlayer(self):
         self.player_label.setPixmap(QPixmap("images/PacManUpEat"+str(self.player.player_id)+".png"))
         self.player_label.resize(40,40)
@@ -231,7 +232,6 @@ class MainWindow(QMainWindow):
             self.player2_label.resize(40, 40)
             self.player2_label.setStyleSheet("background:transparent")
             self.player2_label.move(720, 560)
-
 
     #iscrtavanje protivnika
     def draw_ghosts(self):
@@ -269,36 +269,47 @@ class MainWindow(QMainWindow):
             self.label_for_player2_score.setStyleSheet("font: 19pt Comic Sans MS; color: white")
             self.label_for_player2_score.move(640, 5)
 
-
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Left:
-            self.pLeft = Thread(target=self.player.movePlayerLeft(self.player_label))
-            #w = worker.Worker(self.player.movePlayerLeft(self.player_label))
-        elif event.key() == Qt.Key_Right:
-            self.pRight = Thread(target=self.player.movePlayerRight(self.player_label))
-            #w = worker.Worker(self.player.movePlayerRight(self.player_label))
-        elif event.key() == Qt.Key_Up:
-            self.pUp = Thread(target=self.player.movePlayerUp(self.player_label))
-            #w = worker.Worker(self.player.movePlayerUp(self.player_label))
-        elif event.key() == Qt.Key_Down:
-            self.pDown = Thread(target=self.player.movePlayerDown(self.player_label))
-            #w = worker.Worker(self.player.movePlayerDown(self.player_label))
+        self.key_notifier.add_key(event.key())
 
-        if event.key() == Qt.Key_A:
-            self.pLeft2 = Thread(target=self.player2.movePlayerLeft(self.player2_label))
-            #w = worker.Worker(self.player2.movePlayerLeft(self.player2_label))
-        elif event.key() == Qt.Key_D:
-            self.pRight2 = Thread(target=self.player2.movePlayerRight(self.player2_label))
-            #w = worker.Worker(self.player2.movePlayerRight(self.player2_label))
-        elif event.key() == Qt.Key_W:
+    def __update_position__(self, key):
+        if key == Qt.Key_Left:
+            self.player1_thread = Thread(target=self.player.movePlayerLeft, args=[self.player_label,])
+            self.player1_thread.start()
+            # w = worker.Worker(self.player.movePlayerLeft(self.player_label))
+        elif key == Qt.Key_Right:
+            self.player1_thread = Thread(target=self.player.movePlayerRight, args=[self.player_label,])
+            self.player1_thread.start()
+            # w = worker.Worker(self.player.movePlayerRight(self.player_label))
+        elif key == Qt.Key_Up:
+            self.player1_thread = Thread(target=self.player.movePlayerUp, args=[self.player_label,])
+            self.player1_thread.start()
+            # w = worker.Worker(self.player.movePlayerUp(self.player_label))
+        elif key == Qt.Key_Down:
+            self.player1_thread = Thread(target=self.player.movePlayerDown, args=[self.player_label,])
+            self.player1_thread.start()
+            # w = worker.Worker(self.player.movePlayerDown(self.player_label))
+
+        if key == Qt.Key_A:
+            self.player2_thread = Thread(target=self.player2.movePlayerLeft, args=[self.player2_label,])
+            self.player2_thread.start()
+            # w = worker.Worker(self.player2.movePlayerLeft(self.player2_label))
+        elif key == Qt.Key_D:
+            self.player2_thread = Thread(target=self.player2.movePlayerRight, args=[self.player2_label,])
+            self.player2_thread.start()
+            # w = worker.Worker(self.player2.movePlayerRight(self.player2_label))
+        elif key == Qt.Key_W:
             print('w is pressed')
-            self.pUp2 = Thread(target=self.player2.movePlayerUp(self.player2_label))
-            #w = worker.Worker(self.player2.movePlayerUp(self.player2_label))
-        elif event.key() == Qt.Key_S:
-            self.pDown2 = Thread(target=self.player2.movePlayerDown(self.player2_label))
-            #w = worker.Worker(self.player2.movePlayerDown(self.player2_label))
+            self.player2_thread = Thread(target=self.player2.movePlayerUp, args=[self.player2_label,])
+            self.player2_thread.start()
+            # w = worker.Worker(self.player2.movePlayerUp(self.player2_label))
+        elif key == Qt.Key_S:
+            self.player2_thread = Thread(target=self.player2.movePlayerDown, args=[self.player2_label,])
+            self.player2_thread.start()
+            # w = worker.Worker(self.player2.movePlayerDown(self.player2_label))
 
-        #self.threadpool.start(w)
+    def closeEvent(self, event):
+        self.key_notifier.die()
 
     """Funkcija ce se pozvati kada jedan player izgubi sve zivote
        Vraca tuple (winner_id, winner_name)

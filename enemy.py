@@ -327,6 +327,7 @@ class Enemy(QLabel):
 
     def switch_mode(self):
         self.stop_movement = True
+
         if self.mode == 0:
              #multiprocessing.Process(target=self.move_scatter, args=[]).start()
             self.currentProcess = Thread(target=self.move_scatter)

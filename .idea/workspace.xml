@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fca91065-547a-423f-8aee-522caebf1cec" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/key_notifier.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/PacMan.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/PacMan.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/enemy.py" beforeDir="false" afterPath="$PROJECT_DIR$/enemy.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main_window.py" beforeDir="false" afterPath="$PROJECT_DIR$/main_window.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/start_menu.py" beforeDir="false" afterPath="$PROJECT_DIR$/start_menu.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -12,14 +15,21 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/enemy.py" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/start_menu.py" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/main_window.py" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/player.py" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/main_window.py" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/enemy.py" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="ProjectId" id="1TvAJ25M3KWEyPfBjTsNF2cBQ2b" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -70,9 +80,9 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
+      <option name="SDK_HOME" value="C:\Users\Z51\PycharmProjects\untitled4\venv\Scripts\python.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
