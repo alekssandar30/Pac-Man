@@ -10,7 +10,6 @@ from random import randint
 from threading import Thread
 import multiprocessing
 
-Reset = False
 
 class Enemy(QLabel):
 
@@ -47,8 +46,7 @@ class Enemy(QLabel):
         self.currentProcess = None
         self.eated = False
         self.stop_movement = False
-        self.ghost_speed = 0.06
-
+        self.ghost_speed = 0.07
 
 
     def move_chase(self): # ide za pacmanom
@@ -60,6 +58,10 @@ class Enemy(QLabel):
                 self.check_if_zero_point_passed()
         while self.mode == 1 and not self.stop_movement: # while chase mode
             self.move_one_to_target(self.calculate_chase_position(self.player.return_current_player_position(), self.ghost_id))
+            if self.player.ghost_speed_up == True:
+                self.ghost_speed = 0.06
+            else:
+                self.ghost_speed = 0.07
             if self.check_if_touch_happened():
                 if not decreased_player_life:
                     if self.player.player_eated == True:  # uhvatio je prvog igraca
@@ -77,6 +79,10 @@ class Enemy(QLabel):
                 self.move_one_to_target((self.zero_point[0], self.zero_point[1]))
                 self.check_if_zero_point_passed()
         while self.mode == 0 and not self.stop_movement:
+            if self.player.ghost_speed_up == True:
+                self.ghost_speed = 0.06
+            else:
+                self.ghost_speed = 0.07
             if self.check_if_touch_happened():
                 if not decreased_player_life:
                     if self.player.player_eated == True:  # uhvatio je prvog igraca
@@ -90,6 +96,7 @@ class Enemy(QLabel):
 
 
     def move_frightened(self): # okrene se za 180 stepeni i random krece da se pomera
+        self.ghost_speed = 0.09
         self.stop_movement = False
         increased = False
         if self.zero_point_passed == False:
@@ -123,7 +130,7 @@ class Enemy(QLabel):
                 self.eaten = False
                 self.eated = False
                 self.zero_point_passed = False
-                self.ghost_speed = 0.06
+                self.ghost_speed = 0.07
                 #self.mode = 0
                 #print('prev was in SCATTER pa mora u SCATTER')
                 #self.switch_mode()
@@ -302,7 +309,7 @@ class Enemy(QLabel):
     def change_look_of_ghost(self, picture_num, direction): # eye_direction -> Left, Right, Down, Up
         if picture_num == 1:
             if self.activated_frightened or self.mode == 2: # Moze se pojesti, tj uzima plavi skin
-                self.ghost_speed = 0.10
+                #self.ghost_speed = 0.10
                 if self.activated_warning_skin == True:
                     if self.next_warning_skin1 == False:
                         self.label.setPixmap(QPixmap('images/GhostDeadWhite1.png'))
@@ -315,11 +322,11 @@ class Enemy(QLabel):
             elif self.eaten:
                 self.label.setPixmap(QPixmap("images/Eyes"+direction+".png"))
             else:
-                self.ghost_speed = 0.06
+                #self.ghost_speed = 0.06
                 self.label.setPixmap(QPixmap("images/Ghost"+str(self.ghost_id)+str(direction)+"1.png"))
         elif picture_num == 2:
             if self.activated_frightened or self.mode == 2: # Moze se pojesti, tj uzima plavi skin
-                self.ghost_speed = 0.10
+                #self.ghost_speed = 0.10
                 if self.activated_warning_skin == True:
                     if self.next_warning_skin2 == False:
                         self.label.setPixmap(QPixmap('images/GhostDeadWhite2.png'))
@@ -332,12 +339,11 @@ class Enemy(QLabel):
             elif self.eaten:
                 self.label.setPixmap(QPixmap("images/Eyes"+direction+".png"))
             else:
-                self.ghost_speed = 0.06
+                #self.ghost_speed = 0.06
                 self.label.setPixmap(QPixmap("images/Ghost"+str(self.ghost_id)+str(direction)+"2.png"))
 
     def switch_mode(self):
         self.stop_movement = True
-
         if self.mode == 0:
              #multiprocessing.Process(target=self.move_scatter, args=[]).start()
             self.currentProcess = Thread(target=self.move_scatter)

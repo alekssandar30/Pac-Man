@@ -155,9 +155,9 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main_window.py</url>
-          <line>355</line>
-          <option name="timeStamp" value="1" />
+          <url>file://$PROJECT_DIR$/enemy.py</url>
+          <line>1</line>
+          <option name="timeStamp" value="9" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

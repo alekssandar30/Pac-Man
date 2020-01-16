@@ -21,6 +21,7 @@ class MainWindow(QMainWindow):
 
         self.width = 800
         self.height = 640
+
         self.map = Board(self)
         self.list_of_player_names = list_of_names
         self.play_mode = len(list_of_names)  # 1 - Singleplayer, 2 - Multiplayer, 4 - Tornament w 4 players, 8- Tournament w 8 players
@@ -44,27 +45,30 @@ class MainWindow(QMainWindow):
         self.restart_btn = QPushButton('Play', self)
 
         # instanciraj igraca i protivnike
-        self.instantiate_players_from_list(self.list_of_player_names)  # Kod turnira treba smenjivati id i naziv)
+          # Kod turnira treba smenjivati id i naziv)
 
         ## Special power
-        self.niz_lokacija_special_power = [(2, 5), (18, 1), (6, 12), (2, 5), (10, 10), (18, 8)]
         self.label_super_power = QLabel(self)
+        self.niz_lokacija_special_power = [(2, 5), (18, 1), (6, 12), (2, 5), (10, 10), (18, 8)]
         self.movie = QMovie('images/SpecialPowers.gif')
         self.label_super_power.move(self.niz_lokacija_special_power[0][0] * 40,
                                     self.niz_lokacija_special_power[0][1] * 40)
         self.label_super_power.resize(40, 40)
         self.label_super_power.setMovie(self.movie)
         self.movie.start()
+        self.map.board[self.niz_lokacija_special_power[0][1]][self.niz_lokacija_special_power[0][0]] = 4
 
-        special_power_thread = Thread(target=self.changeSpecialPowerLocation, args=[30,12])  # Thread koji menja pozicije, svake 30s generise superPower, i ostavlja ju je vidljivo 12s
+        special_power_thread = Thread(target=self.changeSpecialPowerLocation, args=[3,1])  # Thread koji menja pozicije, svake 30s generise superPower, i ostavlja ju je vidljivo 12s
         special_power_thread.daemon = True  # Da se thread gasi zajedno sa gasenjem glavnog threada (posle zatvaranja prozora)
         special_power_thread.start()
+
+        self.instantiate_players_from_list(self.list_of_player_names)
 
         self.init_ui()
         self.drawPlayer()
         self.draw_ghosts()
         self.initPlayerScore()
-        self.start_enemies()
+        #self.start_enemies()
 
         self.key_notifier = KeyNotifier()
         self.key_notifier.key_signal.connect(self.__update_position__)
@@ -202,7 +206,7 @@ class MainWindow(QMainWindow):
             self.grave_label = QLabel(self)
             self.player = player.Player(self.player_label, self.map, self.label_for_player_score,
                                         self.label_for_player_lifes, self.grave_label, (40, 560), player_id,
-                                        player_name, 0.07)
+                                        player_name, 0.07, self.label_super_power)
 
             self.ghost1 = enemy.Enemy(self.red_ghost, self.map, self.player, None, (18 * 40, 1 * 40), 1, self.red_ghost,
                                       (360, 400))  # red ghost
@@ -222,7 +226,7 @@ class MainWindow(QMainWindow):
             self.grave_label = QLabel(self)
             self.player = player.Player(self.player_label, self.map, self.label_for_player_score,
                                         self.label_for_player_lifes, self.grave_label, (40, 560), player1_id,
-                                        player1_name, 0.07)
+                                        player1_name, 0.07, self.label_super_power)
 
             player2_id, player2_name = list_of_names[1]
             self.player2_label = QLabel(self)
@@ -231,7 +235,7 @@ class MainWindow(QMainWindow):
             self.label_for_player2_lifes = QLabel(self)
             self.grave_label_for_player2 = QLabel(self)
 
-            self.player2 = player.Player(self.player2_label, self.map, self.label_for_player2_score,self.label_for_player2_lifes, self.grave_label_for_player2, (720, 560),player2_id, player2_name, 0.07)
+            self.player2 = player.Player(self.player2_label, self.map, self.label_for_player2_score,self.label_for_player2_lifes, self.grave_label_for_player2, (720, 560),player2_id, player2_name, 0.07, self.label_super_power)
             self.ghost1 = enemy.Enemy(self.red_ghost, self.map, self.player, self.player2, (18 * 40, 1 * 40), 1,
                                       self.red_ghost, (360, 400))  # red ghost
             self.ghost2 = enemy.Enemy(self.orange_ghost, self.map, self.player2, self.player, (1 * 40, 1 * 40), 2,
@@ -711,36 +715,44 @@ class MainWindow(QMainWindow):
 ########################### POWERS FUNCTIONS ###################################################
 
     def changeSpecialPowerLocation(self, showed_time, hidden_time):  # Funkcija prima showed_time koja nam zadaje za koliko ce sekundi da se pojavi special power, a hidden_time da posle koliko sekundi ce se sakriti
-        # Dodati eaten funkciju -> da ceka jos dodatno
         showing_time = showed_time
         hidding_time = hidden_time
         first_time = True
+        there_was_coin = False
         i = 1
         while True:
             if first_time:
                 self.hideSpecialPower(hidding_time)
+                self.map.board[self.niz_lokacija_special_power[0][1]][self.niz_lokacija_special_power[0][0]] = 2
                 first_time = False
             else:
+                if self.map.is_coin(self.niz_lokacija_special_power[i][0] * 40, self.niz_lokacija_special_power[i][1] * 40):
+                    there_was_coin = True
+                else:
+                    there_was_coin = False
+
                 sleep(showing_time)
                 if self.label_super_power.isHidden():
                     self.label_super_power.setHidden(False)
+                    self.map.board[self.niz_lokacija_special_power[i][1]][self.niz_lokacija_special_power[i][0]] = 4
+                    if self.player_label.x() == self.niz_lokacija_special_power[i][0] * 40 and self.player_label.y() == self.niz_lokacija_special_power[i][1] * 40 :
+                        self.label_super_power.setHidden(True)
 
-                x_coord = self.niz_lokacija_special_power[i][0] * 40
-                y_coord = self.niz_lokacija_special_power[i][1] * 40
-                self.map[y_coord // 40][x_coord // 40] = 4
-                self.label_super_power.move(self.niz_lokacija_special_power[i][0] * 40,
-                                            self.niz_lokacija_special_power[i][1] * 40)
+                self.label_super_power.move(self.niz_lokacija_special_power[i][0] * 40, self.niz_lokacija_special_power[i][1] * 40)
 
-                i += 1
-                if i == 6:
-                    i = 0
                 self.hideSpecialPower(hidding_time)
+                if there_was_coin:
+                    self.map.board[self.niz_lokacija_special_power[i][1]][self.niz_lokacija_special_power[i][0]] = 2
+                i += 1
+                print ('I>>',i)
+                if i == 5:
+                    i = 0
 
     def hideSpecialPower(self, hidding_time):
-        # while True:
         sleep(hidding_time)
-        # if not_eaten:
         self.label_super_power.setHidden(True)
+
+
 
 ################################################################################################
 
@@ -766,7 +778,7 @@ class Board(QFrame):
         # 0 => zid    1=> tunel  2=> Coin  3=> Eat_Ghost
         self.board = [
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 3, 2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 0, 2, 2, 4, 0],
+            [0, 3, 2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 0, 2, 2, 2, 0],
             [0, 2, 0, 2, 2, 2, 0, 0, 0, 2, 2, 2, 0, 0, 2, 2, 2, 0, 2, 0],
             [0, 2, 2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 2, 0, 2, 0, 3, 2, 2, 0],
             [0, 0, 2, 0, 0, 2, 2, 0, 2, 3, 0, 2, 2, 2, 2, 2, 0, 2, 2, 0],
@@ -804,6 +816,15 @@ class Board(QFrame):
     def is_eat_ghosts_power(self, x, y):
         if (x % 40 == 0 and y % 40 == 0):
             if self.board[y // 40][x // 40] == 3:
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def is_deus_ex_machina_power(self, x, y):
+        if (x % 40 == 0 and y % 40 == 0):
+            if self.board[y // 40][x // 40] == 4:
                 return True
             else:
                 return False

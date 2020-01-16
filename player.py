@@ -2,11 +2,13 @@
 from PyQt5.QtWidgets import QWidget, QLabel
 from PyQt5.QtGui import QPixmap, QGuiApplication
 from time import sleep
-import enemy
+from enemy import Enemy
+from random import randint
+from threading import Thread
 
 
 class Player(QLabel):
-    def __init__(self, label, map, label_for_player_score, label_for_player_lifes, dead_label, start_position, player_id, player_name, player_speed):
+    def __init__(self, label, map, label_for_player_score, label_for_player_lifes, dead_label, start_position, player_id, player_name, player_speed, deus_ex_label):
         super().__init__()
         self.player_id = player_id
         self.player_name = player_name
@@ -28,6 +30,9 @@ class Player(QLabel):
         self.start_position = start_position
         self.player_speed = player_speed
         self.player_eated = False
+        self.double_points_from_ex_machina = False
+        self.deus_ex_label = deus_ex_label
+        self.ghost_speed_up = False
 
 
 
@@ -67,6 +72,9 @@ class Player(QLabel):
                                     # ovde ce da se ubrza pacman i da jede protivnike
                                     self.num_of_eated_ghost_powers += 1
                                     self.map.draw_black_background(label.x(), label.y() - 20)
+                                elif self.map.is_deus_ex_machina_power(label.x(), label.y() - 20):
+                                    self.map.draw_black_background(label.x(), label.y() - 20)
+                                    self.start_deus_ex_thread()
                             QGuiApplication.processEvents()
                             sleep(self.player_speed)
                             label.setPixmap(QPixmap("images/PacManUpClose"+str(self.player_id)+".png"))
@@ -100,6 +108,9 @@ class Player(QLabel):
                                     # ovde ce da se ubrza pacman i da jede protivnike
                                     self.num_of_eated_ghost_powers += 1
                                     self.map.draw_black_background(label.x(), label.y() + 20)
+                                elif self.map.is_deus_ex_machina_power(label.x(), label.y() + 20):
+                                    self.map.draw_black_background(label.x(), label.y() + 20)
+                                    self.start_deus_ex_thread()
                             QGuiApplication.processEvents()
                             sleep(self.player_speed)
                             label.setPixmap(QPixmap("images/PacManDownClose"+str(self.player_id)+".png"))
@@ -147,6 +158,9 @@ class Player(QLabel):
                             # ovde ce da se ubrza pacman i da jede protivnike
                             self.num_of_eated_ghost_powers += 1
                             self.map.draw_black_background(label.x() - 20, label.y())
+                        elif self.map.is_deus_ex_machina_power(label.x() - 20, label.y()):
+                            self.map.draw_black_background(label.x() - 20, label.y())
+                            self.start_deus_ex_thread()
                     QGuiApplication.processEvents()
                     sleep(self.player_speed)
                     if (self.provera == 2):
@@ -198,6 +212,8 @@ class Player(QLabel):
                                     # ovde ce da se ubrza pacman i da jede protivnike
                                     self.num_of_eated_ghost_powers += 1
                                     self.map.draw_black_background(label.x(), label.y() - 20)
+                                elif self.map.is_deus_ex_machina_power(label.x(), label.y() - 20):
+                                    self.start_deus_ex_thread()
                             QGuiApplication.processEvents()
                             sleep(self.player_speed)
                             label.setPixmap(QPixmap("images/PacManUpClose"+str(self.player_id)+".png"))
@@ -231,6 +247,9 @@ class Player(QLabel):
                                     # ovde ce da se ubrza pacman i da jede protivnike
                                     self.num_of_eated_ghost_powers += 1
                                     self.map.draw_black_background(label.x(), label.y() + 20)
+                                elif self.map.is_deus_ex_machina_power(label.x(), label.y() + 20):
+                                    self.map.draw_black_background(label.x(), label.y() + 10)
+                                    self.start_deus_ex_thread()
                             QGuiApplication.processEvents()
                             sleep(self.player_speed)
                             label.setPixmap(QPixmap("images/PacManDownClose"+str(self.player_id)+".png"))
@@ -278,6 +297,9 @@ class Player(QLabel):
                             #ovde ce da se ubrza pacman i da jede protivnike
                             self.num_of_eated_ghost_powers += 1
                             self.map.draw_black_background(label.x()+20, label.y())
+                        elif self.map.is_deus_ex_machina_power(label.x()+20, label.y()):
+                            self.map.draw_black_background(label.x()+20, label.y())
+                            self.start_deus_ex_thread()
                     QGuiApplication.processEvents()
                     sleep(self.player_speed)
                     if (self.provera == 4):
@@ -336,6 +358,9 @@ class Player(QLabel):
                                     # ovde ce da se ubrza pacman i da jede protivnike
                                     self.num_of_eated_ghost_powers += 1
                                     self.map.draw_black_background(label.x() - 20, label.y())
+                                elif self.map.is_deus_ex_machina_power(label.x() - 20, label.y()):
+                                    self.map.draw_black_background(label.x() - 20, label.y())
+                                    self.start_deus_ex_thread()
                             QGuiApplication.processEvents()
                             sleep(self.player_speed)
                             label.setPixmap(QPixmap("images/PacManLeftClose"+str(self.player_id)+".png"))
@@ -389,6 +414,9 @@ class Player(QLabel):
                                     # ovde ce da se ubrza pacman i da jede protivnike
                                     self.num_of_eated_ghost_powers += 1
                                     self.map.draw_black_background(label.x() + 20, label.y())
+                                elif self.map.is_deus_ex_machina_power(label.x() + 20, label.y()):
+                                    self.map.draw_black_background(label.x() + 20, label.y())
+                                    self.start_deus_ex_thread()
                             QGuiApplication.processEvents()
                             sleep(self.player_speed)
                             label.setPixmap(QPixmap("images/PacManRightClose"+str(self.player_id)+".png"))
@@ -416,6 +444,9 @@ class Player(QLabel):
                             # ovde ce da se ubrza pacman i da jede protivnike
                             self.num_of_eated_ghost_powers += 1
                             self.map.draw_black_background(label.x(), label.y() - 20)
+                        elif self.map.is_deus_ex_machina_power(label.x(), label.y() - 20):
+                            self.map.draw_black_background(label.x(), label.y() - 20)
+                            self.start_deus_ex_thread()
                     QGuiApplication.processEvents()
                     sleep(self.player_speed)
                     if (self.provera == 1):
@@ -470,6 +501,9 @@ class Player(QLabel):
                                     # ovde ce da se ubrza pacman i da jede protivnike
                                     self.num_of_eated_ghost_powers += 1
                                     self.map.draw_black_background(label.x() - 20, label.y())
+                                elif self.map.is_deus_ex_machina_power(label.x() - 20, label.y()):
+                                    self.map.draw_black_background(label.x() - 20, label.y())
+                                    self.start_deus_ex_thread()
                             QGuiApplication.processEvents()
                             sleep(self.player_speed)
                             label.setPixmap(QPixmap("images/PacManLeftClose"+str(self.player_id)+".png"))
@@ -523,6 +557,9 @@ class Player(QLabel):
                                     # ovde ce da se ubrza pacman i da jede protivnike
                                     self.num_of_eated_ghost_powers += 1
                                     self.map.draw_black_background(label.x() + 20, label.y())
+                                elif self.map.is_deus_ex_machina_power(label.x() + 20, label.y()):
+                                    self.map.draw_black_background(label.x() + 20, label.y())
+                                    self.start_deus_ex_thread()
                             QGuiApplication.processEvents()
                             sleep(self.player_speed)
                             label.setPixmap(QPixmap("images/PacManRightClose"+str(self.player_id)+".png"))
@@ -550,6 +587,9 @@ class Player(QLabel):
                             # ovde ce da se ubrza pacman i da jede protivnike
                             self.num_of_eated_ghost_powers += 1
                             self.map.draw_black_background(label.x(), label.y() + 20)
+                        elif self.map.is_deus_ex_machina_power(label.x(), label.y() + 20):
+                            self.map.draw_black_background(label.x(), label.y() + 20)
+                            self.start_deus_ex_thread()
                     QGuiApplication.processEvents()
                     sleep(self.player_speed)
                     if (self.provera == 3):
@@ -567,6 +607,8 @@ class Player(QLabel):
                                 sleep(self.player_speed)
 
     def increase_points(self, points):
+        if self.double_points_from_ex_machina == True:
+            points *= 2
         self.current_score += points
         self.score_counter_label.setText(str(self.current_score))
 
@@ -574,8 +616,9 @@ class Player(QLabel):
         return (self.label.x(), self.label.y())
 
     def increase_player_lifes(self):
-        self.player_lifes += 1
-        self.change_player_life_label()
+        if self.player_lifes < 2:
+            self.player_lifes += 1
+            self.change_player_life_label()
 
     def decrease_player_lifes(self): # Poziva se reset
         self.player_lifes -= 1
@@ -603,3 +646,43 @@ class Player(QLabel):
 
     def set_reset_mode_from_enemy(self, mode):
         self.reset_mode_for_enemies = mode
+
+    def start_deus_ex_thread(self):
+        deus_ex_thread = Thread(target=self.deus_ex_machina_choose_randomly)
+        deus_ex_thread.setDaemon(True)
+        deus_ex_thread.start()
+
+    def deus_ex_machina_choose_randomly(self): # 6 opcija: pacman ubrza, enemy ubrza, double coin, minus poeni, freeze, plus zivot. Pokrece se preko threda
+        print('Usao')
+        self.deus_ex_label.setHidden(True)
+        choice = randint(1,6)
+        if choice == 1: # pacman ubrza
+            print('PlayerSpeedUP')
+            self.player_speed = 0.05
+            sleep(7)
+            self.player_speed = 0.07
+        elif choice == 2: # enemy ubrza
+            print('ENEMY UBRZA AUA')
+            self.ghost_speed_up = True
+            sleep(4)
+            self.ghost_speed_up = False
+        elif choice == 3: # double coin
+            print('Double coin')
+            self.double_points_from_ex_machina = True
+            sleep(10)
+            self.double_points_from_ex_machina = False
+        elif choice == 4: # minnus poeni
+            print('MinusPoeni')
+            minus_score = randint(10,100)
+            if self.current_score - minus_score >= 0:
+                self.current_score -= minus_score
+            else:
+                self.current_score = 0
+        elif choice == 5: # freeze
+            print('FREEEZE')
+            self.player_speed = 3
+            sleep(3)
+            self.player_speed = 0.07
+        elif choice == 6: # plus zivot
+            print('PLUSLife')
+            self.increase_player_lifes()
