@@ -27,6 +27,7 @@ class Player(QLabel):
         self.dead_label = dead_label
         self.start_position = start_position
         self.player_speed = player_speed
+        self.player_eated = False
 
 
 

@@ -60,16 +60,13 @@ class Enemy(QLabel):
                 self.check_if_zero_point_passed()
         while self.mode == 1 and not self.stop_movement: # while chase mode
             self.move_one_to_target(self.calculate_chase_position(self.player.return_current_player_position(), self.ghost_id))
-            touch_happened = self.check_if_touch_happened() # Vraca tuple, (True, 1) broj posle True oznacava koji player je dodirnut
-            if touch_happened[0]:
+            if self.check_if_touch_happened():
                 if not decreased_player_life:
-                    if touch_happened[1] == 1: # uhvatio je prvog igraca
+                    if self.player.player_eated == True:  # uhvatio je prvog igraca
                         self.player.decrease_player_lifes()
-                    elif touch_happened[1] == 2: # uhvatio je drugog igraca
-                        self.player2.decrease_player_lifes()
-                    elif touch_happened[1] == 3: # uhvatio oba igraca
-                        self.player.decrease_player_lifes()
-                        self.player2.decrease_player_lifes()
+                    if self.player2 != None:  # uhvatio je drugog igraca
+                        if self.player2.player_eated == True:
+                            self.player2.decrease_player_lifes()
                     decreased_player_life = True
 
     def move_scatter(self): # ide u svoj ugao
@@ -80,16 +77,13 @@ class Enemy(QLabel):
                 self.move_one_to_target((self.zero_point[0], self.zero_point[1]))
                 self.check_if_zero_point_passed()
         while self.mode == 0 and not self.stop_movement:
-            touch_happened = self.check_if_touch_happened()  # Vraca tuple, (True, 1) broj posle True oznacava koji player je dodirnut
-            if touch_happened[0]:
+            if self.check_if_touch_happened():
                 if not decreased_player_life:
-                    if touch_happened[1] == 1:  # uhvatio je prvog igraca
+                    if self.player.player_eated == True:  # uhvatio je prvog igraca
                         self.player.decrease_player_lifes()
-                    elif touch_happened[1] == 2:  # uhvatio je drugog igraca
-                        self.player2.decrease_player_lifes()
-                    elif touch_happened[1] == 3:  # uhvatio oba igraca
-                        self.player.decrease_player_lifes()
-                        self.player2.decrease_player_lifes()
+                    elif self.player2 != None:  # uhvatio je drugog igraca
+                        if self.player2.player_eated == True:
+                            self.player2.decrease_player_lifes()
                     decreased_player_life = True
             else:
                 self.move_one_to_target((self.scatter_target[0], self.scatter_target[1]))
@@ -103,30 +97,25 @@ class Enemy(QLabel):
                 self.move_one_to_target((self.zero_point[0], self.zero_point[1]))
                 self.check_if_zero_point_passed()
         while self.mode == 2 and not self.stop_movement:
-            touch_happened = self.check_if_touch_happened()
-            if touch_happened[0]:
+            if self.check_if_touch_happened():
                 if increased == False:
-                    if touch_happened[1] == 1:  # uhvatio je prvog igraca
+                    if self.player.player_eated == True:  # uhvatio je prvog igraca
                         self.player.increase_points(200)
-                    elif touch_happened[1] == 2:  # uhvatio je drugog igraca
-                        self.player2.increase_points(200)
-                    elif touch_happened[1] == 3:  # uhvati
-                        self.player.increase_points(200)
-                        self.player2.increase_points(200)
-                    #self.mode = 3 # pojeden je ghost
+                        #self.player.player_eated == False
+                    if self.player2 != None:  # uhvatio je drugog igraca
+                        if self.player2.player_eated == True:
+                            self.player2.increase_points(200)
+                            #self.player2.player_eated == False
                     self.eaten = True
                     self.eated = True
                     self.reborned = False
-                     # povecaj poene playera za 200
                     print('INCREASED')
                     increased = True
-
-                    # Dodaj labelu + 200
-                    #self.switch_mode()
             else:
                 self.move_random_one()
 
     def move_eaten(self): # vraca se na pocetnu poziciju, na 400 400
+        self.ghost_speed = 0.05
         while not self.reborned and self.mode != 4:
             if self.check_if_ghost_returned_to_home():
                 print('RETURNED TO HOME, ghost ID: ', self.ghost_id)
@@ -134,6 +123,7 @@ class Enemy(QLabel):
                 self.eaten = False
                 self.eated = False
                 self.zero_point_passed = False
+                self.ghost_speed = 0.06
                 #self.mode = 0
                 #print('prev was in SCATTER pa mora u SCATTER')
                 #self.switch_mode()
@@ -384,50 +374,44 @@ class Enemy(QLabel):
             return False
 
     def check_if_touch_happened(self):
-        #while True:
-            touched_ghosts = 0
-            position = self.player.return_current_player_position()
+        position = self.player.return_current_player_position()
+        if self.player2 != None:
+            position2 = self.player2.return_current_player_position()
+        if self.previous_direction == 0:  # Dole
+            if self.label.x() == position[0] and abs((self.label.y() + 40) - position[1]) < 41:
+                # print('DOLE NASO TE ACOOOO AUUA')
+                self.player.player_eated = True
+                return True
             if self.player2 != None:
-                position2 = self.player2.return_current_player_position()
-            if self.previous_direction == 0: # Dole
-                if self.label.x() == position[0]  and abs((self.label.y() + 40) - position[1]) < 41:
-                   # print('DOLE NASO TE ACOOOO AUUA')
-                   touched_ghosts = 1
-                if self.player2 != None:
-                    if self.label.x() == position2[0] and abs((self.label.y() + 40) - position2[1]) < 41:
-                        touched_ghosts += 2
-                if touched_ghosts != 0:
-                    return (True, touched_ghosts)
-            elif self.previous_direction == 1: # LEVO
-                if abs((self.label.x() - 40) - position[0]) < 41 and self.label.y() == position[1]:
-                    #print('LEVO NASO TE ACOOOO AUUA')
-                    touched_ghosts = 1
-                if self.player2 != None:
-                    if abs((self.label.x() - 40) - position2[0]) < 41 and self.label.y() == position2[1]:
-                        touched_ghosts += 2
-                if touched_ghosts != 0:
-                    return (True, touched_ghosts)
-            elif self.previous_direction == 2: # GORE
-                if self.label.x() == position[0] and abs((self.label.y() - 40) - position[1]) < 41:
-                    #print('GORE NASO TE ACOOOO AUUA')
-                    touched_ghosts = 1
-                if self.player2 != None:
-                    if self.label.x() == position2[0] and abs((self.label.y() - 40) - position2[1]) < 41:
-                        touched_ghosts += 2
-                if touched_ghosts != 0:
-                    return (True, touched_ghosts)
-            elif self.previous_direction == 3: # DESNO
-                if abs((self.label.x() + 40) - position[0]) < 41 and self.label.y() == position[1]:
-                    #print('DESNO NASO TE ACOOOO AUUA')
-                    touched_ghosts = 1
-                if self.player2 != None:
-                    if abs((self.label.x() + 40) - position2[0]) < 41 and self.label.y() == position2[1]:
-                        touched_ghosts += 2
-                if touched_ghosts != 0:
-                    return (True, touched_ghosts)
-
-            return (False,'')
-            #return
+                if self.label.x() == position2[0] and abs((self.label.y() + 40) - position2[1]) < 41:
+                    self.player2.player_eated = True
+                    return True
+        elif self.previous_direction == 1:  # LEVO
+            if abs((self.label.x() - 40) - position[0]) < 41 and self.label.y() == position[1]:
+                # print('LEVO NASO TE ACOOOO AUUA')
+                self.player.player_eated = True
+                return True
+            if self.player2 != None:
+                if abs((self.label.x() - 40) - position2[0]) < 41 and self.label.y() == position2[1]:
+                    self.player2.player_eated = True
+                    return True
+        elif self.previous_direction == 2:  # GORE
+            if self.label.x() == position[0] and abs((self.label.y() - 40) - position[1]) < 41:
+                self.player.player_eated = True
+                return True
+            if self.player2 != None:
+                if self.label.x() == position2[0] and abs((self.label.y() - 40) - position2[1]) < 41:
+                    self.player2.player_eated = True
+                    return True
+        elif self.previous_direction == 3:  # DESNO
+            if abs((self.label.x() + 40) - position[0]) < 41 and self.label.y() == position[1]:
+                # print('DESNO NASO TE ACOOOO AUUA')
+                self.player.player_eated = True
+                return True
+            if self.player2 != None:
+                if abs((self.label.x() + 40) - position2[0]) < 41 and self.label.y() == position2[1]:
+                    self.player2.player_eated = True
+                    return True
 
     def reset_enemy(self):
         self.eaten = False  # da li ga je player pojeo

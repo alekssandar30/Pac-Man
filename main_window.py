@@ -23,8 +23,7 @@ class MainWindow(QMainWindow):
         self.height = 640
         self.map = Board(self)
         self.list_of_player_names = list_of_names
-        self.play_mode = len(
-            list_of_names)  # 1 - Singleplayer, 2 - Multiplayer, 4 - Tornament w 4 players, 8- Tournament w 8 players
+        self.play_mode = len(list_of_names)  # 1 - Singleplayer, 2 - Multiplayer, 4 - Tornament w 4 players, 8- Tournament w 8 players
         self.tournament_window = tournament_window  # Posle svakog turnira (tj runde) treba pozvati metodu self.tournament_window.round_done(winner_id, winner_name) da se azurira prozor
 
         # Labele
@@ -33,6 +32,7 @@ class MainWindow(QMainWindow):
         self.orange_ghost = QLabel(self)
         self.red_ghost = QLabel(self)
         self.yellow_ghost = QLabel(self)
+        self.player2 = None
 
         self.title_label = QLabel('PacMan', self)
         self.countdown_label = QLabel(self)
@@ -56,8 +56,7 @@ class MainWindow(QMainWindow):
         self.label_super_power.setMovie(self.movie)
         self.movie.start()
 
-        special_power_thread = Thread(target=self.changeSpecialPowerLocation, args=[30,
-                                                                                    12])  # Thread koji menja pozicije, svake 30s generise superPower, i ostavlja ju je vidljivo 12s
+        special_power_thread = Thread(target=self.changeSpecialPowerLocation, args=[30,12])  # Thread koji menja pozicije, svake 30s generise superPower, i ostavlja ju je vidljivo 12s
         special_power_thread.daemon = True  # Da se thread gasi zajedno sa gasenjem glavnog threada (posle zatvaranja prozora)
         special_power_thread.start()
 
@@ -175,6 +174,8 @@ class MainWindow(QMainWindow):
 
     def do_initial_countdown(self):
         self.player.in_reset = True
+        if self.play_mode in (2, 4, 8):
+           self.player2.in_reset = True
         self.countdown_label.setText('3')
         sleep(1)
         self.countdown_label.setText('2')
@@ -185,6 +186,8 @@ class MainWindow(QMainWindow):
         self.countdown_label.move(360, 200)
         self.countdown_label.setText('')
         self.player.in_reset = False
+        if self.play_mode in (2, 4, 8):
+          self.player2.in_reset = False
 
 ########################### PLAYER FUNCTIONS ###################################################
     def instantiate_players_from_list(self, list_of_names):
@@ -228,9 +231,7 @@ class MainWindow(QMainWindow):
             self.label_for_player2_lifes = QLabel(self)
             self.grave_label_for_player2 = QLabel(self)
 
-            self.player2 = player.Player(self.player2_label, self.map, self.label_for_player2_score,
-                                         self.label_for_player2_lifes, self.grave_label_for_player2, (720, 560),
-                                         player2_id, player2_name, 0.07)
+            self.player2 = player.Player(self.player2_label, self.map, self.label_for_player2_score,self.label_for_player2_lifes, self.grave_label_for_player2, (720, 560),player2_id, player2_name, 0.07)
             self.ghost1 = enemy.Enemy(self.red_ghost, self.map, self.player, self.player2, (18 * 40, 1 * 40), 1,
                                       self.red_ghost, (360, 400))  # red ghost
             self.ghost2 = enemy.Enemy(self.orange_ghost, self.map, self.player2, self.player, (1 * 40, 1 * 40), 2,
@@ -316,33 +317,71 @@ class MainWindow(QMainWindow):
         self.next_players_label.setHidden(True)
         self.restart_btn.setHidden(True)
 
-    def reset_player(self):
-        self.player_label.setHidden(True)
-        self.grave_label.setPixmap(QPixmap('images/Grave.png'))
-        self.grave_label.setHidden(False)
-        self.grave_label.move(self.player_label.x(), self.player_label.y())
+    def reset_player_smart(self):
+        if self.player.player_eated == True and self.player2 == None:
+            self.player.in_reset = True
+            self.reset_player(self.player, self.player_label)
+            self.player.player_eated = False
+            self.player.in_reset = False
+            return
+        elif self.player2 != None and self.player2.player_eated == True:
+            print('PLAYER2 reset')
+            self.player2.in_reset = True
+            self.player.in_reset = True
+            self.reset_player(self.player2, self.player2_label)
+            self.player2.player_eated = False
+            self.player2.in_reset = False
+            self.player.in_reset = False
+            return
+        elif self.player.player_eated == True and self.player2 != None and self.player2.player_eated == False:
+            self.player2.in_reset = True
+            self.player.in_reset = True
+            self.reset_player(self.player, self.player_label)
+            self.player.player_eated = False
+            self.player2.in_reset = False
+            self.player.in_reset = False
+            return
+        elif self.player.player_eated == True and self.player2 != None and self.player2.player_eated == True:
+            self.player2.in_reset = True
+            self.player.in_reset = True
+            self.reset_player(self.player, self.player_label)
+            self.reset_player(self.player2, self.player2_label)
+            self.player.player_eated = False
+            self.player2.player_eated = False
+            self.player2.in_reset = False
+            self.player.in_reset = False
+            return
+
+    def reset_player(self, player, player_label):
+        print('USAO reset player....')
+        player_label.setHidden(True)
+        player.dead_label.setPixmap(QPixmap('images/Grave.png'))
+        player.dead_label.setHidden(False)
+        player.dead_label.move(player_label.x(), player_label.y())
         self.do_initial_countdown()
-        self.grave_label.setHidden(True)
-        self.player_label.move(self.player.start_position[0], self.player.start_position[1])
-        self.player_label.setHidden(False)
-        self.player_label.setPixmap(QPixmap('images/PacManUpEat' + str(self.player.player_id) + '.png'))
+        player.dead_label.setHidden(True)
+        player_label.setHidden(False)
+        player_label.move(player.start_position[0], player.start_position[1])
+        player_label.setPixmap(QPixmap('images/PacManUpEat' + str(player.player_id) + '.png'))
+        if player.player_lifes == -1:
+            pass  # Izbaci da je end game
         next_players = []
 
         if self.play_mode == 2:
-            if self.player.player_lifes == 0 and self.player2.player_lifes > 0:
+            if self.player.player_lifes == -1 and self.player2.player_lifes > -1:
                 self.player_label.setHidden(True)
                 self.player.in_reset = True
-            elif self.player.player_lifes > 0 and self.player2.player_lifes == 0:
+            elif self.player.player_lifes > -1 and self.player2.player_lifes == -1:
                 self.player2_label.setHidden(True)
                 self.player2.in_reset = True
-            elif self.player.player_lifes == 0 and self.player2.player_lifes == 0:
+            elif self.player.player_lifes == -1 and self.player2.player_lifes == -1:
                 winner_id, winner_name = self.calculate_winner()
                 self.winner_label.setText(f"{winner_name} je pobednik!")
                 sleep(2)
                 self.close()
 
         if self.play_mode in (4, 8):
-            if self.player.player_lifes == 0 and self.player2.player_lifes == 0:
+            if self.player.player_lifes == -1 and self.player2.player_lifes == -1:
                 next_players = self.calculate_next_players()
                 winner_id, winner_name = self.calculate_winner()
                 self.winner_label.setText(f"{winner_name} je pobednik!")
@@ -408,12 +447,10 @@ class MainWindow(QMainWindow):
         passed_10_seconds = False
         iteration = 0
         self.switch_if_needed(0)  # init u scatter
-
         while True:
             sleep(0.5)
             second_counter += 0.5
             iteration += 1
-
             if second_counter == 10:
                 enter_scatter = False
                 enter_chase = True
@@ -430,14 +467,15 @@ class MainWindow(QMainWindow):
             if self.mode == 4:
                 print('Usao u 444, iteration: ', iteration)
                 self.player.set_reset_mode_from_enemy(-1)
-                # sleep(3)
+                if self.player2 != None:
+                    self.player2.set_reset_mode_from_enemy(-1)
                 second_counter = 0
                 enter_scatter = True
                 enter_chase = False
                 self.enter_frightened = False
                 passed_10_seconds = False
                 self.reset_ghosts()
-                self.reset_player()
+                self.reset_player_smart()
                 self.mode = 0
                 self.switch_mode_for_enemies()
                 continue
@@ -447,6 +485,13 @@ class MainWindow(QMainWindow):
                 self.mode = 4
                 self.switch_if_needed(4)
                 continue
+
+            if self.player2 != None:
+                if self.player2.return_reset_for_enemies() == 4:  # Reset
+                    print('Usao u [self.player.return_reset_for_enemies() == 4:], iteration: ', iteration)
+                    self.mode = 4
+                    self.switch_if_needed(4)
+                    continue
 
             if self.ghost1.check_if_player_activated_eat_ghost_power():
                 self.enter_frightened = True
