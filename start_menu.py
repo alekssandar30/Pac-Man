@@ -473,6 +473,7 @@ class TournamentWindow(QWidget): # 800, 640
             self.oImage = QImage("images/EightTornamentInitial.png")
             self.field1_for_name.setStyleSheet("font: 10pt Comic Sans MS; color: white")
             self.field1_for_name.move(45, 191)
+            self.field1_for_name.resize(100, 100)
             self.field2_for_name.setStyleSheet("font: 10pt Comic Sans MS; color: white")
             self.field2_for_name.move(45, 322)
             self.field3_for_name.setStyleSheet("font: 10pt Comic Sans MS; color: white")

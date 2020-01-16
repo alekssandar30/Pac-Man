@@ -312,6 +312,7 @@ class Enemy(QLabel):
     def change_look_of_ghost(self, picture_num, direction): # eye_direction -> Left, Right, Down, Up
         if picture_num == 1:
             if self.activated_frightened or self.mode == 2: # Moze se pojesti, tj uzima plavi skin
+                self.ghost_speed = 0.10
                 if self.activated_warning_skin == True:
                     if self.next_warning_skin1 == False:
                         self.label.setPixmap(QPixmap('images/GhostDeadWhite1.png'))
@@ -324,9 +325,11 @@ class Enemy(QLabel):
             elif self.eaten:
                 self.label.setPixmap(QPixmap("images/Eyes"+direction+".png"))
             else:
+                self.ghost_speed = 0.06
                 self.label.setPixmap(QPixmap("images/Ghost"+str(self.ghost_id)+str(direction)+"1.png"))
         elif picture_num == 2:
             if self.activated_frightened or self.mode == 2: # Moze se pojesti, tj uzima plavi skin
+                self.ghost_speed = 0.10
                 if self.activated_warning_skin == True:
                     if self.next_warning_skin2 == False:
                         self.label.setPixmap(QPixmap('images/GhostDeadWhite2.png'))
@@ -339,6 +342,7 @@ class Enemy(QLabel):
             elif self.eaten:
                 self.label.setPixmap(QPixmap("images/Eyes"+direction+".png"))
             else:
+                self.ghost_speed = 0.06
                 self.label.setPixmap(QPixmap("images/Ghost"+str(self.ghost_id)+str(direction)+"2.png"))
 
     def switch_mode(self):
