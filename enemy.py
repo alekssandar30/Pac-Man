@@ -116,7 +116,6 @@ class Enemy(QLabel):
                     self.eaten = True
                     self.eated = True
                     self.reborned = False
-                    print('INCREASED')
                     increased = True
             else:
                 self.move_random_one()
@@ -125,7 +124,6 @@ class Enemy(QLabel):
         self.ghost_speed = 0.05
         while not self.reborned and self.mode != 4:
             if self.check_if_ghost_returned_to_home():
-                print('RETURNED TO HOME, ghost ID: ', self.ghost_id)
                 self.reborned = True
                 self.eaten = False
                 self.eated = False
@@ -349,24 +347,19 @@ class Enemy(QLabel):
             self.currentProcess = Thread(target=self.move_scatter)
             self.currentProcess.daemon = True
             self.currentProcess.start()
-            print('Scatter started, ghost ID: ', self.ghost_id)
         elif self.mode == 1:
             self.currentProcess = Thread(target=self.move_chase)
             self.currentProcess.daemon = True
             self.currentProcess.start()
-            print('Chase started, ghost ID: ', self.ghost_id)
         elif self.mode == 2:
             self.currentProcess = Thread(target=self.move_frightened)
             self.currentProcess.daemon = True
             self.currentProcess.start()
-            print('Frightened started, ghost ID: ', self.ghost_id)
         elif self.mode == 3:
             self.currentProcess = Thread(target=self.move_eaten)
             self.currentProcess.daemon = True
             self.currentProcess.start()
-            print('Eaten started, ghost ID: ', self.ghost_id)
         elif self.mode == 4:
-            print('RESTART started, ghost ID: ', self.ghost_id)
             self.stop_movement = True
 
     def check_if_player_activated_eat_ghost_power(self):

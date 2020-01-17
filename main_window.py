@@ -24,31 +24,18 @@ class MainWindow(QMainWindow):
 
         self.map = Board(self)
         self.list_of_player_names = list_of_names
-        self.play_mode = len(list_of_names)  # 1 - Singleplayer, 2 - Multiplayer, 4 - Tornament w 4 players, 8- Tournament w 8 players
+        self.play_mode = len(list_of_names)  # 1 - Singleplayer, 2 - Multiplayer, 4 - Tornament w 4 players, 8- Tournament w 8 players. Dodaj 0
         self.tournament_window = tournament_window  # Posle svakog turnira (tj runde) treba pozvati metodu self.tournament_window.round_done(winner_id, winner_name) da se azurira prozor
 
         # Labele
-
         self.blue_ghost = QLabel(self)
         self.orange_ghost = QLabel(self)
         self.red_ghost = QLabel(self)
         self.yellow_ghost = QLabel(self)
+        self.deus_ex_feedback_label = QLabel(self)
+        self.deus_ex_feedback_label2 = QLabel(self)
         self.player2 = None
 
-        self.title_label = QLabel('PacMan', self)
-        self.countdown_label = QLabel(self)
-        self.score_label_player = QLabel(self)  # Samo ce im se menjati imena sa .setText(self.player1.player_name+' Score: ', self) kada se menjaju igraci
-        self.player1_name_label = QLabel(self)
-        self.player2_name_label = QLabel(self)
-        self.winner_label = QLabel(self)
-        self.next_players_label = QLabel(self)
-        self.restart_btn = QPushButton('Play', self)
-        self.restart_btn_pushed = False
-
-        # instanciraj igraca i protivnike
-        # Kod turnira treba smenjivati id i naziv)
-
-        ## Special power
         self.label_super_power = QLabel(self)
         self.niz_lokacija_special_power = [(2, 5), (18, 1), (6, 12), (2, 5), (10, 10), (18, 8)]
         self.movie = QMovie('images/SpecialPowers.gif')
@@ -58,6 +45,18 @@ class MainWindow(QMainWindow):
         self.label_super_power.setMovie(self.movie)
         self.movie.start()
         self.map.board[self.niz_lokacija_special_power[0][1]][self.niz_lokacija_special_power[0][0]] = 4
+
+        self.title_label = QLabel('PacMan', self)
+        self.countdown_label = QLabel(self)
+        self.score_label_player = QLabel(self)  # Samo ce im se menjati imena sa .setText(self.player1.player_name+' Score: ', self) kada se menjaju igraci
+        self.player1_name_label = QLabel(self)
+        self.player2_name_label = QLabel(self)
+        self.image_label_for_winner_or_next_player = QLabel(self)
+        self.winner_label = QLabel(self)
+        self.next_players_label = QLabel(self)
+
+        self.restart_btn = QPushButton('Play', self)
+        self.restart_btn_pushed = False
 
         special_power_thread = Thread(target=self.changeSpecialPowerLocation, args=[30,12])  # Thread koji menja pozicije, svake 30s generise superPower, i ostavlja ju je vidljivo 12s
         special_power_thread.daemon = True  # Da se thread gasi zajedno sa gasenjem glavnog threada (posle zatvaranja prozora)
@@ -86,6 +85,17 @@ class MainWindow(QMainWindow):
 
         self.center_window()
         self.setCentralWidget(self.map)
+
+        self.image_label_for_winner_or_next_player.move(35,160)
+        self.image_label_for_winner_or_next_player.resize(730,291)
+        self.image_label_for_winner_or_next_player.setHidden(True)
+        self.deus_ex_feedback_label.setHidden(True)
+        self.deus_ex_feedback_label.move(0,40)
+        self.deus_ex_feedback_label.resize(40,40)
+
+        self.deus_ex_feedback_label2.setHidden(True)
+        self.deus_ex_feedback_label2.move(760, 40)
+        self.deus_ex_feedback_label2.resize(40, 40)
 
         if self.play_mode == 1:  # singleplayer
             player_id, player_name = self.list_of_player_names[0]
@@ -153,17 +163,17 @@ class MainWindow(QMainWindow):
         self.countdown_label.setStyleSheet("font: 120pt Comic Sans MS; color: white")
         self.countdown_label.resize(200, 200)
 
-        self.winner_label.move(200, 100)
-        self.winner_label.setStyleSheet("font: 50pt Comic Sans MS; color: white")
+        self.winner_label.move(180, 20)
+        self.winner_label.setStyleSheet("font: 30pt Comic Sans MS; color: white")
         self.winner_label.resize(500, 500)
         self.winner_label.setText('')
 
-        self.next_players_label.move(100, 50)
-        self.next_players_label.setStyleSheet("font: 30pt Comic Sans MS; color: green")
-        self.next_players_label.resize(500, 500)
+        self.next_players_label.move(140, 95)
+        self.next_players_label.setStyleSheet("font: 22pt Comic Sans MS; color: green")
+        self.next_players_label.resize(700, 500)
         self.next_players_label.setText('')
 
-        self.restart_btn.move(600, 500)
+        self.restart_btn.move(630, 383)
         self.restart_btn.resize(100, 50)
         self.restart_btn.setStyleSheet("font: 30pt Comaic Sans MS; color: white; border: 1px solid black;"
                                        "border-radius: 5px; background-color: BurlyWood;")
@@ -212,7 +222,7 @@ class MainWindow(QMainWindow):
             self.grave_label = QLabel(self)
             self.player = player.Player(self.player_label, self.map, self.label_for_player_score,
                                         self.label_for_player_lifes, self.grave_label, (40, 560), player_id,
-                                        player_name, 0.07, self.label_super_power)
+                                        player_name, 0.07, self.label_super_power,self.deus_ex_feedback_label)
 
             self.ghost1 = enemy.Enemy(self.red_ghost, self.map, self.player, None, (18 * 40, 1 * 40), 1, self.red_ghost,
                                       (360, 400))  # red ghost
@@ -232,7 +242,7 @@ class MainWindow(QMainWindow):
             self.grave_label = QLabel(self)
             self.player = player.Player(self.player_label, self.map, self.label_for_player_score,
                                         self.label_for_player_lifes, self.grave_label, (40, 560), player1_id,
-                                        player1_name, 0.07, self.label_super_power)
+                                        player1_name, 0.07, self.label_super_power,self.deus_ex_feedback_label)
 
             player2_id, player2_name = list_of_names[1]
             self.player2_label = QLabel(self)
@@ -241,7 +251,7 @@ class MainWindow(QMainWindow):
             self.label_for_player2_lifes = QLabel(self)
             self.grave_label_for_player2 = QLabel(self)
 
-            self.player2 = player.Player(self.player2_label, self.map, self.label_for_player2_score,self.label_for_player2_lifes, self.grave_label_for_player2, (720, 560),player2_id, player2_name, 0.07, self.label_super_power)
+            self.player2 = player.Player(self.player2_label, self.map, self.label_for_player2_score,self.label_for_player2_lifes, self.grave_label_for_player2, (720, 560),player2_id, player2_name, 0.07, self.label_super_power,self.deus_ex_feedback_label2)
             self.ghost1 = enemy.Enemy(self.red_ghost, self.map, self.player, self.player2, (18 * 40, 1 * 40), 1,
                                       self.red_ghost, (360, 400))  # red ghost
             self.ghost2 = enemy.Enemy(self.orange_ghost, self.map, self.player2, self.player, (1 * 40, 1 * 40), 2,
@@ -273,7 +283,6 @@ class MainWindow(QMainWindow):
             self.label_for_player2_score.move(640, 5)
 
     def keyPressEvent(self, event):
-        print('Key pressed: ', event.key())
         self.key_notifier.add_key(event.key())
 
     def __update_position__(self, key):
@@ -284,7 +293,6 @@ class MainWindow(QMainWindow):
             self.player1_thread = Thread(target=self.player.movePlayerRight, args=[self.player_label, ])
             self.player1_thread.start()
         elif key == Qt.Key_Up:
-            print('Up pressed')
             self.player1_thread = Thread(target=self.player.movePlayerUp, args=[self.player_label, ])
             self.player1_thread.start()
         elif key == Qt.Key_Down:
@@ -298,7 +306,6 @@ class MainWindow(QMainWindow):
             self.player2_thread = Thread(target=self.player2.movePlayerRight, args=[self.player2_label, ])
             self.player2_thread.start()
         elif key == Qt.Key_W:
-            print('WWW pressed')
             self.player2_thread = Thread(target=self.player2.movePlayerUp, args=[self.player2_label, ])
             self.player2_thread.start()
         elif key == Qt.Key_S:
@@ -322,14 +329,12 @@ class MainWindow(QMainWindow):
 
     def reset_player_smart(self):
         if self.player.player_eated == True and self.player2 == None:
-            print('Player1 eated SINGLEPLAYER')
             self.player.in_reset = True
             self.reset_player(self.player)
             self.player.player_eated = False
             self.player.in_reset = False
             return
         elif self.player2 != None and self.player2.player_eated == True:
-            print('Player2 eated')
             self.player2.in_reset = True
             self.player.in_reset = True
             self.reset_player(self.player2)
@@ -338,7 +343,6 @@ class MainWindow(QMainWindow):
             self.player.in_reset = False
             return
         elif self.player.player_eated == True and self.player2 != None and self.player2.player_eated == False:
-            print('Player1 eated Multiplayer')
             self.player2.in_reset = True
             self.player.in_reset = True
             self.reset_player(self.player)
@@ -353,8 +357,11 @@ class MainWindow(QMainWindow):
             if player.player_lifes == -1:
                 player.label.setHidden(True)
                 player.label.move(900,900)
-                self.winner_label.setText('GAME OVER :( Your score: '+ str(player.current_score))
-                sleep(2)
+                self.image_label_for_winner_or_next_player.setPixmap(QPixmap('images/WinLabel.png'))
+                self.image_label_for_winner_or_next_player.setHidden(False)
+                self.winner_label.move(200, 50)
+                self.winner_label.setText('   GAME OVER :(\n Your scroe: '+ str(player.current_score))
+                sleep(4)
                 self.close()
             else:
                 player.label.setHidden(True)
@@ -382,11 +389,17 @@ class MainWindow(QMainWindow):
                 self.do_initial_countdown()
             elif self.player.player_lifes == -2 and self.player2.player_lifes == -1 or self.player.player_lifes == -1 and self.player2.player_lifes == -2:
                 winner_id, winner_name = self.calculate_winner()
-                self.winner_label.setText(f"{winner_name} je pobednik!")
-                sleep(2)
+                self.image_label_for_winner_or_next_player.setPixmap(QPixmap('images/ChampionLabel.png'))
+                self.image_label_for_winner_or_next_player.setHidden(False)
+                self.winner_label.move(200, 50)
+                if winner_id == 1:
+                    winning_score = self.player.current_score
+                else:
+                    winning_score = self.player2.current_score
+                self.winner_label.setText(f"{winner_name} je pobednik!\n Winning score: "+str (winning_score))
+                sleep(4)
                 self.close()
             elif player.player_lifes > -1:
-                print('Usao u reset u multiplayer, playerID: ', player.player_id)
                 player.label.setHidden(True)
                 player.dead_label.setPixmap(QPixmap('images/Grave.png'))
                 player.dead_label.setHidden(False)
@@ -411,13 +424,25 @@ class MainWindow(QMainWindow):
             elif self.player.player_lifes == -2 and self.player2.player_lifes == -1 or self.player.player_lifes == -1 and self.player2.player_lifes == -2:
                 next_players = self.calculate_next_players()
                 winner_id, winner_name = self.calculate_winner()
-                self.winner_label.setText(f"{winner_name} je pobednik!")
-                self.next_players_label.setText(f"Sledeci igraci: {next_players[0][1]} i {next_players[1][1]}")
+                self.list_of_player_names.append((winner_id, winner_name))
+                while len(self.list_of_player_names) != self.play_mode:
+                    self.list_of_player_names.append(('', ''))
                 self.tournament_window.round_done(winner_id, winner_name)
-                self.restart_btn.setHidden(False)
-                while self.restart_btn_pushed == False:
-                    #QCoreApplication.processEvents()
-                    pass
+                if next_players[1][1] != '':
+                    self.image_label_for_winner_or_next_player.setPixmap(QPixmap('images/WinLabel.png'))
+                    self.image_label_for_winner_or_next_player.setHidden(False)
+                    self.winner_label.setText(f"{winner_name} je pobednik!")
+                    self.next_players_label.setText(f"Sledeci igraci: {next_players[0][1]} i {next_players[1][1]}")
+                    self.restart_btn.setHidden(False)
+                    while self.restart_btn_pushed == False:
+                        #QCoreApplication.processEvents()
+                        pass
+                else:
+                        self.image_label_for_winner_or_next_player.setPixmap(QPixmap('images/ChampionLabel.png'))
+                        self.image_label_for_winner_or_next_player.setHidden(False)
+                        self.winner_label.setText(f"{winner_name} je sampion!")
+                        sleep(4)
+                        self.close()
 
             elif player.player_lifes > -1:
                 player.label.setHidden(True)
@@ -435,7 +460,7 @@ class MainWindow(QMainWindow):
         player1_name = self.player1_name_label.text()
         player2_name = self.player2_name_label.text()
 
-        self.list_of_player_names = [player for player in self.list_of_player_names if player[1].capitalize() != player1_name and player[1].capitalize() != player2_name]
+        self.list_of_player_names = [player for player in self.list_of_player_names if player[1].capitalize() != player1_name and player[1].capitalize() != player2_name and player[1].capitalize() != '']
 
         return self.list_of_player_names
 

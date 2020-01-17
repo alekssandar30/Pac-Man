@@ -8,7 +8,7 @@ from threading import Thread
 
 
 class Player(QLabel):
-    def __init__(self, label, map, label_for_player_score, label_for_player_lifes, dead_label, start_position, player_id, player_name, player_speed, deus_ex_label):
+    def __init__(self, label, map, label_for_player_score, label_for_player_lifes, dead_label, start_position, player_id, player_name, player_speed, deus_ex_label, deus_ex_feedback_label):
         super().__init__()
         self.player_id = player_id
         self.player_name = player_name
@@ -33,6 +33,11 @@ class Player(QLabel):
         self.double_points_from_ex_machina = False
         self.deus_ex_label = deus_ex_label
         self.ghost_speed_up = False
+        self.deus_ex_feedback_label = deus_ex_feedback_label
+        if (player_id == 1):
+            self.deus_ex_feedback_label.move(0,40)
+        else:
+            self.deus_ex_feedback_label.move(200,200)
 
 
 
@@ -653,36 +658,42 @@ class Player(QLabel):
         deus_ex_thread.start()
 
     def deus_ex_machina_choose_randomly(self): # 6 opcija: pacman ubrza, enemy ubrza, double coin, minus poeni, freeze, plus zivot. Pokrece se preko threda
-        print('Usao')
         self.deus_ex_label.setHidden(True)
+        self.deus_ex_feedback_label.setHidden(False)
         choice = randint(1,6)
         if choice == 1: # pacman ubrza
-            print('PlayerSpeedUP')
             self.player_speed = 0.05
-            sleep(7)
+            self.change_deus_ex_image_for_seconds(8, 'FeedbackPacmanSpeedUp')
             self.player_speed = 0.07
         elif choice == 2: # enemy ubrza
-            print('ENEMY UBRZA AUA')
             self.ghost_speed_up = True
-            sleep(4)
+            self.change_deus_ex_image_for_seconds(4, 'FeedbackSpeedUpEnemy')
             self.ghost_speed_up = False
         elif choice == 3: # double coin
-            print('Double coin')
             self.double_points_from_ex_machina = True
-            sleep(10)
+            self.change_deus_ex_image_for_seconds(10, 'FeedbackDoubleCoin')
             self.double_points_from_ex_machina = False
         elif choice == 4: # minnus poeni
-            print('MinusPoeni')
             minus_score = randint(10,100)
             if self.current_score - minus_score >= 0:
-                self.current_score -= minus_score
+                 self.current_score -= minus_score
             else:
-                self.current_score = 0
+                  self.current_score = 0
+            self.change_deus_ex_image_for_seconds(4, 'FeedbackCoinLose')
         elif choice == 5: # freeze
-            print('FREEEZE')
             self.player_speed = 3
-            sleep(3)
+            self.change_deus_ex_image_for_seconds(2, 'FeedbackPlayerFreeze')
             self.player_speed = 0.07
         elif choice == 6: # plus zivot
-            print('PLUSLife')
             self.increase_player_lifes()
+            self.change_deus_ex_image_for_seconds(8, 'FeedbackPlusLife')
+
+        self.deus_ex_feedback_label.setHidden(True)
+
+    def change_deus_ex_image_for_seconds(self, seconds, image):
+        seconds = seconds // 2
+        for _ in range(seconds):
+            self.deus_ex_feedback_label.setPixmap(QPixmap('images/'+image+'.png'))
+            sleep(1)
+            self.deus_ex_feedback_label.setPixmap(QPixmap('images/'+image+'1.png'))
+            sleep(1)
