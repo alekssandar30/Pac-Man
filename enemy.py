@@ -378,7 +378,6 @@ class Enemy(QLabel):
             position2 = self.player2.return_current_player_position()
         if self.previous_direction == 0:  # Dole
             if self.label.x() == position[0] and abs((self.label.y() + 40) - position[1]) < 41:
-                # print('DOLE NASO TE ACOOOO AUUA')
                 self.player.player_eated = True
                 return True
             if self.player2 != None:
@@ -387,7 +386,6 @@ class Enemy(QLabel):
                     return True
         elif self.previous_direction == 1:  # LEVO
             if abs((self.label.x() - 40) - position[0]) < 41 and self.label.y() == position[1]:
-                # print('LEVO NASO TE ACOOOO AUUA')
                 self.player.player_eated = True
                 return True
             if self.player2 != None:
@@ -404,7 +402,6 @@ class Enemy(QLabel):
                     return True
         elif self.previous_direction == 3:  # DESNO
             if abs((self.label.x() + 40) - position[0]) < 41 and self.label.y() == position[1]:
-                # print('DESNO NASO TE ACOOOO AUUA')
                 self.player.player_eated = True
                 return True
             if self.player2 != None:

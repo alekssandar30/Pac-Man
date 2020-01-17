@@ -15,6 +15,7 @@ class Menu(QWidget):
         self.play_btn = QPushButton('Play', self)  # proverava dal je uneto dva imena, ako jeste, onda pusta u igricu, u suprotnom dalje error message
         self.four_player_btn = QPushButton('4 players', self)
         self.eight_player_btn = QPushButton('8 players', self)
+        self.back_btn = QPushButton('Go Back', self, objectName="BackButton")
 
         self.yellow_pacman_button = QPushButton('',self)
         self.orange_pacman_button = QPushButton('',self)
@@ -54,6 +55,27 @@ class Menu(QWidget):
         self.palette = QPalette()
         self.palette.setBrush(QPalette.Window, QBrush(self.oImage))
         self.setPalette(self.palette)
+
+        StyleSheet = '''
+        QPushButton#BackButton {
+            background-color: aqua;
+            border-radius: 20px;      
+            font: 15pt Comic Sans MS;
+        }
+
+        QPushButton#BackButton:hover {
+            background-color: #64b5f6;
+            color: #fff;
+        }
+
+        QPushButton#BackButton:pressed {
+            background-color: #bbdefb;
+        }
+        '''
+        self.back_btn.move(600, 10)
+        self.back_btn.resize(100, 40)
+        self.back_btn.setStyleSheet(StyleSheet)
+        self.back_btn.clicked.connect(self.go_back)
 
         self.singlePlayer_btn.setToolTip('Single player mode')
         self.singlePlayer_btn.move(200, 100)
@@ -259,6 +281,13 @@ class Menu(QWidget):
         self.blue_pacman_button.setHidden(False)
         self.rose_pacman_button.setHidden(False)
         self.gray_pacman_button.setHidden(False)
+
+
+    @pyqtSlot()
+    def go_back(self):
+        new_window = Menu()
+        self.close()
+        new_window.show()
 
     @pyqtSlot()
     def choose_pacman_button(self, button_argument):
