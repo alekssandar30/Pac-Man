@@ -860,8 +860,10 @@ class Board(QFrame):
     def zid(self, x, y):
         if (x % 40 == 0 and y % 40 == 0):
             if x == 800:
+                self.reset_coins_if_needed()
                 return True
             if x == -40:
+                self.reset_coins_if_needed()
                 return True
             if self.board[y // 40][x // 40] != 0:
                 return True
@@ -912,3 +914,26 @@ class Board(QFrame):
             for j in range(16):
                 if board[j][i] == value:
                     self.special_power_locations.append((i * 40, j * 40))
+
+    def reset_coins_if_needed(self):
+        for i in range(20):
+            for j in range(16):
+                if self.board[j][i] == 2:
+                    return
+
+        for i in range(20):
+            for j in range(16):
+                if self.board[j][i] == 1:
+                    self.board[j][i] = 2
+
+        self.board[8][10] = 1
+        self.board[9][9] = 1
+        self.board[9][10] = 1
+        self.board[9][11] = 1
+        self.board[10][9] = 1
+        self.board[10][10] = 1
+        self.board[10][11] = 1
+        self.board[14][1] = 1
+        self.board[14][18] = 1
+
+        self.update()
